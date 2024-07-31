@@ -5,9 +5,7 @@ import { getCurrentUser } from "@/lib/supabase";
 export type User = {
     username: string,
     email:string,
-    userId: string,
-    sessionId: string
-
+    userId: string
 }
 export interface UserContextInterface{
     user: User,
@@ -17,8 +15,7 @@ const userDefaultState = {
     user: {
     username:'',
     email:'',
-    userId: '',
-    sessionId: ''
+    userId: ''
 },
 setUser: (user: User) => { }
 } as UserContextInterface
@@ -60,6 +57,7 @@ interface GlobalContextInterface {
     isLoggedIn: IsLoggedIn;
     setIsLoggedIn: Dispatch<SetStateAction<IsLoggedIn>>;
     isLoading: IsLoading;
+    setIsLoading: Dispatch<SetStateAction<IsLoading>>;
   }
   
   const GlobalContext = createContext<GlobalContextInterface>({
@@ -67,7 +65,9 @@ interface GlobalContextInterface {
     setUser: userDefaultState.setUser,
     isLoggedIn: isLoggedInDefaultState.isLoggedIn,
     setIsLoggedIn: isLoggedInDefaultState.setIsLoggedIn,
-    isLoading: isLoadingDefaultState.isLoading
+    isLoading: isLoadingDefaultState.isLoading,
+    setIsLoading: isLoadingDefaultState.setIsLoading
+
 
   });
 export const useGlobalContext = () => useContext(GlobalContext)
@@ -90,10 +90,8 @@ export default function GlobalProvider({children}: GlobalProviderProps){
                 setIsLoggedIn({isLoggedIn:true})
                 setUser({
                     email: result?.email || '',
-                    username: result?.email || '',
-                    userId: result?.id || '',
-                    sessionId: result?.id || ''
-            
+                    username: result?.username || '',
+                    userId: result?.userId || ''
                     })
             }else{
                 setIsLoggedIn({isLoggedIn:false})
@@ -115,7 +113,8 @@ export default function GlobalProvider({children}: GlobalProviderProps){
             setIsLoggedIn,
             user,
             setUser,
-            isLoading}}>
+            isLoading,
+            setIsLoading}}>
             {children}
         </GlobalContext.Provider>
         

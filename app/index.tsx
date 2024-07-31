@@ -13,10 +13,10 @@ export default function App() {
   const {isLoading, isLoggedIn, user} = useGlobalContext();
   //figure out loading state
 
-  if(isLoggedIn){
+  if(user.username != ''){
     return <Redirect href = "/habits" />
   }
-  else if(isLoading && !isLoggedIn){
+  else{
    return (
     <SafeAreaView className='bg-background h-full'>
     <ScrollView contentContainerStyle = {{height: "100%"}}>
@@ -39,6 +39,7 @@ export default function App() {
         title = "Continue with Email"
         handlePress={()=> router.push('/sign-in')}
         containerStyles = "w-full mt-10"
+        otherMethods={()=>{}}
       />
 
       </View>

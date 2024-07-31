@@ -28,25 +28,22 @@ const SignIn = () => {
     setisSubmitting(true);
     try{
       await signInWithEmail(form.email, form.password)
-      const { data, error } = await supabase.auth.getSession()
+      //const { data, error } = await supabase.auth.getSession()
       const result = await getCurrentUser();
       console.log(result)
       setUser({
           email: result?.email || '',
-          username: result?.email || '',
-          userId: result?.id || '',
-          sessionId: result?.id || ''
+          username: result?.username || '',
+          userId: result?.userId || ''
         })
       setIsLoggedIn({isLoggedIn:true});
 
 
-      if(error){
-        Alert.alert(String(error))
-      }else if(result != undefined){
+    if(result?.username != undefined){
         router.replace('/habits')
       }
     }catch (error) {
-      Alert.alert(String(error))
+      //Alert.alert(String(error))
     } finally{
       setisSubmitting(false);
     }
@@ -71,7 +68,7 @@ const SignIn = () => {
   return (
   <SafeAreaView className="bg-background h-full">
       <ScrollView>
-        <View className = "w-full justify-center min-h-[83vh] px-4 my-6">
+        <View className = "w-full justify-center min-h-[75vh] px-4 my-6">
         <Image 
           source = {images.snowballlogo}
           resizeMode='contain'
@@ -99,6 +96,7 @@ const SignIn = () => {
           handlePress = {submit}
           containerStyles = "mt-7 px-5"
           isLoading = {isSubmitting}
+          otherMethods={()=>{}}
         />
 
         <View className="justify-center pt-5 flex-row gap-2">

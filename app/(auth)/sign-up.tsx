@@ -31,15 +31,17 @@ const SignUp = () => {
       const result = await signUpWithEmail(form.email, form.password, form.username)
       setUser({
         email: result?.email || '',
-        username: result?.email || '',
-        userId: result?.id || '',
-        sessionId: result?.id || ''
+        username: form.username,
+        userId: result?.id || ''
       })
       setIsLoggedIn({isLoggedIn: true})
-      router.replace('/habits')
-    }catch (error){
-      Alert.alert(String(error))
-      setisSubmitting(false)
+      if(result){
+        router.replace('/habits')
+
+      }
+      }catch (error){
+        Alert.alert(String(error))
+        setisSubmitting(false)
     }
     
   }
@@ -47,7 +49,7 @@ const SignUp = () => {
   return (
     <SafeAreaView className="bg-background h-full">
       <ScrollView>
-        <View className = "w-full justify-center min-h-[83vh] px-4 my-6">
+        <View className = "w-full justify-center min-h-[75vh] px-4 my-6">
         <Image 
           source = {images.snowballlogo}
           resizeMode='contain'
@@ -81,6 +83,7 @@ const SignUp = () => {
           handlePress = {submit}
           containerStyles = "mt-7 px-2"
           isLoading = {isSubmitting}
+          otherMethods={()=>{}}
         />
 
         <View className="justify-center pt-5 flex-row gap-2">

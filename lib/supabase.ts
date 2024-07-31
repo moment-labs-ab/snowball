@@ -2,9 +2,9 @@ import { AppState, Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
-import { UserInterfaceIdiom } from 'expo-constants'
 import { useState, useEffect } from 'react'
-import { User } from '@/context/Context'
+import { nanoid } from 'nanoid';
+
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
@@ -30,6 +30,12 @@ AppState.addEventListener('change', (state) => {
     supabase.auth.stopAutoRefresh()
   }
 })
+
+// Function to generate a unique ID
+function generateUniqueId(): string {
+  const id = nanoid();
+  return id
+}
 
 
 export const signUpWithEmail = async function signUpWithEmail(email: string, password: string, username:string) {
@@ -127,21 +133,57 @@ export const signInWithEmail = async function signInWithEmail(email:string, pass
     }
   }
 
-  export const getCurrentUser = async () =>{
+  export const getUsername = async (userId: string) =>{
+
     try {
-      const { data:{
-        session
-      }, error } = await supabase.auth.getSession()
-      if(!session){
-        Alert.alert("User not found.")
-      }else{
-        return session.user
+      const { data, error } = await supabase
+      .from('profiles')
+      .select(`username`)
+      .eq('id', userId)
+      if(data){
+        return(data[0].username)
       }
+      
     } catch (error) {
-      Alert.alert(String(error))
+      console.log("There was an error trying to query users' username")
+      return(undefined)
       
     }
   }
+
+export const getCurrentUser = async () =>{
+  try {
+    const {data} = await supabase.auth.getUser()
+    if(!data){
+      Alert.alert("User data not found")
+    }else{
+      let username: string
+      let userId: string
+      let email: string
+      userId = data.user?.id || ''
+      email = data.user?.email || ''
+      username = await getUsername(userId);
+
+      type currentUserType = {
+        username?: string,
+        email:string,
+        userId: string
+      }
+      let current_user: currentUserType;
+      current_user = {
+        username: username,
+        email: email,
+        userId: userId
+      }
+      return current_user
+
+    }
+    
+  } catch (error) {
+    Alert.alert("Issue fetching current user info.")
+    
+  }
+}
 
   export const refreshUserSession = async () =>{
     try {
@@ -156,5 +198,76 @@ export const signInWithEmail = async function signInWithEmail(email:string, pass
       }
     } catch (error) {
       
+    }
+  }
+
+  export const signOut = async () =>{
+      const { error } = await supabase.auth.signOut()
+    
+  }
+
+  export const insertHabit = async (
+    user_id: string,
+    name: string,
+    reminder: boolean,
+    frequency: number,
+    frequency_rate: string
+  ): Promise<{ success: boolean; message: string; data?: any }> => {
+    if(name === 'Habit' || frequency === 0){
+      return { success: false, message: 'Please fill both name and frequency fields', data: undefined }; 
+  }
+  else{
+    const created_at = new Date().toISOString();
+  
+    const { data, error } = await supabase
+      .from('habits')
+      .insert([
+        {
+          created_at,
+          user_id,
+          name,
+          frequency,
+          frequency_rate,
+          reminder
+        },
+      ]);
+  
+    if (error) {
+      console.error('Error inserting habit:', error);
+      return { success: false, message: 'Error inserting habit', data: error };
+    } else {
+      console.log('Habit inserted successfully:', data);
+      return { success: true, message: 'Habit inserted successfully', data };
+    }
+  }
+}
+  
+  interface Habit {
+    id: string;
+    created_at: string;
+    user_id: string;
+    name: string;
+    frequency: string;
+    frequency_rate: number;
+    reminder: boolean;
+  }
+
+  
+  
+  export const getUserHabits = async (userId: string) =>{
+    try {
+      const { data, error } = await supabase
+        .from('habits')
+        .select('*')
+        .eq('user_id', userId);
+  
+      if (error) {
+        throw new Error(error.message);
+      }
+  
+      return data;
+    } catch (error) {
+      console.error('Error fetching habits:', error);
+      return [];
     }
   }

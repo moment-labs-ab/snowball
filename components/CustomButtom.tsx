@@ -7,12 +7,17 @@ type CustomButtonProps = {
   containerStyles?: string,
   textStyles?: string,
   isLoading?: boolean
+  otherMethods: () => void
 }
 
-const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading}: CustomButtonProps) => {
+const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading, otherMethods}: CustomButtonProps) => {
+  const handlingPress = ()=>{
+    handlePress()
+    otherMethods()
+  }
   return (
     <TouchableOpacity 
-        onPress={handlePress}
+        onPress={handlingPress}
         activeOpacity={0.7}
         className={`bg-secondary rounded-xl min-h-[62px] justify-center items-center ${containerStyles} ${isLoading ? 'opacity-50' : ''}`}
         disabled={isLoading}
