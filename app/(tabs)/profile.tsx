@@ -28,7 +28,7 @@ const Profile = () => {
       <CustomButton
         title = "Sign Out"
         handlePress={()=> logout()}
-        containerStyles = "w-full mt-10 px-16"
+        containerStyles = "w-full mt-10 px-16 bg-secondary"
         otherMethods={()=>{}}
       />
     </View>

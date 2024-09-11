@@ -1,0 +1,71 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+
+interface NumberBoxProps {
+  title: string;
+  placeholder: number;
+  handleChangeNumber: (newNumber: number) => void;
+  otherStyles?: ViewStyle;
+}
+
+const NumberBox: React.FC<NumberBoxProps> = ({ title, placeholder, handleChangeNumber, otherStyles }) => {
+  const [number, setNumber] = useState<number>(placeholder);
+
+  const handleIncrease = () => {
+    const newNumber = number + 1;
+    setNumber(newNumber);
+    handleChangeNumber(newNumber);
+  };
+
+  const handleDecrease = () => {
+    const newNumber = number > 0 ? number - 1 : 0;
+    setNumber(newNumber);
+    handleChangeNumber(newNumber);
+  };
+
+  return (
+    <View style={[styles.container, otherStyles]}>
+      <Text style={styles.title}>{title}</Text>
+      <View style={styles.numberBox}>
+        <TouchableOpacity onPress={handleDecrease} style={styles.button}>
+          <Text style={styles.buttonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.number}>{number}</Text>
+        <TouchableOpacity onPress={handleIncrease} style={styles.button}>
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  numberBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+  },
+  button: {
+    padding: 10,
+  },
+  buttonText: {
+    fontSize: 20,
+  },
+  number: {
+    marginHorizontal: 20,
+    fontSize: 18,
+  },
+});
+
+export default NumberBox;

@@ -21,6 +21,7 @@
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.0.2",
     "@rneui/themed": "^4.0.0-rc.8",
+    "@shopify/flash-list": "^1.7.1",
     "@supabase/supabase-js": "^2.44.4",
     "expo": "~51.0.14",
     "expo-constants": "~16.0.2",

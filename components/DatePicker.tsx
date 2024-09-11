@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { AntDesign } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 
 interface DatePickerProps {
@@ -29,14 +30,32 @@ const DatePicker: React.FC<DatePickerProps> = ({ initialDate, onDateChange }) =>
       onDateChange(date);
     }
   };
+  const changeDate = (direction: number) => {
+    const newDate = moment(selectedDate).add(direction, 'days').toDate();
+    setSelectedDate(newDate);
+    if (onDateChange) {
+      onDateChange(newDate);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={showCalendar} style={styles.dateContainer}>
-        <Text className='flex-start text-secondary font-psemibold text-xl'>
-          {moment(selectedDate).format('MMMM D, YYYY')}
-        </Text>
-      </TouchableOpacity>
+      {/*Add in TouchableOpacity to add back calendar */}
+
+      <View style={styles.dateContainer}>
+        <TouchableOpacity onPress={() => changeDate(-1)}>
+          <AntDesign name="left" size={20} color="#3e4e88" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={showCalendar} style={styles.dateTextContainer}>
+          <Text style={styles.dateText}>
+            {moment(selectedDate).format('MMMM D, YYYY')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => changeDate(1)}>
+          <AntDesign name="right" size={20} color="#3e4e88" />
+        </TouchableOpacity>
+      </View>
+      
       <Modal
         visible={isCalendarVisible}
         transparent={true}
@@ -79,10 +98,18 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%',
   },
   dateText: {
-    fontSize: 18,
-    alignItems: 'flex-start'
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#3e4e88', // This color will now be applied correctly
+  },
+  dateTextContainer: {
+    flex: 1,
+    alignItems: 'center',
+    color:'#3e4e88'
   },
   modalContainer: {
     flex: 1,

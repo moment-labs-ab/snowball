@@ -5,11 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 interface TimeIntervalPickerProps {
   onSave: (interval: string) => void,
-  otherStyles?: string
+  otherStyles?: string, 
+  initialValue?: string
 }
 
-const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherStyles }) => {
-  const [selectedInterval, setSelectedInterval] = useState<string>('');
+const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherStyles, initialValue }) => {
+  const [selectedInterval, setSelectedInterval] = useState<string>(initialValue || '');
   const [customInterval, setCustomInterval] = useState<string>('');
 
   const intervals = [
@@ -32,19 +33,23 @@ const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherSt
   return (
     <View className={`space-y-2 ${otherStyles}`}>
         <Text className="text-base text-black-100 font-pmedium">
-         Frequency Rate:</Text>
-        <View className="p-5 bg-gray-100 rounded-2xl border-2 border-black
-        border-black-200 focus:border-secondaryitems-center mt-5 px-5">
+         Frequency Rate</Text>
+        <View className="p-5 bg-gray rounded-2xl border-2 border-black
+        border-black-200 focus:border-secondary items-center mt-5 px-5">
+          
         <RNPickerSelect
         onValueChange={handleValueChange}
         items={intervals}
-        placeholder={{ label: 'Select an interval', value: null, color:'green'}}
+        placeholder={{ label: 'Select an interval', value: null, color:'black'}}
         style={pickerSelectStyles}
         value={selectedInterval}
+      
         Icon={() => {
-            return <Ionicons name='arrow-down-sharp' size={24} color="black"/>;
+            return <Ionicons name='caret-down-outline' size={38} color="black" className='flex-1 align-center'/>;
         }}
+        
         />
+        
 
     </View>
     </View>
@@ -56,7 +61,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#CDCDE0',
     borderRadius: 10,
-    borderColor: 'black',
+    borderColor: 'red',
     borderWidth: 2,
     alignItems: 'center',
     marginTop: 20,

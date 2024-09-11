@@ -94,7 +94,7 @@ const SignIn = () => {
         <CustomButton 
           title = 'Sign In'
           handlePress = {submit}
-          containerStyles = "mt-7 px-5"
+          containerStyles = "mt-7 px-5 bg-secondary"
           isLoading = {isSubmitting}
           otherMethods={()=>{}}
         />

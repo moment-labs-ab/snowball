@@ -13,9 +13,10 @@ import { useGlobalContext } from '@/context/Context';
 interface NewHabitProps {
   visible: boolean;
   onClose: () => void;
+  title: string
 }
 
-const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose}) => {
+const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose, title}) => {
   const [frequency, setFrequency] = useState<number>(1);
   const [time, setTime] = useState<Date>(new Date());
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
@@ -81,11 +82,11 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose}) => {
     >
       <SafeAreaView style={{flex: 1,backgroundColor: '#E6F0FA',borderTopLeftRadius: 20,borderTopRightRadius: 20, marginTop: 75}}>
       <View style={{ flex: 1, padding: 20, backgroundColor: '#E6F0FA', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
-        <TouchableOpacity onPress={closeHabits} style={{ alignSelf: 'flex-end', marginBottom: 20, backgroundColor: 'gray', borderRadius: 25, height: 25, width: 25, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 15, color: 'black', fontWeight: "700" }}>X</Text>
+        <TouchableOpacity onPress={closeHabits} style={{ alignSelf: 'flex-end', marginBottom: 20, backgroundColor: 'black', borderRadius: 25, height: 25, width: 25, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 15, color: '#E6F0FA', fontWeight: "700" }}>X</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>
-          Create a New Habit
+          {title}
         </Text>
 
         <FormField
@@ -95,7 +96,7 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose}) => {
           otherStyles="px-2"
         />
         <NumberInput
-          title='Frequency:'
+          title='Frequency'
           placeholder="1"
           handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
           otherStyles="px-2 mt-3"
@@ -108,8 +109,7 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose}) => {
         <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'center', paddingLeft: 4 }}>
           
           <Text className="text-base text-black-100 font-pmedium">
-            Add a Reminder
-          </Text>
+            Add a Reminder </Text>
           <Switch
             value={habit.reminder}
             onValueChange={(value) => setHabit({ ...habit, reminder: value })}
@@ -127,13 +127,13 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose}) => {
           <Text style={{ color: 'gray', fontSize: 18, fontWeight: '500', marginRight: 3 }}>
             {habit.frequency === 1 ? 'time' : 'times'}
           </Text>
-          <Text style={{ color: '#3e4e88', fontSize: 18, fontWeight: '700' }}> {habit.frequency_rate}</Text>
+          <Text style={{ color: '#3e4e88', fontSize: 18, fontWeight: '700' }}>{habit.frequency_rate}</Text>
         </View>
 
         <CustomButton 
           title = 'Submit'
           handlePress = {submit}
-          containerStyles = "mt-7 px-2"
+          containerStyles = "mt-7 px-2 bg-secondary"
           isLoading = {isSubmitting}
           otherMethods={onClose}
         />

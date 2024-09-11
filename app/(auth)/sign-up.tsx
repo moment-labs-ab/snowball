@@ -81,7 +81,7 @@ const SignUp = () => {
         <CustomButton 
           title = 'Sign Up'
           handlePress = {submit}
-          containerStyles = "mt-7 px-2"
+          containerStyles = "mt-7 px-2 bg-secondary"
           isLoading = {isSubmitting}
           otherMethods={()=>{}}
         />
