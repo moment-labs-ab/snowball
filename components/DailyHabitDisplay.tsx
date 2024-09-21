@@ -1,7 +1,7 @@
 import { View, Text, TextInput, FlatList, ScrollView } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Habit } from '@/types/types'
-import { getUserHabits, listenToHabitsTable } from '@/lib/supabase'
+import { getUserHabits, listenToHabitsTable } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import HabitCard from './HabitCard'
 import { getTrackingCount } from '@/lib/supabase'
@@ -21,7 +21,7 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
 
 
     useEffect(() => {
-        console.log("USEEFFECT: DailyHabitDisplay")
+        //console.log("USEEFFECT: DailyHabitDisplay")
         const fetchHabits = async () => {
         const habitsData = await getUserHabits(user.userId);
         setHabits(habitsData);
@@ -30,7 +30,7 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
 
         fetchHabits();
         const unsubscribe = listenToHabitsTable((payload) => {
-            //console.log('Change received!', payload);
+            console.log('Change received!', payload);
 
             switch (payload.eventType) {
               case 'INSERT':

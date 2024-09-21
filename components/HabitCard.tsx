@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Animated, PanResponder} from 'react-native'
 import React, {useRef, useState, useEffect} from 'react'
-import { addTracking, getTrackingCount, removeTracking, listenToHabitTrackingTable } from '@/lib/supabase'
+import { addTracking, getTrackingCount, removeTracking, listenToHabitTrackingTable } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import Entypo from '@expo/vector-icons/Entypo';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
@@ -45,7 +45,7 @@ const HabitCard = ({
 
 
     useEffect(() => {
-        console.log("USEEFFECT: HabitCard")
+        //console.log("USEEFFECT: HabitCard")
         const fetchTrackingCount = async () => {
             const count = await getTrackingCount(id, user.userId, date);
             setTrackingCount(count);

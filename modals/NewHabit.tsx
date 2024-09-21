@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Switch, Platform, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { View, Text, Switch, Platform, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import CustomButton from '@/components/CustomButtom';
 import FormField from '@/components/FormField';
 import Modal from 'react-native-modal'
 import NumberInput from '@/components/NumberInput';
 import TimeIntervalPicker from '@/components/TimeIntervalPicker';
-import { insertHabit } from '@/lib/supabase';
+import { insertHabit } from '@/lib/supabase_habits';
 import { useGlobalContext } from '@/context/Context';
 
 interface NewHabitProps {
