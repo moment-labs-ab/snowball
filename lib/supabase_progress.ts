@@ -70,7 +70,7 @@ export const getHabitTrackingCount = async (habit_id: string, startDate: string,
 */
 export const getTrackingProgress = async (userId: string, date: Date) => {
   const { oneWeekAgo, oneMonthAgo, startOfYear, oneYearAgo } = getRelativeDates(date);
-  const history: { [habitId: string]: number[] } = {};
+  const history: { [habitName: string]: number[] } = {};
   const habitsData = await getUserHabits(userId);
 
   const promises = habitsData.map(async (habit) => {
@@ -84,7 +84,7 @@ export const getTrackingProgress = async (userId: string, date: Date) => {
     ]);
 
     // Store the counts in the history object
-    history[habit.id] = [
+    history[habit.name] = [
       weekCount ?? 0,
       monthCount ?? 0,
       yearToDate ?? 0,
@@ -106,7 +106,7 @@ export const getTrackingProgress = async (userId: string, date: Date) => {
  */
 export const createProgressBaselines = async (userId: string, currentDate: Date) => {
     const habitsData = await getUserHabits(userId);
-    const baselines: { [habitId: string]: number[] } = {};
+    const baselines: { [habitName: string]: number[] } = {};
 
     // Loop through each habit and calculate the goals for different timeframes
     habitsData.forEach((habit) => {
@@ -158,7 +158,7 @@ export const createProgressBaselines = async (userId: string, currentDate: Date)
         }
 
         // Add the goals to the baselines object
-        baselines[habit.id] = [weekGoal, monthGoal, ytdGoal, yearGoal, sinceJoinGoal];
+        baselines[habit.name] = [weekGoal, monthGoal, ytdGoal, yearGoal, sinceJoinGoal];
     });
 
     console.log(baselines);

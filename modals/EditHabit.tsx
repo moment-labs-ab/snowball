@@ -43,7 +43,7 @@ const EditHabit: React.FC<EditHabitProps> = ({ visible, onClose, title, habit_id
   }, [visible, trackingCount]);
 
   useEffect(() => {
-    console.log("USEEFFECT: EditHabit")
+    //console.log("USEEFFECT: EditHabit")
     const fetchHabit = async () => {
       try {
         setLoading(true);
