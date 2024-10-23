@@ -50,6 +50,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ initialDate, onDateChange }) =>
           <Text style={styles.dateText}>
             {moment(selectedDate).format('MMMM D, YYYY')}
           </Text>
+          <Text style={styles.dayText}>
+            {moment(selectedDate).format('dddd')}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => changeDate(1)}>
           <AntDesign name="right" size={20} color="#3e4e88" />
@@ -100,6 +103,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '80%',
+  },
+  dayText: {
+    fontSize: 12,
+    color: '#3e4e88', // Match primary color
+    marginTop: 4,
   },
   dateText: {
     fontSize: 22,

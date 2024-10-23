@@ -105,8 +105,6 @@ const EditHabit: React.FC<EditHabitProps> = ({ visible, onClose, title, habit_id
       if (trackingCount !== tracking) {
         console.log("Calling updateTracking...")
         const result = await updateTracking(user.userId, habit_id, selectedDate, tracking)
-        console.log(habit_id, tracking)
-        console.log("Tracking Changed!")
         onTrackingCountChange(tracking);
       }
   

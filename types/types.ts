@@ -20,3 +20,21 @@ export interface HabitTracking {
   tracking_goal: number,
   frequency_rate_int: number
 }
+
+export interface ProgressData {
+  [habitId: string]:{
+  progress: number[];
+  baselines: number[];
+  name: string;
+  frequency: number; //frequency in habits table
+  frequency_rate: string;
+  fromDates: Date[];
+  currentDate: Date;
+  createdAt: Date;
+  }
+}
+
+export interface HabitTrackingEntry {
+  date: string;
+  count: number;
+};

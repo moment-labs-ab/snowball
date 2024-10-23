@@ -4,7 +4,6 @@ import { Habit } from '@/types/types'
 import { getUserHabits, listenToHabitsTable } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import HabitCard from './HabitCard'
-import { getTrackingCount } from '@/lib/supabase'
 import { FlashList } from "@shopify/flash-list";
 
 type dailyHabitDisplayProps = {
@@ -21,7 +20,7 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
 
 
     useEffect(() => {
-        //console.log("USEEFFECT: DailyHabitDisplay")
+        console.log("USEEFFECT: DailyHabitDisplay")
         const fetchHabits = async () => {
         const habitsData = await getUserHabits(user.userId);
         setHabits(habitsData);

@@ -31,7 +31,7 @@ const HabitCard = ({
     const { user, isLoading } = useGlobalContext();
     const [trackingCount, setTrackingCount] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(true);
-    const [trackingColor, setTrackingColor] = useState<string>('#6bcd32')
+    const [trackingColor, setTrackingColor] = useState<string>('#9ec8fb')
 
     const animatedValue = useRef(new Animated.Value(0)).current;
         // PanResponder to detect swipe gestures
@@ -45,11 +45,11 @@ const HabitCard = ({
 
 
     useEffect(() => {
-        //console.log("USEEFFECT: HabitCard")
+        console.log("USEEFFECT: HabitCard")
         const fetchTrackingCount = async () => {
             const count = await getTrackingCount(id, user.userId, date);
             setTrackingCount(count);
-            //console.log("fetchTrackingCount", trackingCount)
+            console.log("fetchTrackingCount", trackingCount)
             setLoading(false);
     
             const initialProgress = count / frequency;
@@ -69,6 +69,12 @@ const HabitCard = ({
                 console.log("Entering Payload, habit_id:", payload.new?.habit_id , id)
                 switch (payload.eventType) {
                     case 'INSERT':
+                        if (payload.new) {
+                            //console.log("payload.new")
+                            newCount = Number(payload.new.tracking_count);
+                            
+                        }
+                        break;
                     case 'UPDATE':
                         if (payload.new) {
                             //console.log("payload.new")
@@ -181,7 +187,7 @@ const HabitCard = ({
     }}>
         <View style={{ flex: 1, paddingLeft: 5}}>
             <Text style={{ 
-                color: '#3e4e88',
+                color: 'black',
                 fontWeight: '600',
                 fontSize: 18,
                 zIndex: 1,

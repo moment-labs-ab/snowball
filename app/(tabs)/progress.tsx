@@ -1,19 +1,19 @@
-import { View, Text } from 'react-native'
+import { View, Text, Button, ScrollView, Dimensions } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { createProgressBaselines, getTrackingProgress } from '@/lib/supabase_progress'
+import {listenToTrackingHistory, getFullProgressData } from '@/lib/supabase_progress'
 import { useGlobalContext } from '@/context/Context'
 import TimeFrameButton from '@/components/TimeFrameButton'
+import { ProgressData } from '@/types/types'
 
 import HabitProgressBar from '@/components/HabitProgressBar'
-
-type ProgressData = Record<string, number[]>;
+import LoadingScreen from '@/components/LoadingScreen'
 
 const Progress = () => {
-  const [baselines, setBaselines] = useState<ProgressData>({});
-  const [progress, setProgress] = useState<ProgressData>({});
+  const [progress, setProgress] = useState<ProgressData>();
   const { user } = useGlobalContext();
-  const [timeFrame, setTimeFrame] = useState("1w")
+  const [timeFrame, setTimeFrame] = useState("1m")
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const timeFrameMap: Record<'1w' | '1m' | 'YTD' | '1y' | 'All', number> = {
     '1w': 0,
@@ -30,34 +30,53 @@ const Progress = () => {
 
   const now = new Date();
   const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  
+  const getProgressData = async () => {
+    try {
+      const fullProgressData = await getFullProgressData(user?.userId, localDate)
+      // Sort progressData by createdAt before returning it
 
-  useEffect(() => {
-    const getProgressData = async () => {
-      try {
-        const fetchedBaselines = await createProgressBaselines(user?.userId, localDate);
-        const fetchedProgress = await getTrackingProgress(user?.userId, localDate);
+      //setProgress(fullProgressData)
+      return fullProgressData
 
-        setBaselines(fetchedBaselines || {});
-        setProgress(fetchedProgress || {});
-        console.log(fetchedBaselines);
-        console.log(fetchedProgress);
-      } catch (error) {
-        console.error("Error fetching progress data:", error);
-      }
-    };
-    getProgressData();
-  }, []);
-
-  if (!progress || !baselines) {
-    return <Text> LOADING</Text>;
+    } catch (error) {
+      console.error("Error fetching progress data:", error);
+    }
   }
-  else{
+
+
+
+useEffect(() =>{
+
+  // Call the async function
+    const unsubscribe = listenToTrackingHistory((payload) => {
+    console.log('Change received in Progress!', payload);
+    switch (payload.eventType) {
+      case 'INSERT':
+        setRefreshKey(prevKey => prevKey + 1)
+        break;
+      case 'UPDATE':
+        setRefreshKey(prevKey => prevKey + 1)
+        break;
+      case 'DELETE':
+        setRefreshKey(prevKey => prevKey + 1)
+        break;
+    }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+    unsubscribe();
+    };
+}, [])
+const screenWidth = Dimensions.get('window').width;
+
 
   return (
 
     <SafeAreaView className="bg-background h-full">
       <View className='flex-1 align-center pl-2 pr-2'>
-        <View style={{width:375, height:175, backgroundColor:'#b5d5fc', borderRadius:20,marginBottom:20}}>
+        <View style={{width:375, height:175, backgroundColor:'#9ec8fb', borderRadius:20,marginBottom:20}}>
       <View className="flex-row justify-between items-center mt-6">
           <Text className="text-xl font-bold text-secondary pl-3">
             Progress
@@ -76,20 +95,43 @@ const Progress = () => {
           />
         ))}
       </View>
-      </View>
-        <HabitProgressBar
-        progress={progress}
-        baselines={baselines}
-        timeFrame={timeFrame}/>
-      </View>
-
       
+      </View>
 
-      </SafeAreaView>
+      <ScrollView
+          horizontal
+          pagingEnabled
+          snapToInterval={screenWidth} // Snap to each screen width
+          decelerationRate="fast" // Makes the snapping faster
+          showsHorizontalScrollIndicator={true}
+        >
+          {/* Habit Progress Bar */}
+          <View style={{ width: screenWidth-20 }}>
+            <HabitProgressBar
+              timeFrame={timeFrame}
+              userId={user.userId}
+              date={localDate}
+            />
+          </View>
+
+          {/* Rectangle view displaying progress object */}
+          <View style={{ width: screenWidth, backgroundColor: '#e0f7fa', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+            <Text className="text-xl font-bold">Progress Details</Text>
+            <Text>{JSON.stringify(progress, null, 2)}</Text>
+          </View>
+        </ScrollView>
+        <View key={refreshKey}>
+        </View>
+      
+      
+      
+   
+    </View>
+    </SafeAreaView>
   )
-}}
+        }
 
-export default Progress
+export default Progress;
 
           {/*
             <HabitProgressBartest

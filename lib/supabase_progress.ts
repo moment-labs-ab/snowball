@@ -4,8 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking } from '@/types/types'
-import { getUserHabits } from './supabase_habits'
+import { Habit, HabitTracking, ProgressData, HabitTrackingEntry } from '@/types/types'
+import { getUserHabits, getHabit } from './supabase_habits'
+import { DateTime } from 'luxon';
+//type ProgressData = Record<string, number[]>;
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -68,9 +70,13 @@ export const getHabitTrackingCount = async (habit_id: string, startDate: string,
 * @param date :The current date.
 * @param user_id :user ID
 */
+interface TrackingProgress {
+  progress: number[];
+  fromDates: Date[]
+}
 export const getTrackingProgress = async (userId: string, date: Date) => {
   const { oneWeekAgo, oneMonthAgo, startOfYear, oneYearAgo } = getRelativeDates(date);
-  const history: { [habitName: string]: number[] } = {};
+  const history: { [habitName: string]: TrackingProgress} = {};
   const habitsData = await getUserHabits(userId);
 
   const promises = habitsData.map(async (habit) => {
@@ -84,20 +90,91 @@ export const getTrackingProgress = async (userId: string, date: Date) => {
     ]);
 
     // Store the counts in the history object
-    history[habit.name] = [
+    history[habit.id] ={ 
+      progress: [
       weekCount ?? 0,
       monthCount ?? 0,
       yearToDate ?? 0,
       yearCount ?? 0,
       sinceJoinCount ?? 0
-    ];
+      ],
+      fromDates: [
+        oneWeekAgo,
+        oneMonthAgo,
+        startOfYear,
+        oneYearAgo
+
+      ]
+    };
   });
 
   // Wait for all promises to resolve
   await Promise.all(promises);
 
-  console.log(history);
+  //console.log(history);
   return history;
+};
+
+/**
+ * This function corrales all progress data needed to create the progress tab.
+ * This function uses createBaselines() and getTrackingProgressData()
+ * 
+ * @param userId 
+ * @param date current date
+ * @returns ProgressData
+ *  Progress, Baselines, Current Date, "From Dates" (based on time frames in progress tab), frequency of habit, frequence rate of habit, habit name.
+ */
+export const getFullProgressData = async (userId: string, date: Date) => {
+  const progressData: ProgressData = {};
+  const habitsData = await getUserHabits(userId);
+  const progress = await getTrackingProgress(userId, date);
+  const baselines = await createProgressBaselines(userId, date);
+
+  // Map over habits and fetch required data for each habit
+  const promises = habitsData.map(async (habit) => {
+    const habitData: Habit | null = await getHabit(userId, habit.id);
+
+    if (habitData && habitData.id) {
+      const current_habit_id = habitData.id;
+
+      // Gather progress, baselines, and other habit details
+      return {
+        id: current_habit_id,
+        progress: progress[current_habit_id]?.progress || [],
+        baselines: baselines[current_habit_id] || [],
+        name: habitData.name,
+        frequency: habitData.frequency,
+        frequency_rate: habitData.frequency_rate,
+        fromDates: progress[current_habit_id]?.fromDates || [],
+        currentDate: date,
+        createdAt: new Date(habitData.created_at)
+      };
+    } else {
+      console.log("Unable to process Habits Progress Data.");
+      return null;
+    }
+  });
+
+  // Resolve all promises while maintaining order
+  const resolvedHabits = await Promise.all(promises);
+
+  // Filter out any null values and populate the progressData object
+  resolvedHabits.forEach((habit) => {
+    if (habit && habit.id) {
+      progressData[habit.id] = {
+        progress: habit.progress,
+        baselines: habit.baselines,
+        name: habit.name,
+        frequency: habit.frequency,
+        frequency_rate: habit.frequency_rate,
+        fromDates: habit.fromDates,
+        currentDate: habit.currentDate,
+        createdAt: habit.createdAt
+      };
+    }
+  });
+
+  return progressData;
 };
 /**
  * Based on a user's habits and their goals for each habit, what should their expected progress be for the past
@@ -158,10 +235,10 @@ export const createProgressBaselines = async (userId: string, currentDate: Date)
         }
 
         // Add the goals to the baselines object
-        baselines[habit.name] = [weekGoal, monthGoal, ytdGoal, yearGoal, sinceJoinGoal];
+        baselines[habit.id] = [weekGoal, monthGoal, ytdGoal, yearGoal, sinceJoinGoal];
     });
 
-    console.log(baselines);
+    //console.log(baselines);
     return baselines;
 };
 
@@ -219,5 +296,120 @@ const getMonthsSinceDate = (date: string, currentDate: Date): number => {
     const totalMonths = yearDiff * 12 + monthDiff;
 
     return totalMonths + 1; // Include the current month
+};
+export const getOneHabitTrackingProgress = async (habitId: string, date:Date, userId: string)=>{
+  const { oneWeekAgo, oneMonthAgo, startOfYear, oneYearAgo } = getRelativeDates(date);
+  const habitData: Habit | null = await getHabit(userId, habitId);
+
+
+  if(habitData){
+  const [weekCount, monthCount, yearToDate, yearCount, sinceJoinCount] = await Promise.all([
+    getHabitTrackingCount(habitId, oneWeekAgo.toISOString(), date.toISOString()),
+    getHabitTrackingCount(habitId, oneMonthAgo.toISOString(), date.toISOString()),
+    getHabitTrackingCount(habitId, startOfYear.toISOString(), date.toISOString()),
+    getHabitTrackingCount(habitId, oneYearAgo.toISOString(), date.toISOString()),
+    getHabitTrackingCount(habitId, new Date(habitData.created_at).toISOString(), date.toISOString())
+  ]);
+
+  return [weekCount, monthCount, yearToDate, yearCount, sinceJoinCount]
+  }else{
+    console.error("Habit ID was not accepted in getOneHabitTrackingProgress")
+  }
+
+}
+
+type ChangeHandler = (payload: { eventType: string; habitId: string; new: number[]; old: number[]}) => void;
+export const listenToTrackingHistory = (handleChange: ChangeHandler) => {
+  const now = new Date();
+  
+    
+  const subscription = supabase
+    .channel('table_db_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'habit_tracking_history',
+      },
+      async (payload: any) => {
+        const eventType = payload.eventType;
+        const id = payload.new.habit_id
+        const user_id = payload.new.user_id
+        const changed_habits_updated_progress = await getOneHabitTrackingProgress(id, now, user_id)
+        console.log("Changed DATA in Listener",changed_habits_updated_progress)
+
+        const newRecord = changed_habits_updated_progress as number[];
+        const oldRecord = changed_habits_updated_progress as number[];
+        handleChange({ eventType, habitId: id, new: newRecord, old: oldRecord });
+      }
+    )
+    .subscribe();
+
+  // Return an unsubscribe function
+  return () => {
+    subscription.unsubscribe();
+  };
+};
+
+/**
+ * Given an habit Id, this will return 
+ */
+export const getHabitMetadata = async () =>{
+
+}
+
+/**
+ * Function that pulls all tracking history between two time frames for a specific habit
+ * @param userId 
+ * @param habitId 
+ * @param startDate 
+ * @param endDate 
+ */
+
+export const getGridTrackingHistory = async (
+  userId: string, 
+  habitId: string, 
+  startDate: Date, 
+  endDate: Date
+): Promise<HabitTrackingEntry[] | null>  => {
+  
+  const { data, error } = await supabase
+    .from('habit_tracking_history')
+    .select('tracked_habit_date', { count: 'exact' })
+    .eq('habit_id', habitId)
+    .gte('tracked_habit_date', startDate.toISOString())
+    .lte('tracked_habit_date', endDate.toISOString());
+
+  if (error) {
+    console.error('Error querying habit tracking history:', error);
+    return null;
+  }
+
+
+  // Step 2: Create an array of all dates between startDate and endDate
+  const dateRange = [];
+  const currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    dateRange.push(new Date(currentDate)); // Add a copy of the date
+    currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+  }
+
+  // Step 3: Convert the tracked habit dates from the database to a set for easy lookup
+  const trackedDates = new Set(data?.map((entry: { tracked_habit_date: string }) => 
+    new Date(entry.tracked_habit_date).toISOString().split('T')[0]
+  ));
+
+  // Step 4: Map over the date range and fill in with count 0 for missing dates
+  const result = dateRange.map(date => {
+    const formattedDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    return {
+      date: formattedDate,
+      count: trackedDates.has(formattedDate) ? 1 : 0
+    };
+  });
+
+  return result;
 };
 

@@ -220,7 +220,8 @@ export const deleteHabit = async (
   export const getUserHabits = async (userId: string): Promise<Habit[]> => {
     const { data, error } = await supabase.from('habits')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true });
     if (error) {
       console.error('Error fetching habits:', error);
       return [];
@@ -412,7 +413,7 @@ export const addTracking = async (user_id: string, habit_id: string, selectedDat
       console.error('Error updating tracking count:', updateError);
       
     }else{
-        addTrackingHistory(trackingId, habit_id, selectedDate)
+        addTrackingHistory(trackingId, habit_id, selectedDate, user_id)
         return newTrackingCount;
     }
   } else if(newValue !== undefined){
@@ -434,7 +435,7 @@ export const addTracking = async (user_id: string, habit_id: string, selectedDat
       //console.error('Error inserting tracking data:', insertError);
     }else{
         const insertedId = data?.[0]?.id
-        addTrackingHistory(insertedId, habit_id, selectedDate)  
+        addTrackingHistory(insertedId, habit_id, selectedDate, user_id)  
         return newTrackingCount;
     }
 
@@ -458,27 +459,28 @@ export const addTracking = async (user_id: string, habit_id: string, selectedDat
       //console.error('Error inserting tracking data:', insertError);
     }else{
       const insertedId = data?.[0]?.id
-      addTrackingHistory(insertedId, habit_id, selectedDate)  
+      addTrackingHistory(insertedId, habit_id, selectedDate, user_id)  
       return newTrackingCount;
     }
   }
 };
 
 
-export const addTrackingHistory = async (tracking_id: string, habit_id: string, tracked_habit_date: Date)=>{
+export const addTrackingHistory = async (tracking_id: string, habit_id: string, tracked_habit_date: Date, user_id: string)=>{
     if(tracking_id){
         const {error: insertError} = await supabase
             .from('habit_tracking_history')
             .insert({
                 tracking_id: tracking_id,
                 habit_id: habit_id,
-                tracked_habit_date: tracked_habit_date
+                tracked_habit_date: tracked_habit_date.toLocaleDateString(),
+                user_id: user_id
             })
 
         if (insertError) {
             console.error('Error inserting tracking history data:', insertError);
         }else{
-            console.log("Habit Tracked.")
+            console.log("Habit Tracked in addTrackingHistory.")
         }
         
 
@@ -562,7 +564,7 @@ export const updateTracking = async (user_id: string, habit_id: string, selected
       console.error('Error updating tracking data:', updateError);
     } else {
       console.log("Habit Tracking Updated.");
-      addTrackingHistory(trackingId, habit_id, selectedDate)
+      addTrackingHistory(trackingId, habit_id, selectedDate, user_id)
       return updatedValue;
     }
     }
