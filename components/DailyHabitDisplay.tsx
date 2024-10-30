@@ -5,11 +5,13 @@ import { getUserHabits, listenToHabitsTable } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import HabitCard from './HabitCard'
 import { FlashList } from "@shopify/flash-list";
+import EventEmitter from 'events';
 
 type dailyHabitDisplayProps = {
     selectedDate: Date
 
 }
+export const eventEmitter = new EventEmitter();
 
 const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
     const { user, isLoading } = useGlobalContext();
@@ -30,15 +32,18 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
         fetchHabits();
         const unsubscribe = listenToHabitsTable((payload) => {
             console.log('Change received!', payload);
+            fetchHabits(); 
 
             switch (payload.eventType) {
               case 'INSERT':
                 if (payload.new) {
+                  console.log("IN INSERT")
                     setHabits(prevHabits => [...prevHabits, payload.new]);
                 }
                 break;
               case 'UPDATE':
                 if (payload.new) {
+                  console.log("IN UPDATE")
                     setHabits(prevHabits => 
                         prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
                       );
@@ -46,15 +51,16 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
                 break;
               case 'DELETE':
                 if (payload.old) {
+                  console.log("IN DELETE")
                     setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
                 }
                 break;
             }
           });
-
           // Cleanup subscription on unmount
           return () => {
             unsubscribe();
+            eventEmitter.emit('dataChanged');
           };
     }, [user.userId, selectedDate, habits.length]);
 

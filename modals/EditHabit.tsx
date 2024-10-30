@@ -9,6 +9,7 @@ import { deleteHabit, getHabit, updateHabitIfChanged, updateTracking } from '@/l
 import { useGlobalContext } from '@/context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NumberBox from '@/components/NumberBox';
+import HeatCalendar5x7 from '@/components/HeatCalendar5x7';
 
 interface EditHabitProps {
   visible: boolean;
@@ -174,8 +175,9 @@ const EditHabit: React.FC<EditHabitProps> = ({ visible, onClose, title, habit_id
           </TouchableOpacity>
         </View>
 
+
         <NumberBox
-        title='Tracker'
+        title='Number Tracked'
         placeholder={trackingCount}
         handleChangeNumber={(e) => setTrackingCount(e)}
         />

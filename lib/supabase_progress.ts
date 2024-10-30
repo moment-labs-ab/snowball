@@ -299,6 +299,7 @@ const getMonthsSinceDate = (date: string, currentDate: Date): number => {
 };
 export const getOneHabitTrackingProgress = async (habitId: string, date:Date, userId: string)=>{
   const { oneWeekAgo, oneMonthAgo, startOfYear, oneYearAgo } = getRelativeDates(date);
+
   const habitData: Habit | null = await getHabit(userId, habitId);
 
 
@@ -313,7 +314,8 @@ export const getOneHabitTrackingProgress = async (habitId: string, date:Date, us
 
   return [weekCount, monthCount, yearToDate, yearCount, sinceJoinCount]
   }else{
-    console.error("Habit ID was not accepted in getOneHabitTrackingProgress")
+    console.log(habitData)
+    console.log("Habit ID was not accepted in getOneHabitTrackingProgress or Habit Tracking Does not Exist.")
   }
 
 }
@@ -379,7 +381,7 @@ export const getGridTrackingHistory = async (
     .select('tracked_habit_date', { count: 'exact' })
     .eq('habit_id', habitId)
     .gte('tracked_habit_date', startDate.toISOString())
-    .lte('tracked_habit_date', endDate.toISOString());
+    .lte('tracked_habit_date', endDate.toISOString())
 
   if (error) {
     console.error('Error querying habit tracking history:', error);

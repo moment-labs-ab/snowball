@@ -238,7 +238,7 @@ export const deleteHabit = async (
       .single(); // Ensures only one record is returned
   
     if (error) {
-      console.error('Error fetching habit:', error);
+      console.log('Error fetching habit:', error);
       return null;
     }
   
@@ -320,7 +320,8 @@ export const listenToHabitTrackingTable = (handleChange: HabitTrackingChangeHand
  * @param frequency_rate_int (Time frame represented as an int)
  * @returns 
  */
-export const getTrackingCount = async (habit_id: string, user_id: string, selectedDate: Date)=>{
+export const getTrackingCount = async (habit_id: string, user_id: string, date: Date)=>{
+  const selectedDate = new Date(date.toDateString())
   //const time_frame_end = getDateAfterTimeFrame(selectedDate, frequency_rate_int);
   const { data: existingTracking, error } = await supabase
     .from('habit_tracking')
@@ -377,10 +378,11 @@ function getDateAfterTimeFrame(date: Date, timeFrame: number): Date {
  * @param selectedDate (date on which they are tracking)
  * @returns 
  */
-export const addTracking = async (user_id: string, habit_id: string, selectedDate: Date, newValue?: number) => {
+export const addTracking = async (user_id: string, habit_id: string, date: Date, newValue?: number) => {
   const frequencies = await getHabitFrequency(habit_id);
   const frequency_rate_int = Number(frequencies[0].frequency_rate_int);
   const frequency = Number(frequencies[0].frequency);
+  const selectedDate = new Date(date.toDateString())
   const time_frame_end = getDateAfterTimeFrame(selectedDate, frequency_rate_int);
 
   // Check if there is already a tracking record for the given user, habit, and time frame
@@ -489,7 +491,8 @@ export const addTrackingHistory = async (tracking_id: string, habit_id: string, 
 
 }
 
-export const removeTracking = async (user_id: string, habit_id: string, selectedDate: Date) =>{
+export const removeTracking = async (user_id: string, habit_id: string, date: Date) =>{
+  const selectedDate = new Date(date.toDateString())
   const deincrementCount = async ()=>{
     const newValue = await getTrackingCount(habit_id, user_id, selectedDate)
     return newValue - 1
@@ -514,7 +517,8 @@ export const removeTracking = async (user_id: string, habit_id: string, selected
 
 }
 
-export const updateTracking = async (user_id: string, habit_id: string, selectedDate: Date, updatedValue: number) => {
+export const updateTracking = async (user_id: string, habit_id: string, date: Date, updatedValue: number) => {
+  const selectedDate = new Date(date.toDateString())
 
   // Check if the tracking record exists
   const { data: existingTracking, error: selectError } = await supabase

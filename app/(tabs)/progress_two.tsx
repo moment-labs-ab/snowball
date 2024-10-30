@@ -33,9 +33,9 @@ const Progress = () => {
   return (
     <SafeAreaView className="bg-background h-full">
     <View className='flex-1 align-center pl-2 pr-2'>
-      <View style={{width:375, height:100, backgroundColor:'#9ec8fb', borderRadius:20,marginBottom:20}}>
+      <View style={{width:375, height:100, backgroundColor:'#3e4e88', borderRadius:8,marginBottom:20}}>
     <View className="flex-row justify-between items-center mt-6">
-        <Text className="text-xl font-bold text-secondary pl-3">
+        <Text className="text-xl font-bold text-primary pl-3">
           Progress
         </Text>
     </View>

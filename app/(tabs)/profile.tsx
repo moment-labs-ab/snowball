@@ -24,11 +24,14 @@ const Profile = () => {
   }
   return (
     <SafeAreaView className="bg-background h-full">
-    <View>
+      <View>
+        
+      </View>
+    <View className='px-3'>
       <CustomButton
         title = "Sign Out"
         handlePress={()=> logout()}
-        containerStyles = "w-full mt-10 px-16 bg-secondary"
+        containerStyles = "mt-10 px-2 bg-secondary"
         otherMethods={()=>{}}
       />
     </View>

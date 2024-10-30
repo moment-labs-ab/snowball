@@ -1,12 +1,14 @@
-import { View, Text, TextInput, FlatList, ScrollView } from 'react-native'
+import { View, Text, TextInput, FlatList, ScrollView, StyleSheet} from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Habit, HabitTrackingEntry } from '@/types/types'
 import { getUserHabits, listenToHabitsTable } from '@/lib/supabase_habits'
-import { getGridTrackingHistory } from '@/lib/supabase_progress'
+import { getGridTrackingHistory, listenToTrackingHistory } from '@/lib/supabase_progress'
 import { useGlobalContext } from '@/context/Context'
 import { DateTime } from 'luxon';
 import { FlashList } from "@shopify/flash-list";
-
+import { eventEmitter } from './DailyHabitDisplay';
+import HeatCalendar5x7 from './HeatCalendar5x7'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TrackingDisplay = () => {
     const { user, isLoading } = useGlobalContext();
@@ -25,9 +27,11 @@ const TrackingDisplay = () => {
     const today = new Date(now.toDateString())
     const oneMonthAgo = getLastMonth(endDate)
 
+    
+
     function getLastMonth(date: Date): Date {
       const lastMonthDate = new Date(date);
-      lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+      lastMonthDate.setDate(lastMonthDate.getDate() - 34);
       return lastMonthDate;
     }
     
@@ -45,6 +49,12 @@ const TrackingDisplay = () => {
         };
 
         fetchHabits();
+
+        const listener = eventEmitter.addListener('dataChanged', () => {
+          // Perform refresh logic
+          //console.log("Event Emitter")
+          fetchHabits();
+        });
         
        
 
@@ -54,11 +64,13 @@ const TrackingDisplay = () => {
           switch (payload.eventType) {
             case 'INSERT':
               if (payload.new) {
+                console.log("Tracking Display Habit INSERT")
                   setHabits(prevHabits => [...prevHabits, payload.new]);
               }
               break;
             case 'UPDATE':
               if (payload.new) {
+                console.log("Tracking Display Habit UPDATE")
                   setHabits(prevHabits => 
                       prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
                     );
@@ -66,6 +78,7 @@ const TrackingDisplay = () => {
               break;
             case 'DELETE':
               if (payload.old) {
+                console.log("Tracking Display Habit DELETE")
                   setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
               }
               break;
@@ -75,79 +88,110 @@ const TrackingDisplay = () => {
         // Cleanup subscription on unmount
         return () => {
           unsubscribe();
+          listener.off;
         };
 
         
     }, [user.userId, habits.length])
 
-    useEffect(()=>{
+    useEffect(() => {
       const fetchGridData = async () => {
         const data: { [key: string]: HabitTrackingEntry[] } = {};
-        if (habits.length > 0){
+    
+        if (habits.length > 0) {
           for (const habit of habits) {
-            const habitData = await getGridTrackingHistory(user.userId, habit.id, startDate, endDate);
-            if(habitData){
-              data[habit.id] = habitData; // Store each habit's data by ID
+            try{
+              console.log("Calling getGridTrackingHistory")
+              const habitData = await getGridTrackingHistory(user.userId, habit.id, startDate, endDate);
+              if (habitData && Array.isArray(habitData)) {
+                data[habit.id] = habitData;
+              }
+            }catch{
+              const habitData = null
             }
-          }
-          setGridData(data);
 
-        } // Set the data for all habits at once
+          }
+    
+          // Temporarily comment out setGridData and test with an empty object
+          setGridData(data); // Or try: setGridData({});
+        }
       };
-  
+    
       if (habits.length > 0) {
+        fetchGridData();
+      }else{
         fetchGridData();
       }
 
-    }, [habits, startDate, endDate])
+      const unsubscribe = listenToTrackingHistory((payload) => {
+        console.log('Change received in Progress!', payload);
+        fetchGridData();
+        switch (payload.eventType) {
+          case 'INSERT':
+            console.log("New Tracking Picked Up! INSERT")
+            //handleRefresh(payload.habitId, payload.new);
+          case 'UPDATE':
+            console.log("New Tracking Picked Up! UPDATE")
+            //handleRefresh(payload.habitId, payload.new);
+          case 'DELETE':
+            console.log("New Tracking Picked Up! DELETE")
+            //handleRefresh(payload.habitId, payload.new);
+            break;
+        }
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }, [habits.length, startDate, endDate]);
 
 
 
  
 
   return (
-
+  
     <FlashList 
             data={habits}
             keyExtractor={(item) => item.id}
             extraData={gridData}
             renderItem={({ item }) => {
               const habitData = gridData[item.id];
-                      
-            return(
-            <View className='flex-row mb-30'>
-                <Text>{item.name}</Text>
-                <View>
-              {habitData ? (
-                habitData.map((entry) => (
-                  <Text key={entry.date}>
-                    {entry.date}: {entry.count} tracked
-                  </Text>
-                ))
-              ) : (
-                <Text>Loading...</Text>
-              )}
-            </View>
-            </View>
-            )}}
+              
+            
+              return (
+                <View style={{ marginBottom: 50 }}>
+                  <View>
+                    {habitData ? (
+                      <HeatCalendar5x7
+                      data={habitData}
+                      habitName={item.name}
+                      frequency={item.frequency}
+                      frequencyRate={item.frequency_rate}/>
+                    ) : (
+                      <Text>Loading...</Text>
+                    )}
+                  </View>
+                </View>
+              );
+            }}
             estimatedItemSize={80}
+            nestedScrollEnabled={true}
             />
+  
 
   )
 }
 
 export default TrackingDisplay;
 
-{/**<FlashList 
-            data={habits}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-            <View className='flex-row mb-30'>
-                <Text>{item.name}</Text>
-            </View>
-            )}
-            estimatedItemSize={80}
-            /> */}
+{/**<View>
+                    {habitData ? (
+                      <HeatCalendar data={habitData} />
+                    ) : (
+                      <Text>Loading...</Text>
+                    )}
+                  </View> */}
 
 {/**   useEffect(() => {
         console.log("USEEFFECT: DailyHabitDisplay")

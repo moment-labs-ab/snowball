@@ -59,7 +59,8 @@ const TabsLayout = () => {
           )
         }}
       />
-      <Tabs.Screen name='progress'
+
+      <Tabs.Screen name='progress_two'
         options={{
           title: 'Progress',
           headerShown: false,
@@ -68,20 +69,6 @@ const TabsLayout = () => {
               icon ={icons.progress}
               color={color}
               name="Progress"
-              focused={focused}
-            />
-          )
-        }}
-      />
-      <Tabs.Screen name='progress_two'
-        options={{
-          title: 'Progress2',
-          headerShown: false,
-          tabBarIcon: ({ color, focused}) => (
-            <TabIcon 
-              icon ={icons.progress}
-              color={color}
-              name="Progress2"
               focused={focused}
             />
           )
