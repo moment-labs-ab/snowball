@@ -58,7 +58,7 @@ const SignUp = () => {
 
         <Text className="text-2xl text-black text-semibold mt-10 font-psemibold pl-3"> Sign Up to Snowball</Text>
         <FormField 
-          title = "Username"
+          title = "Name"
           value = {form.username}
           handleChangeText ={(e) => setForm({ ...form, username:e})}
           otherStyles="mt-10 px-3"

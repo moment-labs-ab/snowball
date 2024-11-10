@@ -14,7 +14,7 @@ type TabIconProps = {
  /** Styles the Icons */
  const TabIcon = ({icon, color, name, focused}: TabIconProps) => {
     return(
-      <View className="items-center justify-center gap-2 mt-3">
+      <View className="items-center justify-center gap-2 mb-1">
         <Image
         source={icon}
         resizeMode='contain'
@@ -39,9 +39,10 @@ const TabsLayout = () => {
           tabBarShowLabel: false,
           tabBarStyle: {
             backgroundColor: "#EDF5FE",
-            borderTopWidth: 2,
+            borderTopWidth: 0,
             borderTopColor: "#EDF5FE",
-            height: 80,
+            height: 45,
+            marginTop:0
           },
         }}
       >

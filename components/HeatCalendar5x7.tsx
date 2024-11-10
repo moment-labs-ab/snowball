@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import dayjs from 'dayjs';
 import { HabitTrackingEntry } from '@/types/types';
-
+import Emoji from 'react-native-emoji';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 interface HeatCalendarProps {
     data: HabitTrackingEntry[];
@@ -19,9 +20,10 @@ const getColorForCount = (count: number) => {
     return '#196127';                   // darkest green
 };
 
-const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const daysOfWeek = ['Su', 'M', 'T', 'W', 'Th', 'F', 'S'];
 
 const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequency, frequencyRate }) => {
+    
     const organizeDataIntoRows = (data: HabitTrackingEntry[]) => {
         // Sort data by date
         const sortedData = [...data].sort((a, b) => 
@@ -33,29 +35,32 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
             sortedData.map(item => [item.date, item])
         );
 
-        // Get today
+        // Get today and calculate start date (35 days ago)
         const today = dayjs();
+        const startDate = today.subtract(34, 'day');  // 34 days ago + today = 35 days
         
-        // Find the most recent Sunday (if today is Sunday, use today)
-        let endDate = today;
-        while (endDate.day() !== 0) { // 0 is Sunday in dayjs
-            endDate = endDate.subtract(1, 'day');
-        }
-        
-        // Go back 4 more weeks to get to the start date (5 weeks total)
-        let startDate = endDate.subtract(4, 'week');
+        // Calculate how many days we need to add at the start to align with Sunday
+        const daysToAdd = startDate.day(); // 0 for Sunday, 1 for Monday, etc.
+        const alignedStartDate = startDate.subtract(daysToAdd, 'day');
         
         // Initialize rows array
         const rows = [];
-        let currentDate = startDate;
+        let currentDate = alignedStartDate;
 
-        // Create 5 rows with 7 days each
-        for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
+        // Calculate how many rows we need to show all dates
+        const totalDays = 35 + daysToAdd;
+        const numberOfRows = Math.ceil(totalDays / 7);
+
+        // Create rows
+        for (let rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
             const row = [];
             
             // Fill each row with 7 days
             for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-                if (currentDate.isAfter(today)) {
+                const isBeforeStartDate = currentDate.isBefore(startDate);
+                const isAfterToday = currentDate.isAfter(today);
+                
+                if (isBeforeStartDate || isAfterToday) {
                     row.push(null);
                 } else {
                     const dateStr = currentDate.format('YYYY-MM-DD');
@@ -78,10 +83,11 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
         let longestStreak = 0;
         let currentStreak = 0;
     
-        // Only count dates within our 5-week window
-        const startDate = dayjs().subtract(4, 'week').startOf('week');
+        // Only count the last 35 days
+        const startDate = dayjs().subtract(34, 'day').startOf('day');
         const validData = data.filter(entry => 
-            dayjs(entry.date).isAfter(startDate) || dayjs(entry.date).isSame(startDate)
+            (dayjs(entry.date).isAfter(startDate) || dayjs(entry.date).isSame(startDate)) &&
+            dayjs(entry.date).isBefore(dayjs().endOf('day'))
         );
     
         validData.forEach((entry) => {
@@ -105,6 +111,7 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
     }
 
     const metrics = calculateMetrics(data);
+    const forceTouch = Gesture.ForceTouch();
 
     return (
         <View style={styles.container}>
@@ -148,16 +155,16 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
             
             <View style={styles.statsContainer}>
                 <View style={styles.metricContainer}>
-                    <Text style={styles.metric}>{metrics.totalTracked}</Text>
-                    <Text style={styles.metricText}>Days Tracked</Text>
+                    <Text style={styles.metric}>❄️{metrics.totalTracked}</Text>
+                    <Text style={styles.metricText}> Days Tracked</Text>
                 </View>
                 <View style={styles.metricContainer}>
-                    <Text style={styles.metric}>{metrics.consistencyPercentage}% </Text>
-                    <Text style={styles.metricText}>Consistency</Text>
+                    <Text style={styles.metric}> 🏔{metrics.consistencyPercentage}% </Text>
+                    <Text style={styles.metricText}> Consistency</Text>
                 </View>
                 <View style={styles.metricContainer}>
-                    <Text style={styles.metric}>{metrics.longestStreak} Days</Text>
-                    <Text style={styles.metricText}>Longest Streak</Text>
+                    <Text style={styles.metric}>🔥{metrics.longestStreak} Days</Text>
+                    <Text style={styles.metricText}> Longest Streak</Text>
                 </View>
             </View>
         </View>
@@ -168,10 +175,11 @@ const styles = StyleSheet.create({
     habitName: {
         fontSize: 25,
         fontWeight: 'bold',
+        color:'#3e4e88'
     },
     habitFrequency: {
-        color: 'grey',
-        fontWeight: '300',
+        color: 'black',
+        fontWeight: '600',
         fontSize: 16,
         marginBottom: 15,
     },
@@ -249,7 +257,9 @@ const styles = StyleSheet.create({
     },
     metricText: {
         fontWeight: 'bold',
-        color: '#788599'
+        color: '#788599',
+        justifyContent:'center',
+        alignContent:'center'
     }
 });
 

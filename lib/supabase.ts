@@ -4,13 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking } from '@/types/types'
+import { Habit, HabitTracking, currentUserType } from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabaseAnonKey,{
   auth: {
     storage: AsyncStorage,
     autoRefreshToken: true,
@@ -58,6 +58,10 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
     console.log(session?.user)
     await supabase.from('profiles').upsert({id: session?.user.id, username: username})
 
+    if(session?.user.id){
+      trackLogin(session.user.id)
+    }
+
     return session?.user
   }
 
@@ -76,6 +80,9 @@ export const signInWithEmail = async function signInWithEmail(email:string, pass
     if (error) Alert.alert(error.message)
 
     const { data: { user } } = await supabase.auth.getUser()
+    if(user){
+      trackLogin(user.id)
+    }
     return user
   }
 
@@ -194,11 +201,7 @@ export const getCurrentUser = async () =>{
       email = data.user?.email || ''
       username = await getUsername(userId);
 
-      type currentUserType = {
-        username?: string,
-        email:string,
-        userId: string
-      }
+      
       let current_user: currentUserType;
       current_user = {
         username: username,
@@ -239,8 +242,60 @@ export const getCurrentUser = async () =>{
   //**
    /* Signs a user out.
    */
-export const signOut = async () =>{
+export const signOut = async (): Promise<{ success: boolean; message: string; data?: any }> =>{
       const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        console.error('Error signing user out:', error);
+        return { success: false, message: 'Error signing user out'};
+      } else {
+        console.log('User signed out successfully:');
+        return { success: true, message: 'User signed out successfully'};
+      }
     
   }
+
+
+  export const handleUserDeletion = async(user_id: string): Promise<{ success: boolean; message: string; data?: any }> => {
+    try {
+      // Delete user using admin client
+      const { data, error } = await supabase.auth.admin.deleteUser(user_id)
+      
+      if (error) {
+        console.error('Error Deleting User:', error)
+        return { 
+          success: false, 
+          message: `Error deleting user: ${error.message}`
+        }
+      }
+  
+      return {
+        success: true,
+        message: 'User and associated data deleted successfully',
+        data
+      }
+    } catch (error) {
+      console.error('Unexpected error during user deletion:', error)
+      return {
+        success: false,
+        message: 'Unexpected error occurred during deletion'
+      }
+    }
+  }
+
+export const trackLogin = async (userId: string) => {
+  const now = new Date().toDateString()
+    try {
+      await supabase
+        .from('user_logins')
+        .insert([{ user_id: userId}]);
+    } catch (error) {
+      console.error("Error logging login event:", error);
+    }
+  };
+
+
+
+
+
   

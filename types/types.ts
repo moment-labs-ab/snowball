@@ -1,3 +1,10 @@
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+
+export interface currentUserType {
+  username?: string,
+  email:string,
+  userId: string
+}
 export interface Habit {
     id: string;
     created_at: string;
@@ -38,3 +45,11 @@ export interface HabitTrackingEntry {
   date: string;
   count: number;
 };
+
+export interface LifetimeHabitStats{
+  totalDaysTracked: number;
+  completionRate: number;
+  mostConsistentHabit: string;
+  longestStreak: number;
+  joinDate: Date;
+}

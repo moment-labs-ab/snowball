@@ -8,10 +8,14 @@ import CustomButton from '../components/CustomButtom'
 import images from '../constants/images'
 
 import { useGlobalContext } from '@/context/Context';
+import { trackLogin } from '@/lib/supabase';
  
 export default function App() {
   const {isLoading, isLoggedIn, user} = useGlobalContext();
   //figure out loading state
+  if(user.email){
+    trackLogin(user.userId)
+  }
 
   if(user.username != ''){
     return <Redirect href = "/habits" />

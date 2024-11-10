@@ -9,7 +9,7 @@ import { deleteHabit, getHabit, updateHabitIfChanged, updateTracking } from '@/l
 import { useGlobalContext } from '@/context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NumberBox from '@/components/NumberBox';
-import HeatCalendar5x7 from '@/components/HeatCalendar5x7';
+import { deleteHabitEmitter } from '@/events/eventEmitters';
 
 interface EditHabitProps {
   visible: boolean;
@@ -140,6 +140,7 @@ const EditHabit: React.FC<EditHabitProps> = ({ visible, onClose, title, habit_id
               console.log('Habit deleted successfully');
               closeHabits()
               // Handle successful deletion, e.g., refresh the habit list
+              deleteHabitEmitter.emit('deleteHabit')
             } else {
               console.error('Error deleting habit:', result.message);
               // Handle deletion error, e.g., show a message to the user

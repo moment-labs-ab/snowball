@@ -101,7 +101,7 @@ AppState.addEventListener('change', (state) => {
       console.error('Error inserting habit:', error);
       return { success: false, message: 'Error inserting habit', data: error };
     } else {
-      console.log('Habit inserted successfully:', data);
+      console.log('Habit inserted successfully:', data, error);
       return { success: true, message: 'Habit inserted successfully', data };
     }
   }
@@ -127,7 +127,7 @@ export const updateHabitIfChanged = async (
     .eq('user_id', user_id)
     .single();
 
-  if (fetchError) {
+  if (fetchError && user_id) {
     console.error('Error fetching habit:', fetchError);
     return { success: false, message: 'Error fetching habit', data: fetchError };
   }
@@ -185,7 +185,7 @@ export const deleteHabit = async (
     .eq('user_id', user_id)
     .single();
 
-  if (fetchError) {
+  if (fetchError && user_id) {
     console.error('Error fetching habit:', fetchError);
     return { success: false, message: 'Error fetching habit', data: fetchError };
   }
@@ -222,7 +222,7 @@ export const deleteHabit = async (
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: true });
-    if (error) {
+    if (error && userId) {
       console.error('Error fetching habits:', error);
       return [];
     }
@@ -237,7 +237,7 @@ export const deleteHabit = async (
       .eq('id', habit_id)
       .single(); // Ensures only one record is returned
   
-    if (error) {
+    if (error && userId) {
       console.log('Error fetching habit:', error);
       return null;
     }
@@ -330,7 +330,7 @@ export const getTrackingCount = async (habit_id: string, user_id: string, date: 
     .eq('habit_id', habit_id)
     .lte('time_frame_start', selectedDate.toISOString())
     .gte('time_frame_end', selectedDate.toISOString());
-    if (error) {
+    if (error && user_id) {
       console.log('Error fetching habits:', error, habit_id);
       return 0;
     }

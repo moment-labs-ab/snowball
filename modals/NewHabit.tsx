@@ -7,12 +7,14 @@ import NumberInput from '@/components/NumberInput';
 import TimeIntervalPicker from '@/components/TimeIntervalPicker';
 import { insertHabit } from '@/lib/supabase_habits';
 import { useGlobalContext } from '@/context/Context';
+import { newHabitEmitter } from '@/events/eventEmitters';
 
 interface NewHabitProps {
   visible: boolean;
   onClose: () => void;
   title: string
 }
+//export const newHabitEmitter = new EventEmitter();
 
 const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose, title}) => {
   const [frequency, setFrequency] = useState<number>(1);
@@ -59,6 +61,8 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose, title}) => {
       frequency_rate: 'Daily',
       reminder: false
     })
+    newHabitEmitter.emit('newHabit');
+
   }
 
   const closeHabits = () =>{

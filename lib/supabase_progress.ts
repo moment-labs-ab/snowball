@@ -376,6 +376,7 @@ export const getGridTrackingHistory = async (
   endDate: Date
 ): Promise<HabitTrackingEntry[] | null>  => {
   
+  
   const { data, error } = await supabase
     .from('habit_tracking_history')
     .select('tracked_habit_date', { count: 'exact' })
