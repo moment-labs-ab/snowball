@@ -1,7 +1,7 @@
 import { View, Text, TextInput, FlatList, ScrollView } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Habit } from '@/types/types'
-import { getUserHabits, listenToHabitsTable } from '@/lib/supabase_habits'
+import { getUserHabits, listenToHabitsTable, updateHabitOrder } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import HabitCard from './HabitCard'
 import { FlashList } from "@shopify/flash-list";

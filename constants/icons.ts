@@ -14,6 +14,7 @@ import play from "../assets/icons/play.png";
 import snowflake from "../assets/icons/snowflake.png"
 import mountain from "../assets/icons/mountain.png"
 import progress from "../assets/icons/progress.png"
+import settings from '../assets/icons/settings.png'
 
 
 const icons: { [key: string]: string } = {
@@ -32,7 +33,8 @@ const icons: { [key: string]: string } = {
   eye,
   progress,
   snowflake,
-  mountain
+  mountain,
+  settings
 };
 
 export default icons;

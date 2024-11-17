@@ -79,6 +79,7 @@ AppState.addEventListener('change', (state) => {
       return { success: false, message: 'Please fill both name and frequency fields', data: undefined }; 
   }
   else{
+    const currentHabitCount = await getHabitCount(user_id)
 
     const frequency_rate_int = getFrequencyNumber(frequency_rate)
 
@@ -93,7 +94,8 @@ AppState.addEventListener('change', (state) => {
           frequency,
           frequency_rate,
           reminder,
-          frequency_rate_int
+          frequency_rate_int,
+          'order':currentHabitCount
         },
       ]);
   
@@ -106,6 +108,48 @@ AppState.addEventListener('change', (state) => {
     }
   }
 }
+
+export const getHabitCount = async (userId: string): Promise<number | null> => {
+  try {
+    const { data, error, count } = await supabase
+      .from('habits')
+      .select('id', { count: 'exact', head: true }) // Only fetch count without data
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error fetching Habits Count:', error);
+      return null;
+    }
+    return count ?? 0; // Return count or 0 if count is null
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return null;
+  }
+}
+
+export const updateHabitOrder = async (
+  habitId: string,
+  newOrder: number,
+  userId: string
+): Promise<{ success: boolean; message: string; data?: any }> => {
+  try {
+    const { data, error } = await supabase
+      .from('habits')
+      .update({ order: newOrder })
+      .eq('id', habitId)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error updating habit order:', error);
+      return { success: false, message: 'Error updating habit order', data: error };
+    }
+    
+    return { success: true, message: 'Habit order updated successfully', data };
+  } catch (error) {
+    console.error('Error in updateHabitOrder:', error);
+    return { success: false, message: 'Unexpected error updating habit order', data: error };
+  }
+};
 
 export const updateHabitIfChanged = async (
   habit_id: string,
@@ -221,7 +265,7 @@ export const deleteHabit = async (
     const { data, error } = await supabase.from('habits')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: true });
+    .order('order', { ascending: true });
     if (error && userId) {
       console.error('Error fetching habits:', error);
       return [];

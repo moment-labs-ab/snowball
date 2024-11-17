@@ -57,7 +57,7 @@ const Habits = () => {
 
   return (
     <SafeAreaView className="bg-background h-full">
-          <View className="flex-row justify-between items-center mt-6 mb-10">
+          <View className="flex-row justify-between items-center mt-6 mb-6">
             <View>
               <Text className="text-xl font-bold text-secondary pl-3">
                 Good {time_of_day},
@@ -86,7 +86,7 @@ const Habits = () => {
             </View>
             */}
           </View>
-            <View style = {{marginTop: 5, marginBottom:40, paddingHorizontal:3, alignItems: 'center'}}>
+            <View style = {{marginTop: 4, marginBottom:30, paddingHorizontal:3, alignItems: 'center'}}>
                 <DatePicker onDateChange={handleDateChange} />
 
                 <View

@@ -12,12 +12,11 @@ import ProfileSettings from '@/components/ProfileSettings';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { LifetimeHabitStats } from '@/types/types';
 import { getLifetimeHabitStats } from '@/lib/supabase_profile';
-import ProfileButton from '@/components/ProfileButton';
-import EditProfile from '@/components/ProfileSettings/EditProfile';
-import ProfileStats from '@/components/ProfileSettings/ProfileStats';
-import ProfileHabits from '@/components/ProfileSettings/ProfileHabits';
-import Feedback from '@/components/ProfileSettings/Feedback';
-const Profile = () => {
+import Feather from '@expo/vector-icons/Feather';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import Tooltip from '@/modals/Generic/Tooltip';
+
+const ProfileStats = () => {
   const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();
   const [modalVisible, setModalVisible] = useState(false);
   const [userLoginCount, setUserLoginCount] = useState(0);
@@ -156,91 +155,67 @@ const Profile = () => {
     </View>
   );
 
-  
+  if(!lifetimeStats){
+    return <View style={styles.container}>
+    <ActivityIndicator size="large" color="#3e4e88" />
+    </View>
+   
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="bg-background h-full">
-        <View className='flex-1 align-center pl-2 pr-2'>
-          <View className="flex-row justify-between items-center mt-6">
-            <Text className="text-xl font-bold text-secondary pl-2">
-              Settings
-            </Text>
-            {/** SETTINGS BUTTON
-            <TouchableOpacity onPress={handleOpenModal} className='pr-1'>
-              <MaterialIcons name="settings" size={24} color="black" />
-            </TouchableOpacity>
-            */}
-          </View>
-          <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-l font-bold text-primary pl-2">& More</Text>
-          </View>
-          <View
-            style={{
-              height: 2,
-              width: '98%',
-              backgroundColor: '#3e4e88',
-              alignSelf: 'center',
-              marginTop: 4,
-            }}
-          />
+            
+          
           <ScrollView>
-            <View className='px-3 mt-3'>
-            <ProfileButton 
-              label='Profile' 
-              action={() => { console.log("Profile Pressed") }}
-              content={<EditProfile/>} 
-            />
-            <ProfileButton 
-              label='Habits' 
-              action={() => { console.log("Habits Pressed") }}
-              content={<ProfileHabits/>}
-            />
-            <ProfileButton 
-              label='Terms & Conditions' 
-              action={() => { console.log("Terms Pressed") }} 
-            />
-            <ProfileButton 
-              label='Privacy Policy' 
-              action={() => { console.log("Privacy Policy Pressed") }} 
-            />
-            <ProfileButton 
-              label='Feedback' 
-              action={() => { console.log("Feedback Pressed") }} 
-              content={<Feedback/>}
-            />
-            {/**
-            <ProfileButton 
-              label='Donate' 
-              action={() => { console.log("Donate Pressed") }} 
-            />
-            */}
-            <ProfileButton 
-              label='Profile Stats' 
-              action={() => { console.log("Donate Pressed") }}
-              content={<ProfileStats/>}
-            />
+            <View className='px-3'>
+              <View style={styles.metricsContainer}>
+                <MetricItem
+                  icon={<Feather name="check-circle" size={30} color="black" />}
+                  text={`${Math.floor(lifetimeStats?.completionRate)}% Completion Rate`}
+                  tooltipKey="completionRate"
+                  reference={completionRateRef}
+                />
+                <MetricItem
+                  icon={<SimpleLineIcons name="fire" size={30} color="black" />}
+                  text={`${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Day'} Streak`}
+                  tooltipKey="streak"
+                  reference={streakRef}
+                />
+                <MetricItem
+                  icon={<SimpleLineIcons name="trophy" size={30} color="black" />}
+                  text={lifetimeStats?.mostConsistentHabit || ''}
+                  tooltipKey="consistentHabit"
+                  reference={consistentHabitRef}
+                />
+                <MetricItem
+                  icon={<Feather name="calendar" size={30} color="black" />}
+                  text={`${lifetimeStats?.totalDaysTracked} Total Days Tracked`}
+                  tooltipKey="daysTracked"
+                  reference={daysTrackedRef}
+                />
+                <MetricItem
+                  icon={<SimpleLineIcons name="login" size={30} color="black" />}
+                  text={`Join Date: ${lifetimeStats?.joinDate?.toLocaleDateString()}`}
+                  tooltipKey="joinDate"
+                  reference={joinDateRef}
+                />
+                <MetricItem
+                  icon={<MaterialIcons name="update" size={30} color="black" />}
+                  text={`${userLoginCount} Account Logins`}
+                  tooltipKey="loginCount"
+                  reference={loginCountRef}
+                />
+              </View>
               
-              <CustomButton
-                title="Sign Out"
-                handlePress={logout}
-                containerStyles="mt-8 px-2 bg-secondary"
-                otherMethods={() => {}}
-              />
             </View>
           </ScrollView>
-        </View>
-        <ProfileSettings 
-          visible={modalVisible} 
-          onClose={handleCloseModal} 
-          title="Profile Settings"
-        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
 
-export default Profile;
+export default ProfileStats;
 
 const styles = StyleSheet.create({
   container: {

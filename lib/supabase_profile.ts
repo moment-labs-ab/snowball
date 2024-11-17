@@ -91,19 +91,20 @@ export async function getUserLoginCount(user_id: string): Promise<number | null>
             h => h.id === mostFrequentHabitId
         )?.name || '';
 
-        // Calculate completion rates for each habit
         const completionRates = habitsData.map(habit => {
             const habitStartDate = new Date(habit.created_at);
-            const totalPossibleDays = Math.floor(
+            const totalPossibleDays = Math.max(1, Math.floor(
                 (new Date().getTime() - habitStartDate.getTime()) / (1000 * 60 * 60 * 24)
-            );
+            ));
             const daysTracked = habitFrequency[habit.id] || 0;
-            return (daysTracked / totalPossibleDays) * 100;
-        });
-
+            
+            // Ensure we don't divide by zero and cap at 100%
+            return Math.min(100, (daysTracked / totalPossibleDays) * 100);
+        }).filter(rate => !isNaN(rate) && isFinite(rate)); // Filter out any NaN or Infinity values
+    
         // Calculate average completion rate
         const completionRate = completionRates.length
-            ? Math.floor(completionRates.reduce((a, b) => a + b) / completionRates.length)
+            ? completionRates.reduce((a, b) => a + b, 0) / completionRates.length
             : 0;
 
         // Calculate current/most recent longest streak
@@ -162,3 +163,40 @@ export async function getUserLoginCount(user_id: string): Promise<number | null>
             joinDate: new Date(loginData.logged_in_at)
         };
 };
+
+export const updateHabitOrder = async (habitId: string, newOrder: number) => {
+    const { data, error } = await supabase
+      .from('habits')
+      .update({ order: newOrder })
+      .eq('id', habitId);
+  
+    if (error) {
+      console.error('Error updating habit order:', error);
+      return false;
+    }
+    return true;
+  };
+
+export const sendFeedback = async(
+    user_id: string,
+    short_description: string,
+    long_description: string)=>{
+    const { data, error } = await supabase
+      .from('feedback')
+      .insert([
+        {
+          user_id,
+          short_description,
+          long_description
+        },
+      ]);
+
+      if (error) {
+        console.error('Error Sending Feedback', error);
+        return { success: false, message: 'Error Sending Feedback', data: error };
+      } else {
+        console.log('Sent feedback successfully:', data, error);
+        return { success: true, message: 'Sent feedback successfully', data };
+      }
+
+}

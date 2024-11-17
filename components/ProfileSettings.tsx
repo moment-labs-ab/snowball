@@ -5,6 +5,7 @@ import ProfileButton from './ProfileButton';
 import Modal from 'react-native-modal';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import EditProfile from './ProfileSettings/EditProfile';
+import ProfileStats from './ProfileSettings/ProfileStats';
 
 
 interface ProfileSettingsProp {
@@ -99,12 +100,13 @@ const ProfileSettings = ({ visible, onClose, title }: ProfileSettingsProp) => {
               action={() => { console.log("Feedback Pressed") }} 
             />
             <ProfileButton 
-              label='Rewards' 
-              action={() => { console.log("Rewards Pressed") }} 
-            />
-            <ProfileButton 
               label='Donate' 
               action={() => { console.log("Donate Pressed") }} 
+            />
+            <ProfileButton 
+              label='Profile Stats' 
+              action={() => { console.log("Donate Pressed") }}
+              content={<ProfileStats/>}
             />
           </View>
         </ScrollView>

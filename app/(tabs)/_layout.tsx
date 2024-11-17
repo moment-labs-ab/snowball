@@ -13,21 +13,24 @@ type TabIconProps = {
 }
  /** Styles the Icons */
  const TabIcon = ({icon, color, name, focused}: TabIconProps) => {
-    return(
-      <View className="items-center justify-center gap-2 mb-1">
-        <Image
+  return(
+    <View className="items-center justify-center gap-2 mb-1" style={{ minWidth: 60 }}> {/* Adjust width as needed */}
+      <Image
         source={icon}
         resizeMode='contain'
         tintColor={color}
-        className='w-4 h-4'
-        />
-
-    <Text className={`${focused ? 'font-psemibold': 'font-pregular'} text-xs`} style={{color: color}}>
+        className='w-5 h-5'
+      />
+      <Text
+        numberOfLines={1}
+        className={`${focused ? 'font-psemibold' : 'font-pregular'}`}
+        style={{ color: color, fontSize: 10, textAlign: 'center', width: '100%' }}
+      >
         {name}
       </Text>
-      </View>
-    )
-   }
+    </View>
+  )
+}
 
 const TabsLayout = () => {
   return (
@@ -41,7 +44,7 @@ const TabsLayout = () => {
             backgroundColor: "#EDF5FE",
             borderTopWidth: 0,
             borderTopColor: "#EDF5FE",
-            height: 45,
+            height: 55,
             marginTop:0
           },
         }}
@@ -92,13 +95,13 @@ const TabsLayout = () => {
 
       <Tabs.Screen name='profile'
         options={{
-          title: 'Profile',
+          title: 'Settings',
           headerShown: false,
           tabBarIcon: ({ color, focused}) => (
             <TabIcon 
-              icon ={icons.profile}
+              icon ={icons.settings}
               color={color}
-              name="Profile"
+              name="Settings"
               focused={focused}
             />
           )
