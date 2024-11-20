@@ -15,6 +15,7 @@ import snowflake from "../assets/icons/snowflake.png"
 import mountain from "../assets/icons/mountain.png"
 import progress from "../assets/icons/progress.png"
 import settings from '../assets/icons/settings.png'
+import editIcon from '../assets/icons/edit.png'
 
 
 const icons: { [key: string]: string } = {
@@ -34,7 +35,8 @@ const icons: { [key: string]: string } = {
   progress,
   snowflake,
   mountain,
-  settings
+  settings,
+  editIcon
 };
 
 export default icons;

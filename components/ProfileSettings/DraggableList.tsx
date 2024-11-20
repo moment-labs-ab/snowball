@@ -1,67 +1,34 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import DragList, { DragListRenderItemInfo } from 'react-native-draglist';
-import Entypo from '@expo/vector-icons/Entypo';
-import { Habit } from '@/types/types';
-
-type HabitListProps = {
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React from "react";
+import { Habit } from "@/types/types";
+import HabitCard from "../HabitCard";
+import HabitItem from "./HabitItem";
+import DraggableListHeader from "./DraggableListHeader";
+interface DraggableListProps {
   habits: Habit[];
-};
-
-const DraggableList: React.FC<HabitListProps> = ({ habits }) => {
-  const [currentHabits, setCurrentHabits] = useState<Habit[]>(habits);
-
-  const renderItem = ({ item, isActive }: DragListRenderItemInfo<Habit>) => (
-    <View
-      style={[
-        styles.movingContainer,
-        isActive ? { backgroundColor: '#cfe3ff' } : null,
-      ]}
-    >
-      <Text style={styles.habitName}>{item.name}</Text>
-      <Entypo name="menu" size={24} color="gray" />
-    </View>
-  );
-
-  const handleDragEnd = () => {
-    // Reorder logic must be handled by DragList internally.
-    // currentHabits is updated automatically when reordering occurs.
-    console.log('Drag ended, current habits:', currentHabits);
-  };
-
+}
+const DraggableList = ({ habits }: DraggableListProps) => {
   return (
-      <DragList
-        data={currentHabits}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        onDragEnd={handleDragEnd}
-      />
+    <View style={styles.listContainer}>
+      <DraggableListHeader title="Edit Habit Order"/>
+      <ScrollView
+        contentContainerStyle={{
+          height: habits.length * 80,
+        }}
+      >
+        {habits.map((item) => (
+          <HabitItem name={item.name} />
+        ))}
+      </ScrollView>
+    </View>
   );
 };
 
 export default DraggableList;
 
 const styles = StyleSheet.create({
-  movingContainer: {
-    borderWidth: 1,
-    minWidth: 330,
-    borderColor: 'black',
-    borderRadius: 4,
-    backgroundColor: '#edf5fe',
-    minHeight: 62,
-    justifyContent: 'space-between',
-    marginHorizontal: 10,
-    marginBottom: 16,
-    overflow: 'hidden',
-    paddingRight: 30,
-    paddingLeft: 5,
-    flexDirection: 'row',
-    alignContent: 'flex-start',
-    alignItems: 'center',
-  },
-  habitName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+  listContainer: {
+    backgroundColor: "white",
+    height: "100%",
   },
 });

@@ -62,8 +62,8 @@ const ProfileHabits = () => {
   
     return (
       <View style={styles.container}>
-        <Text>Hello</Text>
-        <DraggableList habits={habits} />
+        
+        <DraggableList habits={habits}/>
         {/**
         <FlashList
           data={habits}

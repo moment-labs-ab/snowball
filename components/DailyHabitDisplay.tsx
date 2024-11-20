@@ -8,11 +8,12 @@ import { FlashList } from "@shopify/flash-list";
 import { newHabitEmitter, deleteHabitEmitter, habitEmitter } from '@/events/eventEmitters'
 
 type dailyHabitDisplayProps = {
-    selectedDate: Date
+    selectedDate: Date,
+    editHabitOrder: boolean
 
 }
 
-const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
+const DailyHabitDisplay = ({selectedDate, editHabitOrder}: dailyHabitDisplayProps) => {
     const { user, isLoading } = useGlobalContext();
     const [habits, setHabits] = useState<Habit[]>([]);
     const [lastHabit, setLastHabit] = useState("")
@@ -22,6 +23,9 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
 
     useEffect(() => {
         console.log("USEEFFECT: DailyHabitDisplay")
+        if(editHabitOrder === true){
+          console.log("Daily Habit Display Edit Request Received")
+        }
         const fetchHabits = async () => {
         const habitsData = await getUserHabits(user.userId);
         setHabits(habitsData);
@@ -70,6 +74,8 @@ const DailyHabitDisplay = ({selectedDate}: dailyHabitDisplayProps) => {
             unsubscribe();
             habitEmitter.emit('dataChanged');
           };
+
+          
     }, [user.userId, selectedDate, habits.length]);
 
   return (

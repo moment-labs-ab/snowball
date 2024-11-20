@@ -15,7 +15,8 @@ type habitCardProps = {
     frequency_rate: string,
     reminder: boolean,
     frequency_rate_int: number
-    date: Date
+    date: Date,
+    order?: number
 }
 
 
@@ -27,7 +28,8 @@ const HabitCard = ({
     frequency_rate,
     reminder,
     frequency_rate_int,
-    date}: habitCardProps) => {
+    date,
+    order}: habitCardProps) => {
     const { user, isLoading } = useGlobalContext();
     const [trackingCount, setTrackingCount] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(true);

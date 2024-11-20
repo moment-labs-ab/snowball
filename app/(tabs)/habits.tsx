@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { useContext, useEffect, useState } from 'react'
 import { useGlobalContext } from '@/context/Context'
@@ -7,12 +7,15 @@ import LoadingScreen from '@/components/LoadingScreen'
 import DatePicker from '@/components/DatePicker'
 import CustomButton from '@/components/CustomButtom'
 import NewHabit from '@/modals/NewHabit'
-
-import { Habit } from '@/types/types'
 import DailyHabitDisplay from '@/components/DailyHabitDisplay';
+import Toast from 'react-native-toast-message';
+import useShakeDetection from '@/events/useShakeDetection';
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
+  const [deviceShaken, setDeviceShaken] = useState(false)
+  const { isShaken } = useShakeDetection();
+  const [editRequested, setEditRequested] = useState(false)
 
   const getCurrentTime = () => {
     let time_of_day: string;
@@ -39,6 +42,13 @@ const Habits = () => {
     setSelectedDate(date)
   };
 
+    
+    
+
+
+
+
+
 
   //MODAL LOGIC
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,8 +60,35 @@ const Habits = () => {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
-
   
+  useEffect(() => {
+    if (isShaken) {
+      Alert.alert(
+        'Edit Habit Order?',
+        'Would you like to reorder your habits?',
+        [
+          {
+            text: 'No',
+            onPress: () => {
+              console.log('Cancel Pressed')
+              setEditRequested(false)
+          
+          },
+            style: 'cancel',
+            
+          },
+          {
+            text: 'Yes',
+            onPress: () => {
+              console.log('Yes Pressed');
+              setEditRequested(true)
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+  }, [isShaken]);
 
 
 
@@ -87,6 +124,7 @@ const Habits = () => {
             */}
           </View>
             <View style = {{marginTop: 4, marginBottom:30, paddingHorizontal:3, alignItems: 'center'}}>
+
                 <DatePicker onDateChange={handleDateChange} />
 
                 <View
@@ -105,7 +143,7 @@ const Habits = () => {
               </View>
 
               <DailyHabitDisplay
-              selectedDate={selectedDate}/>
+              selectedDate={selectedDate} editHabitOrder={editRequested}/>
               
     </SafeAreaView>
   )
@@ -113,3 +151,4 @@ const Habits = () => {
 
 
 export default Habits
+

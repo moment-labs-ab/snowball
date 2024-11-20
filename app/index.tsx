@@ -9,6 +9,9 @@ import images from '../constants/images'
 
 import { useGlobalContext } from '@/context/Context';
 import { trackLogin } from '@/lib/supabase';
+
+import Toast from 'react-native-toast-message';
+
  
 export default function App() {
   const {isLoading, isLoggedIn, user} = useGlobalContext();
@@ -50,6 +53,7 @@ export default function App() {
     </ScrollView>
 
     <StatusBar backgroundColor='#161622' style='light'/>
+    <Toast />
     </SafeAreaView>
   );
    }
