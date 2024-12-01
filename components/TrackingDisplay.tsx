@@ -150,7 +150,7 @@ const TrackingDisplay = () => {
     return () => {
       unsubscribe();
     };
-  }, [habits.length, startDate]);
+  }, [habits.length]);
 
 
 
@@ -174,7 +174,8 @@ const TrackingDisplay = () => {
                       data={habitData}
                       habitName={item.name}
                       frequency={item.frequency}
-                      frequencyRate={item.frequency_rate}/>
+                      frequencyRate={item.frequency_rate}
+                      id={item.id}/>
                     ) : (
                       <View style={styles.container}>
                   <ActivityIndicator size="large" color="#3e4e88" />

@@ -1,18 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal} from 'react-native'
 import React, {useState} from 'react'
+import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 //import Modal from 'react-native-modal'
 
 
-interface ProfileButtonProps{
+interface CalendarButtonProps{
     label: string,
     action?: () => void
     content?: React.ReactNode;
     // Optional prop to determine if content should be shown in a modal
-    useModal?: boolean;
 }
 
-const ProfileButton: React.FC<ProfileButtonProps> = ({label, action, content, useModal}) => {
+const CalendarButton: React.FC<CalendarButtonProps> = ({ label, action, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -21,13 +21,8 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({label, action, content, us
     return (
       <SafeAreaView>
           <View style={styles.container}>
-              <TouchableOpacity style={styles.button} onPress={toggleContent}>
-                  <Text style={styles.buttonText}>{label}</Text>
-                  <AntDesign 
-                      name="caretup"
-                      size={20} 
-                      color="black" 
-                  />
+              <TouchableOpacity onPress={toggleContent}>
+              <Feather name="calendar" size={24} color="black" />
               </TouchableOpacity>
 
               <Modal
@@ -116,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileButton;
+export default CalendarButton;

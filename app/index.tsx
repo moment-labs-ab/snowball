@@ -12,6 +12,8 @@ import { trackLogin } from '@/lib/supabase';
 
 import Toast from 'react-native-toast-message';
 
+import { GestureHandlerRootView, GestureDetector} from 'react-native-gesture-handler';
+
  
 export default function App() {
   const {isLoading, isLoggedIn, user} = useGlobalContext();

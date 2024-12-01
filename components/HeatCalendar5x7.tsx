@@ -1,19 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import dayjs from 'dayjs';
 import { HabitTrackingEntry } from '@/types/types';
 import Emoji from 'react-native-emoji';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Feather from '@expo/vector-icons/Feather';
+import CalendarButton from './CalendarButton';
+import HabitYearView from './HabitYearView';
+import EditProfile from './ProfileSettings/EditProfile';
 
 interface HeatCalendarProps {
     data: HabitTrackingEntry[];
     habitName: string,
     frequency: number,
-    frequencyRate: string
+    frequencyRate: string,
+    id: string
 }
 
 const getColorForCount = (count: number) => {
-    if (count === 0) return '#c9ced6';  // light grey
+    if (count === 0) return '#a0a7b7';  // light grey
     if (count === 1) return '#3e4e88';  // dark blue
     if (count === 2) return '#7bc96f';  // light green
     if (count === 3) return '#239a3b';  // medium green
@@ -22,7 +27,7 @@ const getColorForCount = (count: number) => {
 
 const daysOfWeek = ['Su', 'M', 'T', 'W', 'Th', 'F', 'S'];
 
-const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequency, frequencyRate }) => {
+const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequency, frequencyRate, id }) => {
     
     const organizeDataIntoRows = (data: HabitTrackingEntry[]) => {
         // Sort data by date
@@ -115,7 +120,10 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
 
     return (
         <View style={styles.container}>
+            <View style={styles.topRow}>
             <Text style={styles.habitName}>{habitName}</Text>
+            <CalendarButton label={habitName + " Year In Review"} content={<HabitYearView id={id}/>}/>
+            </View>
             <Text style={styles.habitFrequency}>Goal: {frequency}x {frequencyRate}</Text>
 
             <View style={styles.headerContainer}>
@@ -172,6 +180,12 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
 };
 
 const styles = StyleSheet.create({
+    topRow:{
+        flexDirection:'row',
+        alignContent:'flex-end',
+        justifyContent:'space-between',
+        alignItems:'center'
+    },
     habitName: {
         fontSize: 25,
         fontWeight: 'bold',
@@ -185,7 +199,7 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: 8,
-        backgroundColor: '#b4bac6',
+        backgroundColor: '#d2d5dd',
         borderRadius: 8
     },
     headerContainer: {

@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import React, {useEffect} from "react";
 import { useFonts } from 'expo-font';
 import GlobalProvider from "@/context/Context";
+import { GestureDetector } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
