@@ -43,7 +43,7 @@ const TrackingDisplay = () => {
   //console.log(today.toString()); 
 
   useEffect(()=>{
-    console.log(today)
+    //console.log(today)
     setEndDate(today)
     setStartDate(oneMonthAgo)
     //console.log(oneMonthAgo)
@@ -109,7 +109,7 @@ const TrackingDisplay = () => {
         for (const habit of habits) {
           try{
             console.log("Calling getGridTrackingHistory", endDate)
-            const habitData = await getGridTrackingHistory(user.userId, habit.id, startDate, endDate);
+            const habitData = await getGridTrackingHistory(user.userId, habit.id, startDate, today);
             if (habitData && Array.isArray(habitData)) {
               data[habit.id] = habitData;
             }

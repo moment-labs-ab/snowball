@@ -54,3 +54,10 @@ export interface LifetimeHabitStats{
   longestStreak: number;
   joinDate: Date;
 }
+
+export interface Vision{
+  name: string,
+  emoji: string,
+  habit_ids: object,
+  tags: object
+}

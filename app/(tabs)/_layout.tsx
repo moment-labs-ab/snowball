@@ -78,15 +78,15 @@ const TabsLayout = () => {
           )
         }}
       />
-      <Tabs.Screen name='manifest'
+      <Tabs.Screen name='envision'
         options={{
-          title: 'Manifest',
+          title: 'Envision',
           headerShown: false,
           tabBarIcon: ({ color, focused}) => (
             <TabIcon 
               icon ={icons.mountain}
               color={color}
-              name="Manifest"
+              name="Envision"
               focused={focused}
             />
           )

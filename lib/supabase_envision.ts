@@ -1,0 +1,61 @@
+import { AppState, Alert } from 'react-native'
+import 'react-native-url-polyfill/auto'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { createClient, Session } from '@supabase/supabase-js'
+import { useState, useEffect } from 'react'
+import { nanoid } from 'nanoid';
+import { Habit, HabitTracking } from '@/types/types'
+
+
+const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+})
+
+// Tells Supabase Auth to continuously refresh the session automatically
+// if the app is in the foreground. When this is added, you will continue
+// to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
+// `SIGNED_OUT` event if the user's session is terminated. This should
+// only be registered once.
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh()
+  } else {
+    supabase.auth.stopAutoRefresh()
+  }
+})
+
+export const insertNewVision = async(
+    name: string,
+    emoji:string,
+    habit_ids:object,
+    user_id: string,
+    tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
+    const { data, error } = await supabase
+      .from('vision_objects')
+      .insert([
+        {
+          name,
+          emoji,
+          habit_ids,
+          tags,
+          user_id
+        },
+      ]);
+
+      if (error) {
+        console.error('Error inserting vision:', error);
+        return { success: false, message: 'Error inserting vision', data: error };
+      } else {
+        console.log('Vision inserted successfully:', data, error);
+        return { success: true, message: 'Vision inserted successfully', data };
+      }
+}
+
