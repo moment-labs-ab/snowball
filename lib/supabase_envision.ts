@@ -37,6 +37,7 @@ export const insertNewVision = async(
     emoji:string,
     habit_ids:object,
     user_id: string,
+    description: string,
     tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
     const { data, error } = await supabase
       .from('vision_objects')
@@ -46,7 +47,8 @@ export const insertNewVision = async(
           emoji,
           habit_ids,
           tags,
-          user_id
+          user_id,
+          description
         },
       ]);
 

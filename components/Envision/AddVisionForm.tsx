@@ -56,11 +56,12 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
   
 
   const handleSubmit = () => {
-    insertNewVision(name, emoji, selectedHabits,user.userId, tags)
+    insertNewVision(name, emoji, selectedHabits,user.userId, description, tags)
     setName('')
     setEmoji('')
     setSelectedHabits([])
     setTags([])
+    setDescription('')
     
     if (closeModal) {
       closeModal();
