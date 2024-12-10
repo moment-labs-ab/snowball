@@ -1,12 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import VisionObject from "@/components/Envision/VisionObject";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AddVisionButton from "@/components/Envision/AddVisionButton";
-import AddVisionForm from "@/components/Envision/AddVisionForm";
+import AddGoalButton from "@/components/Envision/AddGoalButton";
+import GoalObject from "@/components/Envision/GoalObject";
+import AddGoalForm from "@/components/Envision/AddGoalForm";
 
-const Envision = () => {
+const goals = () => {
   const handleOpenModal = () => {
     console.log("Vision Object Add");
   };
@@ -17,17 +17,17 @@ const Envision = () => {
           <View style={styles.flexRow}>
             <View>
               <View style={[styles.flexRow, styles.headerRow]}>
-                <Text style={styles.headerText}>Envision</Text>
+                <Text style={styles.headerText}>Goals</Text>
               </View>
               <View style={[styles.flexRow, styles.subHeaderRow]}>
                 <Text style={styles.subHeaderText}>Who do you want to be?</Text>
               </View>
             </View>
-            <AddVisionButton label='Add a New Vision' content={<AddVisionForm/>}/>
+            <AddGoalButton label='Add a New Vision' content={<AddGoalForm/>}/>
           </View>
           <View style={styles.divider} />
         
-        <VisionObject />
+        <GoalObject />
       </View>
     </SafeAreaView>
   );
@@ -35,7 +35,7 @@ const Envision = () => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#f5f5f5", // Replace with your bg-background class color if different
+    backgroundColor: '#edf5fe', // Replace with your bg-background class color if different
     flex: 1,
   },
   container: {
@@ -95,4 +95,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Envision;
+export default goals;

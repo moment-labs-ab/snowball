@@ -10,6 +10,8 @@ import { useGlobalContext } from '@/context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NumberBox from '@/components/NumberBox';
 import { deleteHabitEmitter } from '@/events/eventEmitters';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 interface EditHabitProps {
   visible: boolean;

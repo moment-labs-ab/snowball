@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const VisionObject = () => {
+const GoalObject = () => {
   return (
     <View>
-      <Text>VisionObject</Text>
+      <Text>Goal Object</Text>
       <Text>Emoji</Text>
       <Text>Habits Associated</Text>
       <Text>Progress Tracking</Text>
@@ -12,4 +12,4 @@ const VisionObject = () => {
   )
 }
 
-export default VisionObject
+export default GoalObject

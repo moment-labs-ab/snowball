@@ -5,14 +5,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 
-interface VisionButtonProps {
+interface GoalButtonProps {
     label: string,
     action?: () => void
     content?: React.ReactNode;
     onClose?: () => void; // Optional callback to handle closing
 }
 
-const AddVisionButton: React.FC<VisionButtonProps> = ({ label, action, content, onClose}) => {
+const AddGoalButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -137,4 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddVisionButton;
+export default AddGoalButton;

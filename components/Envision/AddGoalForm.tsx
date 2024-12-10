@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import EmojiSelector from 'react-native-emoji-selector'; // You might need to install this package
-import { insertNewVision } from '@/lib/supabase_envision';
+import { insertNewGoal } from '@/lib/supabase_goals';
 import { useGlobalContext } from '@/context/Context'
 import { getUserHabits } from '@/lib/supabase_habits';
 import { Habit } from '@/types/types';
@@ -9,7 +9,7 @@ import { color } from '@rneui/themed/dist/config';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 
 
-export interface Vision {
+export interface Goal {
   name: string;
   emoji: string;
   habit_names: string[];
@@ -26,7 +26,7 @@ const dummyHabits = [
   'Drink Water', 'Healthy Eating', 'Journal Writing'
 ];
 
-const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
+const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const { user, isLoading } = useGlobalContext();
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('');
@@ -56,7 +56,7 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
   
 
   const handleSubmit = () => {
-    insertNewVision(name, emoji, selectedHabits,user.userId, description, tags)
+    insertNewGoal(name, emoji, selectedHabits,user.userId, description, tags)
     setName('')
     setEmoji('')
     setSelectedHabits([])
@@ -86,8 +86,8 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
 >
     <ScrollView style={styles.container}>
       <View style={{marginBottom:5}}>
-      <Text style={styles.visionTitle}>
-        Vision Name
+      <Text style={styles.goalTitle}>
+        Goal Name
       </Text>
       </View>
       <View style={styles.row}>
@@ -172,8 +172,8 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
       */}
 
 <View style={{ marginBottom: 5, marginTop: 5 }}>
-  <Text style={styles.visionTitle}>
-    Add a Description for your Vision
+  <Text style={styles.goalTitle}>
+    Add a Description for your Goal
   </Text>
 </View>
 <View style={styles.row}>
@@ -181,7 +181,7 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
           style={[styles.input, styles.textArea]}
           value={description}
           onChangeText={setDescription}
-          placeholder="Provide a detailed description of your Vision"
+          placeholder="Provide a detailed description of your Goal"
           placeholderTextColor={"#898989"}
           multiline
           numberOfLines={6}
@@ -192,7 +192,7 @@ const AddVisionForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) =>
 
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Create Vision</Text>
+        <Text style={styles.submitButtonText}>Create Goal</Text>
       </TouchableOpacity>
     </ScrollView>
     </KeyboardAvoidingView>
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
-  visionTitle:{
+  goalTitle:{
     fontSize:16,
     fontWeight:'bold'
 
@@ -223,6 +223,9 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     marginRight: 10,
+    alignContent:'center',
+    justifyContent:'center',
+    alignItems:'center'
   },
   
   description: {
@@ -306,4 +309,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddVisionForm;
+export default AddGoalForm;

@@ -17,11 +17,11 @@ const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherSt
     { label: 'Daily', value: 'Daily' },
     { label: 'Weekly', value: 'Weekly' },
     { label: 'Bi-weekly', value: 'Bi-weekly' },
-    { label: 'Monthly', value: 'Monthly' },
-    { label: 'Bi-monthly', value: 'Bi-monthly' },
-    { label: 'Quarterly', value: 'Quarterly' },
-    { label: 'Semi-annually', value: 'Semi-annually' },
-    { label: 'Yearly', value: 'Yearly' },
+    //{ label: 'Monthly', value: 'Monthly' },
+    //{ label: 'Bi-monthly', value: 'Bi-monthly' },
+    //{ label: 'Quarterly', value: 'Quarterly' },
+    //{ label: 'Semi-annually', value: 'Semi-annually' },
+    //{ label: 'Yearly', value: 'Yearly' },
   ];
 
   const handleValueChange = (value: string) => {

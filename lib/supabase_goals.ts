@@ -32,7 +32,7 @@ AppState.addEventListener('change', (state) => {
   }
 })
 
-export const insertNewVision = async(
+export const insertNewGoal= async(
     name: string,
     emoji:string,
     habit_ids:object,
@@ -40,7 +40,7 @@ export const insertNewVision = async(
     description: string,
     tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
     const { data, error } = await supabase
-      .from('vision_objects')
+      .from('goal_objects')
       .insert([
         {
           name,
@@ -53,11 +53,11 @@ export const insertNewVision = async(
       ]);
 
       if (error) {
-        console.error('Error inserting vision:', error);
-        return { success: false, message: 'Error inserting vision', data: error };
+        console.error('Error inserting goal:', error);
+        return { success: false, message: 'Error inserting goal', data: error };
       } else {
-        console.log('Vision inserted successfully:', data, error);
-        return { success: true, message: 'Vision inserted successfully', data };
+        console.log('Goal inserted successfully:', data, error);
+        return { success: true, message: 'Goal inserted successfully', data };
       }
 }
 

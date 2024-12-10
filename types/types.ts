@@ -55,7 +55,7 @@ export interface LifetimeHabitStats{
   joinDate: Date;
 }
 
-export interface Vision{
+export interface Goal{
   name: string,
   emoji: string,
   habit_ids: object,
