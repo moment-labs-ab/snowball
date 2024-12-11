@@ -6,6 +6,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
 import EditHabit from '@/modals/EditHabit';
 import { HabitTracking } from '@/types/types';
+import EditHabitButton from '@/modals/EditHabitButton';
+import EditHabitModal from '@/modals/EditHabitModal';
 
 type habitCardProps = {
     id: string,
@@ -205,6 +207,14 @@ const HabitCard = ({
                 {frequency}x {frequency_rate}
             </Text>
         </View>
+        <EditHabitButton content={<EditHabitModal visible={modalVisible}
+            onClose={handleCloseModal}
+            title={"Edit "}
+            habit_id={id}
+            selectedDate={date}
+            trackingCount={trackingCount}
+            onTrackingCountChange={handleTrackingCountChange}/>}/>
+            {/**
         <TouchableOpacity onPress={() => {handleOpenModal()}} style={{ paddingRight: 5 }}>
             <Entypo name="dots-three-vertical" size={24} color="black" />
         </TouchableOpacity>
@@ -217,6 +227,7 @@ const HabitCard = ({
             trackingCount={trackingCount}
             onTrackingCountChange={handleTrackingCountChange} />
         </View>
+        */}
     </View>
 </TouchableOpacity>
 

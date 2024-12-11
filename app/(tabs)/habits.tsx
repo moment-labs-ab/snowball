@@ -10,6 +10,9 @@ import NewHabit from '@/modals/NewHabit'
 import DailyHabitDisplay from '@/components/DailyHabitDisplay';
 import Toast from 'react-native-toast-message';
 import useShakeDetection from '@/events/useShakeDetection';
+import NewHabitButton from '@/modals/NewHabitButton';
+import NewHabitModal from '@/modals/NewHabitModal';
+
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
@@ -103,7 +106,8 @@ const Habits = () => {
                 {user.username}
               </Text>
             </View>
-            <View> 
+            <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>}/>
+            {/**<View> 
               <TouchableOpacity
                   onPress={handleOpenModal}
                   activeOpacity={0.7}
@@ -111,6 +115,7 @@ const Habits = () => {
                 >
                   <Text className="text-white font-pbold text-lg">+</Text>
                 </TouchableOpacity></View>
+              */}
 
 
             {/**
@@ -137,10 +142,11 @@ const Habits = () => {
                   }}
                 />
               </View>
-
+{/**
               <View>
               <NewHabit visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>
               </View>
+              */}
 
               <DailyHabitDisplay
               selectedDate={selectedDate} editHabitOrder={editRequested}/>
