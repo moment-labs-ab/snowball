@@ -17,7 +17,7 @@ import NewHabitModal from '@/modals/NewHabitModal';
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
   const [deviceShaken, setDeviceShaken] = useState(false)
-  const { isShaken } = useShakeDetection();
+  //const { isShaken } = useShakeDetection();
   const [editRequested, setEditRequested] = useState(false)
 
   const getCurrentTime = () => {
@@ -64,7 +64,7 @@ const Habits = () => {
     setModalVisible(false);
   };
   
-  useEffect(() => {
+  {/**useEffect(() => {
     if (isShaken) {
       Alert.alert(
         'Edit Habit Order?',
@@ -92,6 +92,7 @@ const Habits = () => {
       );
     }
   }, [isShaken]);
+  */}
 
 
 

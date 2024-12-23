@@ -2,9 +2,10 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AddGoalButton from "@/components/Envision/AddGoalButton";
-import GoalObject from "@/components/Envision/GoalObject";
-import AddGoalForm from "@/components/Envision/AddGoalForm";
+import AddGoalButton from "@/components/GoalObjects/AddGoalButton";
+import GoalObject from "@/components/GoalObjects/GoalObject";
+import AddGoalForm from "@/components/GoalObjects/AddGoalForm";
+import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
 
 const goals = () => {
   const handleOpenModal = () => {
@@ -27,7 +28,7 @@ const goals = () => {
           </View>
           <View style={styles.divider} />
         
-        <GoalObject />
+        <AllGoalsView />
       </View>
     </SafeAreaView>
   );

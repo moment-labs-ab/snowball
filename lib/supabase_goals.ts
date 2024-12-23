@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking } from '@/types/types'
+import { Goal } from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -61,3 +61,15 @@ export const insertNewGoal= async(
       }
 }
 
+export const getUserGoals = async (userId: string): Promise<Goal[]> => {
+  const { data, error } = await supabase.from('goal_objects')
+  .select('*')
+  .eq('user_id', userId)
+  .order('created_at', { ascending: true });
+  if (error && userId) {
+    console.error('Error fetching habits:', error);
+    return [];
+  }
+  console.log(data)
+  return data as Goal[];
+};
