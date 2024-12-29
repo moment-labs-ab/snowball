@@ -38,19 +38,23 @@ export const insertNewGoal= async(
     habit_ids:object,
     user_id: string,
     description: string,
+    expectedEndDate: Date,
+    milestones: object,
     tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
     const { data, error } = await supabase
       .from('goal_objects')
-      .insert([
+      .insert(
         {
           name,
           emoji,
           habit_ids,
           tags,
           user_id,
-          description
+          description,
+          expected_end_date: expectedEndDate,
+          milestones
         },
-      ]);
+      );
 
       if (error) {
         console.error('Error inserting goal:', error);
@@ -73,3 +77,36 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   console.log(data)
   return data as Goal[];
 };
+
+//Defining the types for handling habit changes.
+type ChangeHandler = (payload: { eventType: string; new: Goal; old: Goal}) => void;
+//** DB Listener. Listens for changes in the Habit table to automatically change the user's homepage.
+ /* 
+ * @param handleChange 
+ * @returns 
+ */
+export const listenToGoalsTable = (handleChange: ChangeHandler) => {
+    
+    const subscription = supabase
+      .channel('table_db_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'goal_objects',
+        },
+        (payload: any) => {
+          const eventType = payload.eventType;
+          const newRecord = payload.new as Goal;
+          const oldRecord = payload.old as Goal;
+          handleChange({ eventType, new: newRecord, old: oldRecord });
+        }
+      )
+      .subscribe();
+  
+    // Return an unsubscribe function
+    return () => {
+      subscription.unsubscribe();
+    };
+  };
