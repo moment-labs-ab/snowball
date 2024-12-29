@@ -24,7 +24,7 @@ const goals = () => {
                 <Text style={styles.subHeaderText}>Who do you want to be?</Text>
               </View>
             </View>
-            <AddGoalButton label='Add a New Vision' content={<AddGoalForm/>}/>
+            <AddGoalButton label='Create a New Goal' content={<AddGoalForm/>}/>
           </View>
           <View style={styles.divider} />
         

@@ -57,8 +57,13 @@ export interface LifetimeHabitStats{
 
 export interface Goal{
   id: string,
+  created_at: Date,
   name: string,
   emoji: string,
   habit_ids: Record<string, string>,
-  tags: Record<string, string>;
+  tags: Record<string, string>,
+  user_id: string,
+  description: string,
+  expected_end_date: Date,
+  milestones:Record<string, string>
 }
