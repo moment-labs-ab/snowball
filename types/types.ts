@@ -65,5 +65,6 @@ export interface Goal{
   user_id: string,
   description: string,
   expected_end_date: Date,
-  milestones:Record<string, string>
+  milestones:Record<string, string>,
+  color: string
 }

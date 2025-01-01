@@ -40,6 +40,7 @@ export const insertNewGoal= async(
     description: string,
     expectedEndDate: Date,
     milestones: object,
+    color: string,
     tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
     const { data, error } = await supabase
       .from('goal_objects')
@@ -52,7 +53,8 @@ export const insertNewGoal= async(
           user_id,
           description,
           expected_end_date: expectedEndDate,
-          milestones
+          milestones,
+          color
         },
       );
 
@@ -69,7 +71,7 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   const { data, error } = await supabase.from('goal_objects')
   .select('*')
   .eq('user_id', userId)
-  .order('created_at', { ascending: true });
+  .order('expected_end_date', { ascending: true });
   if (error && userId) {
     console.error('Error fetching habits:', error);
     return [];

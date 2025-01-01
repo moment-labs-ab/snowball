@@ -11,9 +11,10 @@ interface GoalButtonProps {
     action?: () => void
     content?: React.ReactNode;
     onClose?: () => void; // Optional callback to handle closing
+    style?: object
 }
 
-const NewHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose}) => {
+const NewHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose, style}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -39,7 +40,7 @@ const NewHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, onC
     return (
       <SafeAreaView>
           <View style={styles.container}>
-          <TouchableOpacity onPress={toggleContent} style={styles.iconButton}>
+          <TouchableOpacity onPress={toggleContent} style={[styles.iconButton, style]}>
           <Entypo name="plus" size={24} color="white" />
             </TouchableOpacity>
 

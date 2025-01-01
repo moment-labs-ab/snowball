@@ -45,13 +45,6 @@ const Habits = () => {
     setSelectedDate(date)
   };
 
-    
-    
-
-
-
-
-
 
   //MODAL LOGIC
   const [modalVisible, setModalVisible] = useState(false);
@@ -63,39 +56,6 @@ const Habits = () => {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
-  
-  {/**useEffect(() => {
-    if (isShaken) {
-      Alert.alert(
-        'Edit Habit Order?',
-        'Would you like to reorder your habits?',
-        [
-          {
-            text: 'No',
-            onPress: () => {
-              console.log('Cancel Pressed')
-              setEditRequested(false)
-          
-          },
-            style: 'cancel',
-            
-          },
-          {
-            text: 'Yes',
-            onPress: () => {
-              console.log('Yes Pressed');
-              setEditRequested(true)
-            },
-          },
-        ],
-        { cancelable: true }
-      );
-    }
-  }, [isShaken]);
-  */}
-
-
-
   return (
     <SafeAreaView className="bg-background h-full">
           <View className="flex-row justify-between items-center mt-6 mb-6">
