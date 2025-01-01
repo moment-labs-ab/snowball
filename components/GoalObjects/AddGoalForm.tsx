@@ -14,12 +14,18 @@ import {
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
 import { insertNewGoal } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
-import { getUserHabits } from "@/lib/supabase_habits";
+import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { Habit } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { goalEmitter } from '@/events/eventEmitters';
+import { goalEmitter } from "@/events/eventEmitters";
+import ColorPicker from 'react-native-wheel-color-picker';
+import FeedbackFormComponent from "../ProfileSettings/Feedback";
+import NewHabitButton from "@/modals/NewHabitButton";
+import NewHabitModal from "@/modals/NewHabitModal";
+import { habitEmitter } from "@/events/eventEmitters";
+
 
 export interface Goal {
   name: string;
@@ -57,12 +63,12 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-  const [habits, setHabits] = useState<Habit[]>();
+  const [habits, setHabits] = useState<Habit[]>([]);
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<
-    number | null
-  >(null);
+  const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
+  const [color, setColor] = useState('#3e4e88');
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const fetchHabits = async () => {
     const data = await getUserHabits(user.userId);
@@ -70,6 +76,39 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   };
   useEffect(() => {
     fetchHabits();
+
+    const unsubscribe = listenToHabitsTable((payload) => {
+      console.log('Change received!', payload);
+      fetchHabits(); 
+
+      switch (payload.eventType) {
+        case 'INSERT':
+          if (payload.new) {
+            console.log("IN INSERT")
+              setHabits(prevHabits => [...prevHabits, payload.new]);
+          }
+          break;
+        case 'UPDATE':
+          if (payload.new) {
+            console.log("IN UPDATE")
+              setHabits(prevHabits => 
+                  prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
+                );
+          }
+          break;
+        case 'DELETE':
+          if (payload.old) {
+            console.log("IN DELETE")
+              setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
+          }
+          break;
+      }
+    });
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribe();
+      habitEmitter.emit('dataChanged');
+    };
   }, []);
 
   const handleAddTag = () => {
@@ -84,8 +123,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       name === "" ||
       emoji === "" ||
       selectedHabits.length === 0 ||
-      description === "" ||
-      milestones.length === 0
+      description === ""
     ) {
       Alert.alert("Please fill out all parts of your goal.");
     } else {
@@ -97,6 +135,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
         description,
         expectedEndDate,
         milestones,
+        color,
         tags
       );
       setName("");
@@ -108,7 +147,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       if (closeModal) {
         closeModal();
       }
-      goalEmitter.emit("newGoal")
+      goalEmitter.emit("newGoal");
     }
   };
 
@@ -168,24 +207,59 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
             style={[styles.addButton, { backgroundColor: "#CDCDE0" }]}
             onPress={addMilestone}
           >
-            <Text style={{ color: "#3e4e88", fontSize:15, fontWeight:'500' }}>Add Milestone</Text>
+            <Text style={{ color: color, fontSize: 15, fontWeight: "500" }}>
+              Add Milestone
+            </Text>
           </TouchableOpacity>
         </View>
       )}
     </View>
   );
 
-  const renderDatePicker = () => (
-    <View style={styles.dateSection}>
-      <Text style={styles.label}>Expected End Date</Text>
-      <TouchableOpacity
-        style={styles.datePicker}
-        onPress={() => setShowDatePicker(true)}
-      >
-        <Text>{expectedEndDate.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-    </View>
+  const renderColorPicker = () => (
+    <Modal
+      visible={showColorPicker}
+      transparent={true}
+      animationType="slide"
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.label}>Choose Color</Text>
+          <View style={styles.colorPickerContainer}>
+            <ColorPicker
+              color={color}
+              onColorChange={handleColorChange}
+              thumbSize={40}
+              sliderSize={40}
+              noSnap={true}
+              row={false}
+            />
+          </View>
+          <TouchableOpacity
+            style={[styles.submitButton, { marginTop: 20 }]}
+            onPress={() => setShowColorPicker(false)}
+          >
+            <Text style={styles.submitButtonText}>Select Color</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
+  const handleColorChange = (color: string) => {
+    setColor(color);
+    //console.log(color)
+  };
+
+   //NEW HABIT MODAL LOGIC
+   const [modalVisible, setModalVisible] = useState(false);
+
+   const handleOpenModal = () => {
+     setModalVisible(true);
+   };
+ 
+   const handleCloseModal = () => {
+     setModalVisible(false);
+   };
 
   if (!habits) {
     return <View></View>;
@@ -216,7 +290,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 borderWidth: 1,
                 borderColor: "#ccc",
                 borderRadius: 5,
-                backgroundColor: "#3e4e88",
+                backgroundColor: color,
                 marginRight: 10,
               }}
               onPress={() => setIsEmojiSelectorVisible(true)}
@@ -225,21 +299,19 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
             </TouchableOpacity>
 
             <View style={{ flex: 1 }}>
-              
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#ccc",
-                    padding: 10,
-                    borderRadius: 5,
-                  }}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder="Keep it Short & Powerful"
-                  placeholderTextColor={"#898989"}
-                  textAlignVertical="center"
-                />
-              
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  padding: 10,
+                  borderRadius: 5,
+                }}
+                value={name}
+                onChangeText={setName}
+                placeholder="Keep it Short & Powerful"
+                placeholderTextColor={"#898989"}
+                textAlignVertical="center"
+              />
             </View>
 
             <Modal
@@ -284,6 +356,13 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 )}
               </TouchableOpacity>
             ))}
+            <View
+            style={{padding:10, flexDirection:'row'}}>
+              <View style={{flexDirection:'row', alignItems:'center'}}>
+                <Text>Create a New Habit</Text>
+              <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>} style={{height:30, width:30}}/>
+              </View>
+            </View>
           </View>
 
           <View style={{ marginBottom: 5, marginTop: 5 }}>
@@ -312,25 +391,37 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View>
             <Text style={styles.label}>Expected End Date</Text>
-            <View style={{justifyContent:'center', alignItems:'center'}}>
-            <View style={styles.pickerContainer}>
-              <DateTimePicker
-                value={
-                  activeMilestoneIndex !== null
-                    ? milestones[activeMilestoneIndex].date || new Date()
-                    : expectedEndDate
-                }
-                mode="date"
-                display='inline'
-                onChange={handleDateChange}
-                accentColor="#3e4e88"
-                //style={{ backgroundColor: 'black', paddingInlineStart:10}}
-              />
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <View style={styles.pickerContainer}>
+                <DateTimePicker
+                  value={
+                    activeMilestoneIndex !== null
+                      ? milestones[activeMilestoneIndex].date || new Date()
+                      : expectedEndDate
+                  }
+                  mode="date"
+                  display="inline"
+                  onChange={handleDateChange}
+                  accentColor={color}
+                  //style={{ backgroundColor: 'black', paddingInlineStart:10}}
+                />
+              </View>
             </View>
           </View>
+
+          <View style={{ marginVertical: 10 }}>
+            <Text style={styles.label}>Goal Color</Text>
+            <TouchableOpacity
+              style={[styles.colorButton, { backgroundColor: color }]}
+              onPress={() => setShowColorPicker(true)}
+            >
+              <Text style={styles.colorButtonText}>Select Color</Text>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          {renderColorPicker()}
+
+          <TouchableOpacity style={[styles.submitButton, {backgroundColor: color}]} onPress={handleSubmit}>
             <Text style={styles.submitButtonText}>Create Goal</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -433,7 +524,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
     marginBottom: 200,
-    width:'100%'
+    width: "100%",
   },
   submitButtonText: {
     color: "white",
@@ -442,14 +533,15 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    backgroundColor: "white",
-    height: "75%",
+    backgroundColor: 'white',
+    padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 10,
+    height: '60%',
   },
   closeButton: {
     alignSelf: "center",
@@ -493,14 +585,39 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   pickerContainer: {
-    backgroundColor: '#CDCDE0',    
-    alignItems:'center',
-    borderRadius:5,
-    width:'100%'
+    backgroundColor: "#CDCDE0",
+    alignItems: "center",
+    borderRadius: 5,
+    width: "100%",
   },
   picker: {
     width: "100%",
   },
+  colorButton: {
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  colorButtonText: {
+    color: 'white',
+    fontWeight: '500',
+  },
+  colorPickerContainer: {
+    height: 350,
+    padding: 20,
+  },
+  newHabitContainer:{
+    borderColor:'#3e4e88',
+    width:"50%",
+    backgroundColor:'#3e4e88',
+    height:35,
+    justifyContent:'center',
+    borderRadius:5,
+    textAlign:'center',
+    alignItems:'center'
+  }
+  
 });
 
 export default AddGoalForm;

@@ -1,4 +1,4 @@
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getUserGoals } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
@@ -15,6 +15,7 @@ type GoalObjectProps = {
   description: string;
   expected_end_date: Date;
   milestones: Record<string, string>;
+  color: string
 };
 
 type HabitIdItem = {
@@ -31,6 +32,7 @@ const GoalObject = ({
   description,
   expected_end_date,
   milestones,
+  color
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
@@ -54,19 +56,55 @@ const GoalObject = ({
     setHabitIdsList(habitIdsArray);
   }, [habit_ids]);
 
+  const onPress = ()=>{
+    console.log(name, milestones, habit_ids)
+  }
+
   return (
-    <View>
-      <Text>{name}</Text>
-      <Text>{emoji}</Text>
-      <Text>{expected_end_date.toString()}</Text>
-      <FlashList
-        data={habitIdsList}
-        renderItem={renderHabitItem}
-        estimatedItemSize={50}
-        keyExtractor={(item) => item.id}
-      />
+    <View style={styles.wrapper}>
+      <TouchableOpacity onPress={onPress}>
+      <View style={[styles.goalContainer, {backgroundColor: color}]}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.emoji}>{emoji}</Text>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.date}>{expected_end_date.toString()}</Text>
+        </View>
+      </View>
+      </TouchableOpacity>
     </View>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  wrapper: {
+    marginTop: 10,
+  },
+  goalContainer: {
+    borderWidth: 2,
+    borderColor: 'black',
+    borderRadius: 8,
+    width: '100%',
+    aspectRatio: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emoji: {
+    fontSize: 48,
+    marginBottom: 10,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    textAlign:'center'
+  },
+  date: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
 
 export default GoalObject;
