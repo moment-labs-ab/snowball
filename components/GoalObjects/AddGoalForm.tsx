@@ -25,6 +25,7 @@ import FeedbackFormComponent from "../ProfileSettings/Feedback";
 import NewHabitButton from "@/modals/NewHabitButton";
 import NewHabitModal from "@/modals/NewHabitModal";
 import { habitEmitter } from "@/events/eventEmitters";
+import GoalColorPicker from "./GoalColorPicker";
 
 
 export interface Goal {
@@ -67,7 +68,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState('#3e4e88');
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const fetchHabits = async () => {
@@ -126,7 +127,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       description === ""
     ) {
       Alert.alert("Please fill out all parts of your goal.");
-    } else {
+    } 
+    else {
       insertNewGoal(
         name,
         emoji,
@@ -411,15 +413,9 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.label}>Goal Color</Text>
-            <TouchableOpacity
-              style={[styles.colorButton, { backgroundColor: color }]}
-              onPress={() => setShowColorPicker(true)}
-            >
-              <Text style={styles.colorButtonText}>Select Color</Text>
-            </TouchableOpacity>
+            <GoalColorPicker selectedColor={color} onColorChange={handleColorChange} />
+            
           </View>
-
-          {renderColorPicker()}
 
           <TouchableOpacity style={[styles.submitButton, {backgroundColor: color}]} onPress={handleSubmit}>
             <Text style={styles.submitButtonText}>Create Goal</Text>
@@ -594,7 +590,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   colorButton: {
-    padding: 15,
+    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 5,
