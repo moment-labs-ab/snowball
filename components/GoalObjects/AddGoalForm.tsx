@@ -362,7 +362,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
             style={{padding:10, flexDirection:'row'}}>
               <View style={{flexDirection:'row', alignItems:'center'}}>
                 <Text>Create a New Habit</Text>
-              <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>} style={{height:30, width:30}}/>
+              <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>} style={{height:30, width:30, backgroundColor:color}}/>
               </View>
             </View>
           </View>

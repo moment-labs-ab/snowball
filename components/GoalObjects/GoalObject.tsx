@@ -57,7 +57,7 @@ const GoalObject = ({
   }, [habit_ids]);
 
   const onPress = ()=>{
-    console.log(name, milestones, habit_ids)
+    console.log(id,name, milestones, habit_ids)
   }
 
   return (
@@ -80,11 +80,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   goalContainer: {
-    borderWidth: 2,
-    borderColor: 'black',
+    // Remove the border and add shadow properties
     borderRadius: 8,
     width: '100%',
     aspectRatio: 1,
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 4 }, // Shadow position
+    shadowOpacity: 0.3, // Shadow transparency
+    shadowRadius: 6, // Shadow spread
+    elevation: 5, // Android shadow
   },
   contentContainer: {
     flex: 1,
@@ -99,7 +103,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
-    textAlign:'center'
+    textAlign:'center',
+    padding:2
   },
   date: {
     fontSize: 14,

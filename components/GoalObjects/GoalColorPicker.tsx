@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 
 interface GoalColorPickerProps {
   selectedColor: string;
@@ -7,19 +13,23 @@ interface GoalColorPickerProps {
 }
 
 const colors = [
-    "#3e4e88",
-    "#8BBDFA",
-  '#FF6B6B', // Coral red
-  '#4ECB71', // Green
-  '#FFD93D', // Yellow
-  '#B86EFF', // Purple
-  '#FF9F40', // Orange
-  '#FF6B9E', // Pink
-  '#43AA8B', // Teal
-  '#8F7355', // Brown
+  "#3e4e88",
+  "#8BBDFA",
+  "#ccd8ea",
+  "#FF6B6B", // Coral red
+  "#4ECB71", // Green
+  "#ffe88b", // Yellow
+  "#B86EFF", // Purple
+  "#FF9F40", // Orange
+  "#FF6B9E", // Pink
+  "#43AA8B", // Teal
+  "#8F7355", // Brown
 ];
 
-const GoalColorPicker: React.FC<GoalColorPickerProps> = ({ selectedColor, onColorChange }) => {
+const GoalColorPicker: React.FC<GoalColorPickerProps> = ({
+  selectedColor,
+  onColorChange,
+}) => {
   const handleSelectColor = (color: string) => {
     onColorChange(color);
   };
@@ -61,10 +71,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginHorizontal: 8,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   selectedCircle: {
-    borderColor: '#000',
+    borderColor: "#000",
   },
 });
 
