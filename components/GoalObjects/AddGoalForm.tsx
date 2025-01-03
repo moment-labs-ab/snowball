@@ -67,7 +67,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
-  const [color, setColor] = useState('#3e4e88');
+  const [color, setColor] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const fetchHabits = async () => {
