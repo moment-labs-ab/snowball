@@ -122,7 +122,7 @@ const TrackingDisplay = () => {
               user.userId,
               habit.id,
               startDate,
-              endDate
+              today
             );
             if (habitData && Array.isArray(habitData)) {
               data[habit.id] = habitData;

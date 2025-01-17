@@ -114,9 +114,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             borderTopRightRadius: 20,
           }}
         >
-        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-            {title}
-          </Text>
 
           <FormField
             title="I want to"

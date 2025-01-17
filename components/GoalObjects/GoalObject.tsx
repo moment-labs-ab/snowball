@@ -1,9 +1,12 @@
-import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getUserGoals } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { FlashList } from "@shopify/flash-list";
 import { Goal } from "@/types/types";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import InnerGoalView from "./InnerGoalView";
+
 
 type GoalObjectProps = {
   id: string;
@@ -25,6 +28,7 @@ type HabitIdItem = {
 
 const GoalObject = ({
   id,
+  created_at,
   name,
   emoji,
   habit_ids,
@@ -37,6 +41,9 @@ const GoalObject = ({
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
   const [habitIdsList, setHabitIdsList] = useState<HabitIdItem[]>([]);
+  const [displayDate, setDisplayDate] = useState("")
+  const [isVisible, setIsVisible] = useState(false);
+
 
   const renderHabitItem = ({ item }: { item: HabitIdItem }) => (
     <View
@@ -54,23 +61,67 @@ const GoalObject = ({
       value,
     }));
     setHabitIdsList(habitIdsArray);
+
+    console.log(expected_end_date);
+
+    //const prettyDate = expected_end_date.toLocaleDateString('en-US', {
+      //year: 'numeric',
+     // month: 'long',
+     // day: 'numeric',
+    //});
+    //setDisplayDate(prettyDate)
   }, [habit_ids]);
 
   const onPress = ()=>{
     console.log(id,name, milestones, habit_ids)
   }
 
+  const toggleContent = () => {
+    setIsVisible(!isVisible);
+};
+
+  
+
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={toggleContent}>
       <View style={[styles.goalContainer, {backgroundColor: color}]}>
         <View style={styles.contentContainer}>
           <Text style={styles.emoji}>{emoji}</Text>
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.date}>{expected_end_date.toString()}</Text>
         </View>
       </View>
       </TouchableOpacity>
+      <Modal
+                  visible={isVisible}
+                  animationType="slide"
+                  onRequestClose={toggleContent}
+                  presentationStyle='pageSheet'
+                  
+              >
+                  <SafeAreaView style={styles.modalContainer}>
+                      <View style={styles.headerContainer}>
+                          <TouchableOpacity 
+                              style={styles.backButton}
+                              onPress={toggleContent}
+                          >
+                              <AntDesign name="arrowdown" size={24} color="black" />
+                              
+                          </TouchableOpacity>
+                      </View>
+                      <InnerGoalView 
+                      id={id}
+                      created_at={created_at}
+                      name={name}
+                      emoji={emoji}
+                      habit_ids={habit_ids}
+                      tags={tags}
+                      description={description}
+                      expected_end_date={expected_end_date}
+                      milestones={milestones}
+                      color={color}/>
+                  </SafeAreaView>
+              </Modal>
     </View>
   );
 }
@@ -100,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   name: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     marginBottom: 4,
     textAlign:'center',
@@ -110,6 +161,58 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
+    container: {
+        padding: 2,
+        borderTopColor: 'black',
+    },
+    button: {
+        backgroundColor: '#bedafc',
+        padding: 15,
+        marginVertical: 6,
+        borderRadius: 8,
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        borderColor: '#8BBDFA',
+        borderWidth: 2,
+        flexDirection: 'row'
+    },
+    buttonText: {
+        color: '#3e4e88',
+        fontSize: 20,
+        fontWeight: '600'
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: '#edf5fe',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: '#edf5fe',
+        height:40,
+        marginBottom:5
+    },
+    backButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'absolute',
+        left: 16,
+        zIndex: 1,
+    },
+    backButtonText: {
+        marginLeft: 4,
+        fontSize: 16,
+        color: 'black',
+    },
+    headerText: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#3e4e88',
+    },
+    
 });
 
 export default GoalObject;

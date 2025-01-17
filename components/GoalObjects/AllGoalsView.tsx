@@ -23,7 +23,7 @@ const AllGoalsView = () => {
   useEffect(() => {
     fetchUserGoals();
 
-    const listener = goalEmitter.addListener("newGoal", () => {
+    const listener = goalEmitter.addListener("newHabitInGoals", () => {
       // Perform refresh logic
       //console.log("Event Emitter")
       fetchUserGoals();

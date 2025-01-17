@@ -44,6 +44,8 @@ const DailyHabitDisplay = ({selectedDate, editHabitOrder}: dailyHabitDisplayProp
         });
         const unsubscribe = listenToHabitsTable((payload) => {
             console.log('Change received!', payload);
+            habitEmitter.emit('dataChanged');
+
             fetchHabits(); 
 
             switch (payload.eventType) {
@@ -72,7 +74,6 @@ const DailyHabitDisplay = ({selectedDate, editHabitOrder}: dailyHabitDisplayProp
           // Cleanup subscription on unmount
           return () => {
             unsubscribe();
-            habitEmitter.emit('dataChanged');
           };
 
           

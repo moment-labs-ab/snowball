@@ -108,7 +108,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     // Cleanup subscription on unmount
     return () => {
       unsubscribe();
-      habitEmitter.emit('dataChanged');
+      habitEmitter.emit('newHabitInGoals');
     };
   }, []);
 

@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import useShakeDetection from '@/events/useShakeDetection';
 import NewHabitButton from '@/modals/NewHabitButton';
 import NewHabitModal from '@/modals/NewHabitModal';
+import NewHabitModalDev from '@/modals/NewHabitModalDev';
 
 
 const Habits = () => {
@@ -67,7 +68,7 @@ const Habits = () => {
                 {user.username}
               </Text>
             </View>
-            <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>}/>
+            <NewHabitButton label={"Create a New Habit"} content={<NewHabitModalDev visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>}/>
             {/**<View> 
               <TouchableOpacity
                   onPress={handleOpenModal}
