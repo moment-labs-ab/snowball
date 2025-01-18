@@ -23,9 +23,9 @@ import { goalEmitter } from "@/events/eventEmitters";
 import ColorPicker from 'react-native-wheel-color-picker';
 import FeedbackFormComponent from "../ProfileSettings/Feedback";
 import NewHabitButton from "@/modals/NewHabitButton";
-import NewHabitModal from "@/modals/NewHabitModal";
 import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
+import NewHabitModal from "@/modals/NewHabitModal";
 
 
 export interface Goal {
