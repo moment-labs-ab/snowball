@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       padding: 16,
-      backgroundColor: '#E6F0FA',
+      backgroundColor: "#E6F0FA",
       height:60
   },
   backButton: {

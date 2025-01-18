@@ -1,4 +1,4 @@
-import { View, Text, TextInput } from 'react-native'
+import { View, Text, TextInput, StyleSheet } from 'react-native'
 import React from 'react'
 
 type NumberInputProps = {
@@ -20,13 +20,12 @@ const NumberInput = ({ title, placeholder, handleChangeText, otherStyles, ...pro
   };
 
   return (
-    <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-black-100 font-pmedium">{title}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
 
-      <View className="w-12 h-12 px-4 bg-gray-100 rounded-lg border-2
-      border-black-200 focus:border-secondary items-center flex-row">
+      <View  style={styles.inputContainer}>
         <TextInput
-          className="flex-1 text-black font-psemibold text-base"
+          style={styles.input}
           placeholder={placeholder}
           placeholderTextColor="#7B7B8B"
           onChangeText={handleTextChange}
@@ -38,4 +37,47 @@ const NumberInput = ({ title, placeholder, handleChangeText, otherStyles, ...pro
   )
 }
 
-export default NumberInput
+export default NumberInput;
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: 8,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: "bold",
+    marginTop: 5,
+    marginBottom: 5,
+    paddingLeft:2
+  },
+  inputContainer: {
+    width:'20%',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputContainerFocused: {
+    borderColor: '#YOUR_SECONDARY_COLOR', // Replace with your secondary color
+  },
+  input: {
+    flex: 1,
+    padding: 0, // Remove default padding
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold', // Replace with your font
+    color: '#000000',
+  },
+  // Optional states
+  inputContainerError: {
+    borderColor: '#FF4D4D',
+  },
+  inputContainerDisabled: {
+    opacity: 0.7,
+  },
+  // If you need to handle width variations
+  fullWidth: {
+    width: '100%',
+  },
+});

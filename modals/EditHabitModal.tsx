@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Switch, Platform, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { View, Text, Switch, Platform, TouchableOpacity, Alert, SafeAreaView, TextInput } from 'react-native';
 import CustomButton from '@/components/CustomButtom';
 import FormField from '@/components/FormField';
 import Modal from 'react-native-modal'
@@ -182,12 +182,28 @@ const EditHabitModal: React.FC<EditHabitProps> = ({ visible, onClose, title, hab
         />
 
 
-        <FormField
-          title="I want to"
-          placeholder={habit.name}
-          handleChangeText={(e) => setHabit({ ...habit, name: e })}
-          otherStyles="px-2"
-        />
+<View style={{ marginBottom: 5 }}>
+          <Text style={{fontSize: 17,
+    fontWeight: "bold",
+    marginTop: 5,
+    marginBottom: 5,
+    paddingLeft:2}}>I want to ...</Text>
+        </View>
+        <View >
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: "#ccc",
+              padding: 10,
+              borderRadius: 5,
+            }}
+            value={habit.name}
+            onChangeText={(e) => setHabit({ ...habit, name: e })}
+            placeholder="Read, Meditate, Journal ..."
+            placeholderTextColor={"#898989"}
+            textAlignVertical="center"
+          />
+        </View>
         <NumberInput
           title='Frequency'
           placeholder={String(habit.frequency)}

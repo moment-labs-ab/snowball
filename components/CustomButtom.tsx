@@ -9,9 +9,10 @@ type CustomButtonProps = {
   isLoading?: boolean
   otherMethods: () => void,
   tertiaryMethods?: ()=> void
+  backgroundColor?: string
 }
 
-const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading, otherMethods, tertiaryMethods}: CustomButtonProps) => {
+const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading, otherMethods, tertiaryMethods, backgroundColor}: CustomButtonProps) => {
   const handlingPress = ()=>{
     handlePress()
     otherMethods()
@@ -21,15 +22,17 @@ const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoadin
   }
   return (
     <TouchableOpacity 
-        onPress={handlingPress}
-        activeOpacity={0.7}
-        className={`rounded-xl min-h-[62px] justify-center items-center ${containerStyles} ${isLoading ? 'opacity-50' : ''}`}
-        disabled={isLoading}
-    >
-        <Text className={`text-white font-psemibold text-lg ${textStyles}`}>
-            {title}
-        </Text>
-    </TouchableOpacity>
+    onPress={handlingPress}
+    activeOpacity={0.7}
+    className={`rounded-xl min-h-[62px] justify-center items-center ${containerStyles} ${isLoading ? 'opacity-50' : ''}`}
+    style={backgroundColor ? { backgroundColor } : undefined}
+    disabled={isLoading}
+>
+    <Text className={`text-white font-psemibold text-lg ${textStyles}`}>
+        {title}
+    </Text>
+</TouchableOpacity>
+
   )
 }
 
