@@ -21,6 +21,7 @@ import { insertHabit } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { newHabitEmitter } from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import GoalColorPicker from "@/components/GoalObjects/GoalColorPicker";
 
 interface NewHabitProps {
   visible: boolean;
@@ -40,6 +41,7 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
   const [time, setTime] = useState<Date>(new Date());
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const { user } = useGlobalContext();
+  const [color, setColor] = useState("#3e4e88")
 
   const [habit, setHabit] = useState({
     name: "",
@@ -101,6 +103,10 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
     });
   };
 
+  const handleColorChange = (color: string) => {
+    setColor(color);
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -122,7 +128,7 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
         <View style={{ marginBottom: 5 }}>
           <Text style={styles.label}>I want to ...</Text>
         </View>
-        <View style={{ flex: 1 }}>
+        <View >
           <TextInput
             style={{
               borderWidth: 1,
@@ -138,21 +144,14 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
           />
         </View>
 
-        <FormField
-          title="I want to"
-          placeholder="Read, Meditate, Journal ..."
-          handleChangeText={(e) => setHabit({ ...habit, name: e })}
-          otherStyles="px-2"
-        />
+        
         <NumberInput
           title="Frequency"
           placeholder="1"
           handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
-          otherStyles="px-2 mt-3"
         />
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-          otherStyles="px-2 mt-3"
         />
 
         <View
@@ -169,14 +168,19 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
           <Switch
             value={habit.reminder}
             onValueChange={(value) => setHabit({ ...habit, reminder: value })}
-            trackColor={{ false: "gray", true: "#8BBDFA" }}
+            trackColor={{ false: "gray", true:  color}}
             className="pl-2"
           />
         </View>
-
+{/**
+        <View style={{marginTop:30}}>
+        <Text style={styles.label}>Goal Color</Text>
+            <GoalColorPicker selectedColor={color} onColorChange={handleColorChange} />
+            </View>
+ */}
         <View
           style={{
-            marginTop: 50,
+            marginTop: 40,
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
@@ -186,12 +190,12 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
           <Text style={{ color: "gray", fontSize: 18, fontWeight: "500" }}>
             I want to{" "}
           </Text>
-          <Text style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}>
+          <Text style={{ color: color, fontSize: 18, fontWeight: "700" }}>
             {habit.name}{" "}
           </Text>
           <Text
             style={{
-              color: "#3e4e88",
+              color: color,
               fontSize: 18,
               fontWeight: "700",
               marginRight: 3,
@@ -209,7 +213,7 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
           >
             {habit.frequency === 1 ? "time" : "times"}
           </Text>
-          <Text style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}>
+          <Text style={{ color: color, fontSize: 18, fontWeight: "700" }}>
             {habit.frequency_rate}
           </Text>
         </View>
@@ -217,9 +221,10 @@ const NewHabitModalDev: React.FC<NewHabitProps> = ({
         <CustomButton
           title="Submit"
           handlePress={submit}
-          containerStyles="mt-7 px-2 bg-secondary"
+          containerStyles="mt-5 px-2"
           isLoading={isSubmitting}
           otherMethods={onClose}
+          backgroundColor={color}
         />
       </View>
     </SafeAreaView>
