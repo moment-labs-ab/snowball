@@ -37,7 +37,7 @@ const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherSt
   placeholder={{ 
     label: 'Select an interval', 
     value: null, 
-    color: 'gray' // Placeholder text color
+    color: 'gray',
   }}
   style={{
     ...pickerSelectStyles
