@@ -68,3 +68,10 @@ export interface Goal{
   milestones:Record<string, string>,
   color: string
 }
+
+export interface Milestones {
+  milestone: string;
+  checked: boolean
+  date?: Date;
+  
+}

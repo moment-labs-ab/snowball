@@ -42,7 +42,9 @@ interface SelectedHabits {
 
 interface Milestones {
   milestone: string;
+  checked: boolean
   date?: Date;
+  
 }
 
 const dummyHabits = [
@@ -161,7 +163,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   //MILESTONES
   const addMilestone = () => {
     if (milestones.length < 5) {
-      setMilestones([...milestones, { milestone: "" }]);
+      setMilestones([...milestones, { milestone: "", checked:false }]);
     }
   };
 
