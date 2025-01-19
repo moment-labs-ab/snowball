@@ -67,6 +67,43 @@ export const insertNewGoal= async(
       }
 }
 
+export const updateGoal = async (
+  id: string,
+  user_id: string,
+  name?: string,
+  emoji?: string,
+  habit_ids?: object,
+  description?: string,
+  expectedEndDate?: Date,
+  milestones?: object,
+  color?: string,
+  tags?: object
+): Promise<{ success: boolean; message: string; data?: any }> => {
+  const { data, error } = await supabase
+    .from('goal_objects')
+    .update({
+      ...(name && { name }),
+      ...(emoji && { emoji }),
+      ...(habit_ids && { habit_ids }),
+      ...(description && { description }),
+      ...(expectedEndDate && { expected_end_date: expectedEndDate }),
+      ...(milestones && { milestones }),
+      ...(color && { color }),
+      ...(tags && { tags }),
+    })
+    .eq('id', id)
+    .eq('user_id', user_id);
+
+  if (error) {
+    console.error('Error updating goal:', error);
+    return { success: false, message: 'Error updating goal', data: error };
+  } else {
+    console.log('Goal updated successfully:', data);
+    return { success: true, message: 'Goal updated successfully', data };
+  }
+};
+
+
 export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   const { data, error } = await supabase.from('goal_objects')
   .select('*')

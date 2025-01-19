@@ -18,7 +18,7 @@ const colors = [
   "#ccd8ea",
   "#FF6B6B", // Coral red
   "#4ECB71", // Green
-  "#ffe88b", // Yellow
+  "#e0cd02", // Yellow
   "#B86EFF", // Purple
   "#FF9F40", // Orange
   "#FF6B9E", // Pink

@@ -20,12 +20,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { goalEmitter } from "@/events/eventEmitters";
-import ColorPicker from "react-native-wheel-color-picker";
-import FeedbackFormComponent from "../ProfileSettings/Feedback";
 import NewHabitButton from "@/modals/NewHabitButton";
 import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
+import { updateGoal } from "@/lib/supabase_goals";
 
 export interface Goal {
   name: string;
@@ -149,22 +148,18 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     ) {
       Alert.alert("Please fill out all parts of your goal.");
     } else {
-      insertNewGoal(
+      updateGoal(
+        id,
+        user.userId,
         name,
         emoji,
         selectedHabits,
-        user.userId,
         description,
         expectedEndDate,
         milestones,
         color,
         tags
-      );
-      setName("");
-      setEmoji("");
-      setSelectedHabits([]);
-      setTags([]);
-      setDescription("");
+      )
 
       if (closeModal) {
         closeModal();
@@ -423,7 +418,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
             style={[styles.submitButton, { backgroundColor: color }]}
             onPress={handleSubmit}
           >
-            <Text style={styles.submitButtonText}>Create Goal</Text>
+            <Text style={styles.submitButtonText}>Update Goal</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
