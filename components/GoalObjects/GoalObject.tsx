@@ -16,12 +16,16 @@ import Entypo from "@expo/vector-icons/Entypo";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
 
+interface SelectedHabits {
+  id: string;
+  name: string;
+}
 type GoalObjectProps = {
   id: string;
   created_at: Date;
   name: string;
   emoji: string;
-  habit_ids: { [key: string]: any };
+  habit_ids: SelectedHabits[];
   tags: Object;
   description: string;
   expected_end_date: Date;

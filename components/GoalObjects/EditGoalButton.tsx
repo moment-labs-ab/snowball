@@ -5,15 +5,19 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Modal,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { deleteGoal } from "@/lib/supabase_goals";
+import { useGlobalContext } from "@/context/Context";
 
 interface GoalButtonProps {
   label: string;
   goalName: string;
+  goalId: string,
   color?: string;
   action?: () => void;
   content?: React.ReactNode;
@@ -23,12 +27,15 @@ interface GoalButtonProps {
 const EditGoalButton: React.FC<GoalButtonProps> = ({
   label,
   goalName,
+  goalId,
   color,
   action,
   content,
   onClose,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const {user} = useGlobalContext();
+
 
   const toggleContent = () => {
     setIsVisible(!isVisible);
@@ -50,6 +57,37 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
     }
     return child;
   });
+
+  const handleDelete = async (goal_id: string, user_id:string)=>{
+    Alert.alert(
+      'Delete Goal',
+      'Are you sure you want to delete this goal and its history? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Delete canceled'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            const result = await deleteGoal(goal_id, user_id);
+            if (result.success) {
+              console.log('Goal deleted successfully');
+              // Handle successful deletion, e.g., refresh the habit list
+              //deleteHabitEmitter.emit('deleteHabit')
+            } else {
+              console.error('Error deleting goal:', result.message);
+              // Handle deletion error, e.g., show a message to the user
+            }
+          },
+          style: 'destructive', // Optional: gives a red color to the button on iOS
+        },
+      ],
+      { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+    );
+
+  }
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -74,6 +112,10 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
               <Text style={styles.headerText}>
                 {label}
               </Text>{" "}
+              <TouchableOpacity onPress={()=>{handleDelete(goalId,user.userId)}}
+          style={styles.deleteButton}>
+            <Ionicons name="trash-outline" size={28} color="red" style={{ marginLeft: 10 }} />
+          </TouchableOpacity>
             </View>
             <View style={styles.contentContainer}>{enhancedContent}</View>
           </SafeAreaView>
@@ -111,16 +153,14 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between", // Ensures even spacing between elements
     padding: 16,
     backgroundColor: "#edf5fe",
     height: 60,
   },
   backButton: {
-    flexDirection: "row",
+    justifyContent: "center", // Centers the content inside the back button
     alignItems: "center",
-    position: "absolute",
-    left: 16,
-    zIndex: 1,
   },
   backButtonText: {
     marginLeft: 4,
@@ -128,8 +168,8 @@ const styles = StyleSheet.create({
     color: "black",
   },
   headerText: {
-    flex: 1,
-    textAlign: "center",
+    flex: 1, // Allows the text to expand and take up remaining space
+    textAlign: "center", // Centers the text within its allocated space
     fontSize: 20,
     fontWeight: "600",
     color: "#3e4e88",
@@ -137,6 +177,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     backgroundColor: "#edf5fe",
+  },
+  deleteButton: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   iconButton: {
     backgroundColor: "#3e4e88", // Replace with bg-secondary class color if different

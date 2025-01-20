@@ -149,3 +149,23 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
       subscription.unsubscribe();
     };
   };
+
+  export const deleteGoal = async (
+    id: string,
+    user_id: string
+  ): Promise<{ success: boolean; message: string; data?: any }> => {
+    const { data, error } = await supabase
+      .from('goal_objects')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user_id);
+  
+    if (error) {
+      console.error('Error deleting goal:', error);
+      return { success: false, message: 'Error deleting goal', data: error };
+    } else {
+      console.log('Goal deleted successfully:', data);
+      return { success: true, message: 'Goal deleted successfully', data };
+    }
+  };
+  

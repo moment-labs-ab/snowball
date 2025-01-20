@@ -59,7 +59,9 @@ const InnerGoalView = ({
           label="Edit Goal"
           goalName={name}
           color={color}
-          content={<EditGoalForm 
+          goalId={id}
+          content={
+          <EditGoalForm 
           id={id}
           originalName={name}
           originalDescription={description}
