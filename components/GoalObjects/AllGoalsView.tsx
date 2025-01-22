@@ -32,7 +32,6 @@ const AllGoalsView = () => {
     const unsubscribe = listenToGoalsTable((payload) => {
       console.log("Change received!", payload);
       fetchUserGoals();
-
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
@@ -67,9 +66,13 @@ const AllGoalsView = () => {
     };
   }, [goals.length]);
 
-  if (goals.length == 0) {
+  if (goals == undefined) {
     return <ActivityIndicator size="large" color="#3e4e88" />;
-  } else {
+  }else if(goals.length == 0){
+    return <Text> Create your first habit!</Text>
+
+  }
+  else {
     return (
       <ScrollView>
       <View style={styles.container}>
@@ -79,16 +82,7 @@ const AllGoalsView = () => {
           renderItem={({ item }) => (
             <View style={styles.goalContainer}>
               <GoalObject
-                id={item.id}
-                created_at={item.created_at}
-                name={item.name}
-                emoji={item.emoji}
-                habit_ids={item.habit_ids}
-                tags={item.tags}
-                description={item.description}
-                expected_end_date={item.expected_end_date}
-                milestones={item.milestones}
-                color={item.color}
+                goal={item}
               />
             </View>
           )}

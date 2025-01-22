@@ -104,6 +104,7 @@ export const updateGoal = async (
 };
 
 
+
 export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   const { data, error } = await supabase.from('goal_objects')
   .select('*')
