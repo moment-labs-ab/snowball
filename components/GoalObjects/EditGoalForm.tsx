@@ -164,7 +164,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       if (closeModal) {
         closeModal();
       }
-      goalEmitter.emit("newGoal");
+      goalEmitter.emit("updatedGoal");
     }
   };
 

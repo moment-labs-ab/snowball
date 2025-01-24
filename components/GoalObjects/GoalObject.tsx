@@ -16,9 +16,21 @@ import Entypo from "@expo/vector-icons/Entypo";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
 
-
+interface SelectedHabits {
+  id: string;
+  name: string;
+}
 type GoalObjectProps = {
-  goal: Goal
+  id: string;
+  created_at: Date;
+  name: string;
+  emoji: string;
+  habit_ids: SelectedHabits[];
+  tags: Record<string, string>;
+  description: string;
+  expected_end_date: Date;
+  milestones: Milestones[];
+  color: string;
 };
 
 type HabitIdItem = {
@@ -27,7 +39,16 @@ type HabitIdItem = {
 };
 
 const GoalObject = ({
- goal
+  id,
+  created_at,
+  name,
+  emoji,
+  habit_ids,
+  tags,
+  description,
+  expected_end_date,
+  milestones,
+  color,
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
@@ -46,7 +67,7 @@ const GoalObject = ({
 
   useEffect(() => {
     // Convert habit_ids object to an array of key-value pairs
-    const habitIdsArray = Object.entries(goal.habit_ids).map(([id, value]) => ({
+    const habitIdsArray = Object.entries(habit_ids).map(([id, value]) => ({
       id,
       value,
     }));
@@ -59,10 +80,10 @@ const GoalObject = ({
     // day: 'numeric',
     //});
     //setDisplayDate(prettyDate)
-  }, [goal.habit_ids]);
+  }, [habit_ids]);
 
   const onPress = () => {
-    console.log(goal.id, goal.name, goal.milestones, goal.habit_ids);
+    console.log(id, name, milestones, habit_ids);
   };
 
   const toggleContent = () => {
@@ -72,10 +93,10 @@ const GoalObject = ({
   return (
     <View style={styles.wrapper}>
       <TouchableOpacity onPress={toggleContent}>
-        <View style={[styles.goalContainer, { backgroundColor: goal.color }]}>
+        <View style={[styles.goalContainer, { backgroundColor: color }]}>
           <View style={styles.contentContainer}>
-            <Text style={styles.emoji}>{goal.emoji}</Text>
-            <Text style={styles.name}>{goal.name}</Text>
+            <Text style={styles.emoji}>{emoji}</Text>
+            <Text style={styles.name}>{name}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -92,7 +113,17 @@ const GoalObject = ({
             </TouchableOpacity>
           </View>
           <InnerGoalView
-          goal={goal}
+            id={id}
+            created_at={created_at}
+            name={name}
+            emoji={emoji}
+            habit_ids={habit_ids}
+            tags={tags}
+            description={description}
+            expected_end_date={expected_end_date}
+            milestones={milestones}
+            color={color}
+            contentToggled={isVisible}
           />
         </SafeAreaView>
       </Modal>

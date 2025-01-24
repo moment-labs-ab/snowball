@@ -110,8 +110,8 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
                 <AntDesign name="arrowdown" size={24} color="black" />
               </TouchableOpacity>
               <Text style={styles.headerText}>
-                {label}
-              </Text>{" "}
+                {label} {" "}
+              </Text>
               <TouchableOpacity onPress={()=>{handleDelete(goalId,user.userId)}}
           style={styles.deleteButton}>
             <Ionicons name="trash-outline" size={28} color="red" style={{ marginLeft: 10 }} />

@@ -66,7 +66,6 @@ export interface Goal{
   emoji: string,
   habit_ids: SelectedHabits[],
   tags: Record<string, string>,
-  user_id: string,
   description: string,
   expected_end_date: Date,
   milestones:Milestones[],

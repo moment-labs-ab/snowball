@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         marginBottom:5
     },
     habitName: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "500",
         color: 'black',
         textAlign:'center'
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
       fontSize: 10,
       color: '#666',
       textAlign:'center',
-      marginBottom: 10,
-      fontWeight:'600'
+      fontWeight:'600',
+      marginBottom:4
     },
     listContent: {
       padding: 2,
