@@ -54,17 +54,27 @@ export interface LifetimeHabitStats{
   longestStreak: number;
   joinDate: Date;
 }
+interface SelectedHabits {
+  id: string;
+  name: string;
+}
 
 export interface Goal{
   id: string,
   created_at: Date,
   name: string,
   emoji: string,
-  habit_ids: Record<string, string>,
+  habit_ids: SelectedHabits[],
   tags: Record<string, string>,
-  user_id: string,
   description: string,
   expected_end_date: Date,
-  milestones:Record<string, string>,
+  milestones:Milestones[],
   color: string
+}
+
+export interface Milestones {
+  milestone: string;
+  checked: boolean
+  date?: Date;
+  
 }

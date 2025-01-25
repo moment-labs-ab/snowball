@@ -1,20 +1,47 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import GoalHabitsView from "./GoalHabitsView";
+import { Milestones } from "@/types/types";
+import MilestoneList from "./MilestoneList";
+import EditGoalButton from "./EditGoalButton";
+import EditGoalForm from "./EditGoalForm";
+import { Goal } from "@/types/types";
 
+interface SelectedHabits {
+  id: string;
+  name: string;
+}
 type InnerGoalViewProps = {
   id: string;
   created_at: Date;
   name: string;
   emoji: string;
-  habit_ids: { [key: string]: any };
-  tags: Object;
+  habit_ids: SelectedHabits[];
+  tags: Record<string, string>;
   description: string;
   expected_end_date: Date;
-  milestones: Record<string, string>;
+  milestones: Milestones[];
   color: string;
-}
+  contentToggled: boolean;
+};
 
-const InnerGoalView = ({id,
+const InnerGoalView = ({
+  id,
+  created_at,
+  name,
+  emoji,
+  habit_ids,
+  tags,
+  description,
+  expected_end_date,
+  milestones,
+  color,
+  contentToggled,
+}: InnerGoalViewProps) => {
+  
+  const [goalData, setGoalData] = useState<Goal>({
+    id,
+    created_at,
     name,
     emoji,
     habit_ids,
@@ -22,15 +49,83 @@ const InnerGoalView = ({id,
     description,
     expected_end_date,
     milestones,
-    color}:InnerGoalViewProps) => {
+    color,
+  });
+
+  useEffect(() => {
+    console.log(JSON.stringify(milestones));
+  }, [contentToggled, habit_ids.length]);
+
+
   return (
-    <View style={{backgroundColor:color}}>
-      <Text>{name}</Text>
-      <Text>{description}</Text>
-      <Text>{expected_end_date.toString()}</Text>
-      <Text>{JSON.stringify(milestones)}</Text>
-    </View>
+    <SafeAreaView style={{ padding: 20 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 10,
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={[styles.title, { color: color, flex: 1, textAlign: "center" }]}
+        >
+          {emoji} {name}
+        </Text>
+        <EditGoalButton
+          label="Edit Goal"
+          goalName={name}
+          color={color}
+          goalId={id}
+          content={
+            <EditGoalForm
+              id={goalData.id}
+              originalName={goalData.name}
+              originalDescription={goalData.description}
+              originalEmoji={goalData.emoji}
+              originalColor={goalData.color}
+              originalMilestones={goalData.milestones}
+              originalTags={goalData.tags}
+              original_expected_end_date={goalData.expected_end_date}
+              original_habit_ids={goalData.habit_ids}
+            />
+          }
+        />
+      </View>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.description}>"{description}"</Text>
+      </View>
+      <GoalHabitsView
+        habit_ids={habit_ids}
+        created_at={created_at}
+        expected_end_date={expected_end_date}
+        color={color}
+      />
+
+      <MilestoneList data={milestones} />
+    </SafeAreaView>
   );
 };
 
 export default InnerGoalView;
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  descriptionContainer: {
+    marginTop: 5,
+    marginBottom:20
+  },
+  description: {
+    textAlign: "center",
+    fontWeight: "200",
+  },
+});

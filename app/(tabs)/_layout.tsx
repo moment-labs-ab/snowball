@@ -57,7 +57,7 @@ const TabsLayout = () => {
             <TabIcon 
               icon ={icons.snowflake}
               color={color}
-              name="Habits"
+              name={"Habits"}
               focused={focused}
             />
           )
@@ -72,7 +72,7 @@ const TabsLayout = () => {
             <TabIcon 
               icon ={icons.progress}
               color={color}
-              name="Progress"
+              name={"Progress"}
               focused={focused}
             />
           )
@@ -86,7 +86,7 @@ const TabsLayout = () => {
             <TabIcon 
               icon ={icons.mountain}
               color={color}
-              name="Goals"
+              name={"Goals"}
               focused={focused}
             />
           )
@@ -101,7 +101,7 @@ const TabsLayout = () => {
             <TabIcon 
               icon ={icons.settings}
               color={color}
-              name="Settings"
+              name={"Settings"}
               focused={focused}
             />
           )
