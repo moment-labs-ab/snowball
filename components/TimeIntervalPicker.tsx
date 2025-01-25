@@ -26,9 +26,10 @@ const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherSt
   };
 
   return (
-    <View className={`space-y-2 ${otherStyles}`}>
+    <View className={`${otherStyles}`}>
         <Text style={styles.label}>
          Frequency Rate</Text>
+         <Text style={styles.miniLabel}>Pick a time frame to track on.</Text>
         <View style={styles.container}>
           
         <RNPickerSelect
@@ -58,12 +59,18 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,  // border-2
     borderColor: '#E6F0FA',  // border-black-200 (using a gray shade since it's likely meant to be subtle)
-    marginTop: 20,  // mt-5 equals 20
+    marginTop: 5// mt-5 equals 20
   },
   label: {
     fontSize: 17,
     fontWeight: "bold",
     marginTop: 5,
+    marginBottom: 1,
+    paddingLeft:2
+  },
+  miniLabel: {
+    fontSize: 11,
+    fontWeight: '200',
     marginBottom: 5,
     paddingLeft:2
   },

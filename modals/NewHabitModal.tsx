@@ -22,6 +22,7 @@ import { useGlobalContext } from "@/context/Context";
 import { newHabitEmitter } from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import GoalColorPicker from "@/components/GoalObjects/GoalColorPicker";
+import HabitSelector from "./HabitSelector";
 
 interface NewHabitProps {
   visible: boolean;
@@ -45,7 +46,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
 
   const [habit, setHabit] = useState({
     name: "",
-    frequency: 0,
+    frequency: 1,
     frequency_rate: "Daily",
     reminder: false,
   });
@@ -123,17 +124,19 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
           backgroundColor: "#E6F0FA",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          paddingVertical:30
           
         }}
       >
         <View style={{ marginBottom: 5 }}>
-          <Text style={styles.label}>I want to ...</Text>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.miniLabel}>What action do you want to track?</Text>
         </View>
         <View >
           <TextInput
             style={{
               borderWidth: 1,
-              borderColor: "#ccc",
+              borderColor: "#E6F0F",
               padding: 10,
               borderRadius: 5,
             }}
@@ -144,6 +147,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             textAlignVertical="center"
           />
         </View>
+        <HabitSelector setHabit={setHabit} />
 
         
         <NumberInput
@@ -289,6 +293,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
     marginTop: 5,
+    marginBottom: 1,
+    paddingLeft:2
+  },
+  miniLabel: {
+    fontSize: 11,
+    fontWeight: '200',
     marginBottom: 5,
     paddingLeft:2
   },
