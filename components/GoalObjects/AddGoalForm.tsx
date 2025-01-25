@@ -26,7 +26,7 @@ import NewHabitButton from "@/modals/NewHabitButton";
 import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
-
+import GoalSelector from "./GoalSelector";
 
 export interface Goal {
   name: string;
@@ -70,7 +70,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
-  const [color, setColor] = useState('#3e4e88');
+  const [color, setColor] = useState('#8BBDFA');
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const fetchHabits = async () => {
@@ -122,37 +122,57 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   };
 
   const handleSubmit = () => {
-    if (
-      name === "" ||
-      emoji === "" ||
-      selectedHabits.length === 0 ||
-      description === ""
-    ) {
-      Alert.alert("Please fill out all parts of your goal.");
-    } 
-    else {
-      insertNewGoal(
-        name,
-        emoji,
-        selectedHabits,
-        user.userId,
-        description,
-        expectedEndDate,
-        milestones,
-        color,
-        tags
-      );
-      setName("");
-      setEmoji("");
-      setSelectedHabits([]);
-      setTags([]);
-      setDescription("");
-
-      if (closeModal) {
-        closeModal();
-      }
-      goalEmitter.emit("newGoal");
+    // Create an array to track missing fields
+    const missingFields: string[] = [];
+  
+    // Validate mandatory fields
+    if (name.trim() === "") {
+      missingFields.push("Goal Name");
     }
+    if (selectedHabits.length === 0) {
+      missingFields.push("Associated Habits");
+    }
+    if (description.trim() === "") {
+      missingFields.push("Goal Description");
+    }
+    if (!expectedEndDate) {
+      missingFields.push("End Date");
+    }
+  
+    // If any mandatory fields are missing, show an alert
+    if (missingFields.length > 0) {
+      Alert.alert(
+        "Incomplete Goal",
+        `Please complete the following fields:\n\n${missingFields.join('\n')}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    // If all validations pass, proceed with goal creation
+    insertNewGoal(
+      name,
+      emoji,
+      selectedHabits,
+      user.userId,
+      description,
+      expectedEndDate,
+      milestones,
+      color,
+      tags
+    );
+  
+    // Reset form fields
+    setName("");
+    setEmoji("");
+    setSelectedHabits([]);
+    setTags([]);
+    setDescription("");
+  
+    if (closeModal) {
+      closeModal();
+    }
+    goalEmitter.emit("newGoal");
   };
 
   const handleEmojiSelect = (selectedEmoji: string) => {
@@ -187,6 +207,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const renderMilestones = () => (
     <View style={styles.milestoneSection}>
       <Text style={styles.label}>Milestones</Text>
+      <Text style={styles.miniLabel}>Break your goal down into smaller steps.</Text>
       {milestones.map((milestone, index) => (
         <View key={index} style={styles.milestoneRow}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -276,6 +297,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
         <ScrollView style={styles.container}>
           <View style={{ marginBottom: 5 }}>
             <Text style={styles.label}>Goal Name</Text>
+            <Text style={styles.miniLabel}>Keep it short & powerful.</Text>
+
           </View>
 
           <View
@@ -312,11 +335,12 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 }}
                 value={name}
                 onChangeText={setName}
-                placeholder="Keep it Short & Powerful"
+                placeholder="Make your own or Choose One."
                 placeholderTextColor={"#898989"}
                 textAlignVertical="center"
               />
             </View>
+            
 
             <Modal
               visible={isEmojiSelectorVisible}
@@ -338,10 +362,13 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 </View>
               </View>
             </Modal>
+            
           </View>
+          <GoalSelector setName={setName} selectedColor={color}/>
 
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.label}>Associate Habits:</Text>
+            <Text style={styles.miniLabel}>What habits will help you accomplish this goal?</Text>
             {habits.map((habit) => (
               <TouchableOpacity
                 key={habit.id}
@@ -371,6 +398,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View style={{ marginBottom: 5, marginTop: 5 }}>
             <Text style={styles.label}>Add a Description for your Goal</Text>
+            <Text style={styles.miniLabel}>Just so you don't forget.</Text>
           </View>
           <View style={styles.descriptionRow}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -384,7 +412,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 }}
                 value={description}
                 onChangeText={setDescription}
-                placeholder="Any Notes?"
+                placeholder="Be as descriptive as possible."
                 placeholderTextColor={"#898989"}
                 textAlignVertical="center"
               />
@@ -395,6 +423,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View>
             <Text style={styles.label}>Expected End Date</Text>
+            <Text style={styles.miniLabel}>When do you want to accomplish this goal?</Text>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.pickerContainer}>
                 <DateTimePicker
@@ -430,8 +459,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-  },
+    paddingHorizontal:20
+    },
   goalTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -614,7 +643,13 @@ const styles = StyleSheet.create({
     borderRadius:5,
     textAlign:'center',
     alignItems:'center'
-  }
+  },
+  miniLabel: {
+    fontSize: 11,
+    fontWeight: '200',
+    marginBottom: 5,
+    paddingLeft:2
+  },
   
 });
 
