@@ -46,7 +46,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
 
   const [habit, setHabit] = useState({
     name: "",
-    frequency: 1,
+    frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
   });
@@ -59,27 +59,50 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const submit = async () => {
-    if (habit.name === "Habit" || habit.frequency === 0) {
-      Alert.alert("Error", "Please fill in all the fields");
-    } else {
-      setisSubmitting(true);
-      try {
-        const result = await insertHabit(
-          user.userId,
-          habit.name,
-          habit.reminder,
-          habit.frequency,
-          habit.frequency_rate
-        );
-        if (result.success == false) {
-          console.log(result.message);
-        } else if (result.data) {
-          console.log(result);
-        }
-      } catch (error) {
-        Alert.alert(String(error));
-        setisSubmitting(false);
+    // Create an array to track missing fields
+    const missingFields: string[] = [];
+  
+    // Validate mandatory fields
+    if (habit.name.trim() === "" || habit.name === "Habit") {
+      missingFields.push("Habit Name");
+    }
+    if (habit.frequency <= 0) {
+      missingFields.push("Frequency");
+    }
+    if (!habit.frequency_rate) {
+      missingFields.push("Frequency Rate");
+    }
+  
+    // If any mandatory fields are missing, show an alert
+    if (missingFields.length > 0) {
+      Alert.alert(
+        "Incomplete Habit",
+        `Please complete the following fields:\n\n${missingFields.join('\n')}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    // Existing submission logic
+    setisSubmitting(true);
+    try {
+      const result = await insertHabit(
+        user.userId,
+        habit.name,
+        habit.reminder,
+        habit.frequency,
+        habit.frequency_rate
+      );
+      
+      if (result.success == false) {
+        console.log(result.message);
+        Alert.alert("Error", result.message);
+      } else if (result.data) {
+        console.log(result);
       }
+    } catch (error) {
+      Alert.alert("Submission Error", String(error));
+    } finally {
       setisSubmitting(false);
       setHabit({
         name: "Habit",
