@@ -54,6 +54,7 @@ type EditGoalFormProps = {
   original_expected_end_date: Date;
   originalMilestones: Milestones[];
   originalColor: string;
+  refreshGoals: () => Promise<void>;
   closeModal?: () => void;
 };
 
@@ -67,6 +68,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   original_expected_end_date,
   originalMilestones,
   originalColor,
+  refreshGoals,
   closeModal,
 }) => {
   const { user, isLoading } = useGlobalContext();
@@ -165,6 +167,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
         closeModal();
       }
       goalEmitter.emit("updatedGoal");
+      refreshGoals()
     }
   };
 

@@ -23,6 +23,7 @@ type InnerGoalViewProps = {
   milestones: Milestones[];
   color: string;
   contentToggled: boolean;
+  refreshGoals: () => Promise<void>;
 };
 
 const InnerGoalView = ({
@@ -37,8 +38,8 @@ const InnerGoalView = ({
   milestones,
   color,
   contentToggled,
+  refreshGoals
 }: InnerGoalViewProps) => {
-  
   const [goalData, setGoalData] = useState<Goal>({
     id,
     created_at,
@@ -52,13 +53,26 @@ const InnerGoalView = ({
     color,
   });
 
+  const updateMilestones = (updatedMilestones: typeof goalData.milestones) => {
+    setGoalData((prevGoalData) => ({
+      ...prevGoalData, // Keep all other properties the same
+      milestones: updatedMilestones, // Update the milestones
+    }));
+  };
+  const handleCheckMilestone = (index: number) => {
+    const updatedMilestones = [...goalData.milestones];
+    updatedMilestones[index].checked = !updatedMilestones[index].checked;
+
+    updateMilestones(updatedMilestones);
+    console.log(`Milestone updated: ${updatedMilestones[index].milestone}`);
+  };
+
   useEffect(() => {
     console.log(JSON.stringify(milestones));
   }, [contentToggled, habit_ids.length]);
 
-
   return (
-    <SafeAreaView style={{ padding: 20 }}>
+    <SafeAreaView style={{ padding: 20, flex: 1 }}>
       <View
         style={{
           flexDirection: "row",
@@ -88,6 +102,7 @@ const InnerGoalView = ({
               originalTags={goalData.tags}
               original_expected_end_date={goalData.expected_end_date}
               original_habit_ids={goalData.habit_ids}
+              refreshGoals={refreshGoals}
             />
           }
         />
@@ -95,14 +110,19 @@ const InnerGoalView = ({
       <View style={styles.descriptionContainer}>
         <Text style={styles.description}>"{description}"</Text>
       </View>
-      <GoalHabitsView
-        habit_ids={habit_ids}
-        created_at={created_at}
-        expected_end_date={expected_end_date}
-        color={color}
-      />
-
-      <MilestoneList data={milestones} />
+      <View style={{marginBottom:20}}>
+        <GoalHabitsView
+          habit_ids={habit_ids}
+          created_at={created_at}
+          expected_end_date={expected_end_date}
+          color={color}
+        />
+      </View>
+        <MilestoneList
+          data={goalData.milestones}
+          onCheckMilestone={handleCheckMilestone}
+          checkmarkColor={goalData.color}
+        />
     </SafeAreaView>
   );
 };
@@ -122,7 +142,7 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     marginTop: 5,
-    marginBottom:20
+    marginBottom: 20,
   },
   description: {
     textAlign: "center",

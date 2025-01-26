@@ -199,8 +199,9 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: 8,
-        backgroundColor: '#d2d5dd',
-        borderRadius: 8
+        borderRadius: 8,
+        borderWidth: 1,
+        backgroundColor:'#e7e8ed'
     },
     headerContainer: {
         flexDirection: 'row',
