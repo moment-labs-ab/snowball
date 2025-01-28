@@ -1,8 +1,7 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
-import { Tabs, Redirect } from 'expo-router';
+import { Tabs } from 'expo-router';
 import icons from '../../constants/icons';
-import iconSet from '@expo/vector-icons/build/FontAwesome5';
 
 type TabIconProps = {
     icon: Object,
@@ -102,21 +101,6 @@ const TabsLayout = () => {
                                 icon={icons.profile}
                                 color={color}
                                 name={"Profile"}
-                                focused={focused}
-                            />
-                        )
-                    }}
-                />
-
-                <Tabs.Screen name='settings'
-                    options={{
-                        title: 'Settings',
-                        headerShown: false,
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabIcon
-                                icon={icons.settings}
-                                color={color}
-                                name={"Settings"}
                                 focused={focused}
                             />
                         )

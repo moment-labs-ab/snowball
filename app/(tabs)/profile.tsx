@@ -8,6 +8,8 @@ import { router } from 'expo-router'
 import icons from '@/constants/icons'
 import { ImageSourcePropType } from 'react-native'
 import ProfileCard from '@/components/ProfileSettings/ProfileCard'
+import SettingsButton from '@/components/SettingsButton'
+import Settings from '@/components/ProfileSettings/settings'
 
 const Profile = () => {
     const { isLoggedIn, setUser, user } = useGlobalContext()
@@ -151,6 +153,11 @@ const Profile = () => {
                                 name={userData.username}
                                 description={"Some description placeholder"}
                                 onProfilePicturePress={() => console.log("Profile Picture Pressed")}
+                            />
+                            <SettingsButton
+                                label='Settings' 
+                                action={() => { console.log("Settings button Pressed") }}
+                                content={<Settings/>} 
                             />
                             <Image source={{ uri: icons.settings }}  style={styles.settingsButton}/>
                         </View>
