@@ -10,6 +10,7 @@ import { ImageSourcePropType } from 'react-native'
 import ProfileCard from '@/components/ProfileSettings/ProfileCard'
 import SettingsButton from '@/components/SettingsButton'
 import Settings from '@/components/ProfileSettings/settings'
+import SettingsNew from '@/components/ProfileSettings/SettingsNew'
 
 const Profile = () => {
     const { isLoggedIn, setUser, user } = useGlobalContext()
@@ -159,7 +160,11 @@ const Profile = () => {
                                 action={() => { console.log("Settings button Pressed") }}
                                 content={<Settings/>} 
                             />
-                            <Image source={{ uri: icons.settings }}  style={styles.settingsButton}/>
+                            <SettingsButton
+                                label='Settings' 
+                                action={() => { console.log("Settings button Pressed") }}
+                                content={<SettingsNew/>} 
+                            />
                         </View>
 
                         <View style={styles.signOut}>

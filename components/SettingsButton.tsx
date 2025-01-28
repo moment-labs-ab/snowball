@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal } from 'react-native'
 import React, {useState} from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+
 //import Modal from 'react-native-modal'
 
 
@@ -21,13 +23,8 @@ const SettingsButton: React.FC<SettingButtonProps> = ({label, action, content, u
     return (
       <SafeAreaView>
           <View style={styles.container}>
-              <TouchableOpacity style={styles.button} onPress={toggleContent}>
-                  <Text style={styles.buttonText}>{label}</Text>
-                  <AntDesign 
-                      name="caretup"
-                      size={20} 
-                      color="black" 
-                  />
+              <TouchableOpacity style={styles.settingsButton} onPress={toggleContent}>
+                <Feather name="settings" size={35} color="grey" />
               </TouchableOpacity>
 
               <Modal
@@ -43,7 +40,7 @@ const SettingsButton: React.FC<SettingButtonProps> = ({label, action, content, u
                               style={styles.backButton}
                               onPress={toggleContent}
                           >
-                              <AntDesign name="arrowdown" size={24} color="black" />
+                              <AntDesign name="close" size={24} color="black" />
                               
                           </TouchableOpacity>
                           <Text style={styles.headerText}>{label}</Text>
@@ -114,6 +111,11 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#edf5fe',
   },
+  settingsButton: {
+    alignSelf: 'flex-start',
+    marginRight: 25,
+    marginTop: 15
+}
 });
 
 export default SettingsButton;
