@@ -1,4 +1,4 @@
-import { View, Text, Button, ScrollView, Dimensions } from 'react-native'
+import { View, Text, Button, ScrollView, Dimensions, StyleSheet } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {listenToTrackingHistory, getFullProgressData, getGridTrackingHistory } from '@/lib/supabase_progress'

@@ -139,11 +139,28 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       missingFields.push("End Date");
     }
   
+    // Check for duplicate milestones
+    const milestoneNames = milestones.map((milestone) => milestone.milestone.trim().toLowerCase());
+    const duplicateMilestones = milestoneNames.filter(
+      (milestone, index) => milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    );
+  
+    if (duplicateMilestones.length > 0) {
+      Alert.alert(
+        "Duplicate Milestones",
+        `The following milestones are duplicated:\n\n${[
+          ...new Set(duplicateMilestones),
+        ].join("\n")}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
     // If any mandatory fields are missing, show an alert
     if (missingFields.length > 0) {
       Alert.alert(
         "Incomplete Goal",
-        `Please complete the following fields:\n\n${missingFields.join('\n')}`,
+        `Please complete the following fields:\n\n${missingFields.join("\n")}`,
         [{ text: "OK" }]
       );
       return;
@@ -174,10 +191,18 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     }
     goalEmitter.emit("newGoal");
   };
+  
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
     setIsEmojiSelectorVisible(false);
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      seExpectedEndDate(selectedDate);
+    }
   };
 
   //MILESTONES
@@ -195,12 +220,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     const updatedMilestones = [...milestones];
     updatedMilestones[index] = { ...updatedMilestones[index], milestone: text };
     setMilestones(updatedMilestones);
-  };
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      seExpectedEndDate(selectedDate);
-    }
   };
 
   // Add this before the return statement
@@ -241,35 +260,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     </View>
   );
 
-  const renderColorPicker = () => (
-    <Modal
-      visible={showColorPicker}
-      transparent={true}
-      animationType="slide"
-    >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.label}>Choose Color</Text>
-          <View style={styles.colorPickerContainer}>
-            <ColorPicker
-              color={color}
-              onColorChange={handleColorChange}
-              thumbSize={40}
-              sliderSize={40}
-              noSnap={true}
-              row={false}
-            />
-          </View>
-          <TouchableOpacity
-            style={[styles.submitButton, { marginTop: 20 }]}
-            onPress={() => setShowColorPicker(false)}
-          >
-            <Text style={styles.submitButtonText}>Select Color</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
+
   const handleColorChange = (color: string) => {
     setColor(color);
     //console.log(color)

@@ -31,6 +31,7 @@ type GoalObjectProps = {
   expected_end_date: Date;
   milestones: Milestones[];
   color: string;
+  refreshGoals: () => Promise<void>;
 };
 
 type HabitIdItem = {
@@ -49,6 +50,7 @@ const GoalObject = ({
   expected_end_date,
   milestones,
   color,
+  refreshGoals
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
@@ -124,6 +126,7 @@ const GoalObject = ({
             milestones={milestones}
             color={color}
             contentToggled={isVisible}
+            refreshGoals={refreshGoals}
           />
         </SafeAreaView>
       </Modal>

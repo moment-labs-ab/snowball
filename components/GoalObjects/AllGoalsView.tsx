@@ -16,8 +16,22 @@ const AllGoalsView = () => {
 
   const fetchUserGoals = async () => {
     const data = await getUserGoals(user.userId);
-    //console.log(data)
-    setGoals(data);
+  
+    // Sort by expected_end_date first and then by name
+    const sortedData = data.sort((a, b) => {
+      const dateA = new Date(a.expected_end_date).getTime();
+      const dateB = new Date(b.expected_end_date).getTime();
+  
+      // Compare dates first
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+  
+      // If dates are the same, compare names
+      return a.name.localeCompare(b.name);
+    });
+  
+    setGoals(sortedData);
   };
 
   useEffect(() => {
@@ -89,6 +103,8 @@ const AllGoalsView = () => {
                 expected_end_date={item.expected_end_date}
                 milestones={item.milestones}
                 color={item.color}
+                refreshGoals={fetchUserGoals}
+                
               />
             </View>
           )}

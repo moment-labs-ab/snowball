@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Goal } from '@/types/types'
+import { Goal, Milestones} from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -118,6 +118,25 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   return data as Goal[];
 };
 
+export const getUserSingleGoal = async (userId: string, goal_id: string): Promise<Goal | null> => {
+  const { data, error } = await supabase.from('goal_objects')
+  .select('*')
+  .eq('user_id', userId)
+  .eq('id', goal_id)
+  .order('expected_end_date', { ascending: true })
+  .single()
+  if (error && userId) {
+    console.error('Error fetching habits:', error);
+    return null;
+  }
+  console.log(data)
+  return data as Goal;
+};
+
+export const addCheckToMilestone = async(userId: string, milestone_name:string)=>{
+
+}
+
 //Defining the types for handling habit changes.
 type ChangeHandler = (payload: { eventType: string; new: Goal; old: Goal}) => void;
 //** DB Listener. Listens for changes in the Habit table to automatically change the user's homepage.
@@ -169,4 +188,32 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
       return { success: true, message: 'Goal deleted successfully', data };
     }
   };
+
+  /**
+ * Updates the milestones for a specific user in the goal_objects table.
+ *
+ * @param userId - The ID of the user whose milestones need to be updated.
+ * @param updatedMilestones - An array of milestone objects to update.
+ * @returns A promise with the response from Supabase.
+ */
+export const updateUserMilestones= async(userId: string, goalId: string, updatedMilestones: Milestones[]): Promise<void> =>{
+  try {
+    // Perform the update query
+    const { data, error } = await supabase
+      .from('goal_objects')
+      .update({ milestones: updatedMilestones })
+      .eq('user_id', userId)
+      .eq('id', goalId);
+
+    if (error) {
+      throw new Error(`Error updating milestones: ${error.message}`);
+    }
+
+    console.log('Milestones updated successfully:', data);
+  } catch (error) {
+    console.error('Failed to update milestones:', error);
+    throw error;
+  }
+}
+
   

@@ -1,47 +1,50 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { getHabitTrackingCount } from '@/lib/supabase_progress'
-import { FlashList } from '@shopify/flash-list'
-import ProgressRaceBar from './ProgressRaceBar'
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { getHabitTrackingCount } from '@/lib/supabase_progress';
+import { FlashList } from '@shopify/flash-list';
+import ProgressRaceBar from './ProgressRaceBar';
+
 
 type GoalHabitsViewProps = {
     habit_ids: { [key: string]: any };
-    created_at: Date,
-    expected_end_date: Date,
-    color: string
-}
+    created_at: Date;
+    expected_end_date: Date;
+    color: string;
+};
 
 interface Habit {
     id: string;
     name: string;
 }
 
-const GoalHabitsView = ({habit_ids, created_at, expected_end_date, color}: GoalHabitsViewProps) => {
-    const [habitsTracking, setHabitsTracking] = useState<{ [key: string]: number }>({})
-    const [isLoading, setIsLoading] = useState(true)
+const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: GoalHabitsViewProps) => {
+    const [habitsTracking, setHabitsTracking] = useState<{ [key: string]: number }>({});
+    const [isLoading, setIsLoading] = useState(true);
 
-    const goalStartDate = new Date(created_at)
-    const goalEndDate = new Date(expected_end_date)
-    const today = new Date()
+    const goalStartDate = new Date(created_at);
+    const goalEndDate = new Date(expected_end_date);
+    const today = new Date();
 
-    function getDaysBetweenDates(startDate: Date, endDate: Date): number {
+    const getDaysBetweenDates = (startDate: Date, endDate: Date): number => {
         const oneDayMs = 24 * 60 * 60 * 1000;
-        const start = startDate.getTime();
-        const end = endDate.getTime();
-        return Math.round(Math.abs(end - start) / oneDayMs);
-    }
+        return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / oneDayMs);
+    };
 
-    const daysBetween = getDaysBetweenDates(goalStartDate, today)
-    const totalExpectedDays = getDaysBetweenDates(goalStartDate, goalEndDate)
-    const totalDaysLeft = getDaysBetweenDates(today, goalEndDate)
+    const daysBetween = getDaysBetweenDates(goalStartDate, today);
+    const totalExpectedDays = getDaysBetweenDates(goalStartDate, goalEndDate);
+    const totalDaysLeft = getDaysBetweenDates(today, goalEndDate);
 
     useEffect(() => {
         const fetchHabitTracking = async () => {
-            setIsLoading(true)
+            setIsLoading(true);
             try {
                 const trackingData = await Promise.all(
                     habit_ids.map(async (habit: Habit) => {
-                        const count = await getHabitTrackingCount(habit.id, goalStartDate.toDateString(), goalEndDate.toDateString());
+                        const count = await getHabitTrackingCount(
+                            habit.id,
+                            goalStartDate.toDateString(),
+                            goalEndDate.toDateString()
+                        );
                         return { name: habit.name, count };
                     })
                 );
@@ -53,103 +56,108 @@ const GoalHabitsView = ({habit_ids, created_at, expected_end_date, color}: GoalH
 
                 setHabitsTracking(trackingObject);
             } catch (error) {
-                console.error("Error fetching habit tracking data:", error);
+                console.error('Error fetching habit tracking data:', error);
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
         };
 
         fetchHabitTracking();
+    }, [habit_ids.length]);
 
-        
-    }, [])
+    const trackingData = Object.entries(habitsTracking);
 
-    const trackingData = Object.entries(habitsTracking)
+    const ITEM_HEIGHT = 55; // Approximate height of one row
+    const MIN_HEIGHT = 75; // Minimum height of container
+    const MAX_ROWS = 2.7; // Max rows to display without scroll
+    const calculatedHeight = Math.min(trackingData.length, MAX_ROWS) * ITEM_HEIGHT;
+    const containerHeight = Math.max(calculatedHeight, MIN_HEIGHT);
 
     if (isLoading) {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, { height: containerHeight }]}>
                 <Text style={styles.loadingText}>Loading habits...</Text>
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.flashListContainer}>
-            
-              <Text style={styles.labelKey}>
-              <Text style={{color:color}}>Tracked</Text>
-              <Text style ={{color:'#bababa'}}> / </Text>
-              <Text style ={{color:"#afd2fc"}}>Expected</Text>
-              <Text style ={{color:'#bababa'}}> / </Text>
-              <Text style ={{color:'#6f6e79'}}>Days Left </Text>
-              </Text>
-
-                <FlashList
-                    data={trackingData}
-                    keyExtractor={([habitName]) => habitName}
-                    renderItem={({ item: [habitName, count] }) => (
-                        <View style={styles.item}>
-                            <Text style={styles.habitName}>{habitName}</Text>
-                            <ProgressRaceBar 
-                                actual={count} 
-                                expectedNow={daysBetween} 
-                                total={totalExpectedDays} 
-                                totalDaysLeft={totalDaysLeft}
-                                color={color}
-                            />
-                        </View>
-                    )}
-                    estimatedItemSize={100}
-                    numColumns={2}
-                    contentContainerStyle={styles.listContent}
-                />
-            </View>
+        <View style={[styles.container, { height: containerHeight }]}>
+            <FlashList
+                data={trackingData}
+                keyExtractor={([habitName]) => habitName}
+                renderItem={({ item: [habitName, count] }) => (
+                    <View style={styles.item}>
+                        <Text style={styles.habitName}>{habitName}</Text>
+                        <ProgressRaceBar
+                            actual={count}
+                            expectedNow={daysBetween}
+                            total={totalExpectedDays}
+                            totalDaysLeft={totalDaysLeft}
+                            color={color}
+                        />
+                    </View>
+                )}
+                estimatedItemSize={ITEM_HEIGHT}
+                numColumns={2}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={true}
+                indicatorStyle='black'
+            />
+            <Text style={styles.labelKey}>
+                <Text style={{ color: color }}>Tracked</Text>
+                <Text style={{ color: '#bababa' }}> / </Text>
+                <Text style={{ color: '#afd2fc' }}>Expected</Text>
+                <Text style={{ color: '#bababa' }}> / </Text>
+                <Text style={{ color: '#6f6e79' }}>Days Left</Text>
+            </Text>
         </View>
-    )
-}
+    );
+};
+
 
 export default GoalHabitsView;
 
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: 400, // Set a fixed height or use Dimensions.get('window').height * 0.8 for dynamic height
+        height:'5%',
+    },
+    scrollView: {
+        padding: 10,
     },
     flashListContainer: {
-        flex: 1, // This ensures the FlashList takes up all available space
+        flex: 1,
         width: '100%',
         height: '100%',
     },
     item: {
         flexDirection: 'column',
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         width: '100%',
         flex: 1,
-        marginBottom:5
+        marginBottom: 5,
     },
     habitName: {
         fontSize: 14,
-        fontWeight: "500",
+        fontWeight: '200',
         color: 'black',
-        textAlign:'center'
+        textAlign: 'center',
     },
     loadingText: {
         fontSize: 16,
-        color: "gray",
+        color: 'gray',
         textAlign: 'center',
         padding: 16,
     },
     labelKey: {
-      fontSize: 10,
-      color: '#666',
-      textAlign:'center',
-      fontWeight:'600',
-      marginBottom:4
+        fontSize: 12,
+        color: '#666',
+        textAlign: 'center',
+        fontWeight: '600',
     },
     listContent: {
-      padding: 2,
-      paddingHorizontal:2
+        padding: 2,
+        paddingHorizontal: 2,
     },
 });
