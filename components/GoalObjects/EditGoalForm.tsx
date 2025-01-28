@@ -142,34 +142,71 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   }, []);
 
   const handleSubmit = () => {
-    if (
-      name === "" ||
-      emoji === "" ||
-      selectedHabits.length === 0 ||
-      description === ""
-    ) {
-      Alert.alert("Please fill out all parts of your goal.");
-    } else {
-      updateGoal(
-        id,
-        user.userId,
-        name,
-        emoji,
-        selectedHabits,
-        description,
-        expectedEndDate,
-        milestones,
-        color,
-        tags
-      )
-
-      if (closeModal) {
-        closeModal();
-      }
-      goalEmitter.emit("updatedGoal");
-      refreshGoals()
+    // Create an array to track missing fields
+    const missingFields: string[] = [];
+  
+    // Validate mandatory fields
+    if (name.trim() === "") {
+      missingFields.push("Goal Name");
     }
+    if (selectedHabits.length === 0) {
+      missingFields.push("Associated Habits");
+    }
+    if (description.trim() === "") {
+      missingFields.push("Goal Description");
+    }
+    if (!expectedEndDate) {
+      missingFields.push("End Date");
+    }
+  
+    // Check for duplicate milestones
+    const milestoneNames = milestones.map((milestone) => milestone.milestone.trim().toLowerCase());
+    const duplicateMilestones = milestoneNames.filter(
+      (milestone, index) => milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    );
+  
+    if (duplicateMilestones.length > 0) {
+      Alert.alert(
+        "Duplicate Milestones",
+        `The following milestones are duplicated:\n\n${[
+          ...new Set(duplicateMilestones),
+        ].join("\n")}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    // If any mandatory fields are missing, show an alert
+    if (missingFields.length > 0) {
+      Alert.alert(
+        "Incomplete Goal",
+        `Please complete the following fields:\n\n${missingFields.join("\n")}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    // If all validations pass, proceed with goal update
+    updateGoal(
+      id,
+      user.userId,
+      name,
+      emoji,
+      selectedHabits,
+      description,
+      expectedEndDate,
+      milestones,
+      color,
+      tags
+    );
+  
+    if (closeModal) {
+      closeModal();
+    }
+    goalEmitter.emit("updatedGoal");
+    refreshGoals();
   };
+  
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);

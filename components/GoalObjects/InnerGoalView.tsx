@@ -6,6 +6,9 @@ import MilestoneList from "./MilestoneList";
 import EditGoalButton from "./EditGoalButton";
 import EditGoalForm from "./EditGoalForm";
 import { Goal } from "@/types/types";
+import { getUserSingleGoal, updateUserMilestones } from "@/lib/supabase_goals";
+import { useGlobalContext } from "@/context/Context";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 interface SelectedHabits {
   id: string;
@@ -38,8 +41,10 @@ const InnerGoalView = ({
   milestones,
   color,
   contentToggled,
-  refreshGoals
+  refreshGoals,
 }: InnerGoalViewProps) => {
+  const { user, isLoading } = useGlobalContext();
+
   const [goalData, setGoalData] = useState<Goal>({
     id,
     created_at,
@@ -64,12 +69,26 @@ const InnerGoalView = ({
     updatedMilestones[index].checked = !updatedMilestones[index].checked;
 
     updateMilestones(updatedMilestones);
-    console.log(`Milestone updated: ${updatedMilestones[index].milestone}`);
+    try {
+      updateUserMilestones(user.userId, id, updatedMilestones);
+      console.log('Milestones update complete.');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    console.log(`Milestone updated: ${updatedMilestones[index].milestone}`, updatedMilestones);
+  };
+
+  const fetchSingleGoal = async () => {
+    const goalData = await getUserSingleGoal(user.userId, id);
+    if (goalData) {
+      setGoalData(goalData);
+    }
   };
 
   useEffect(() => {
-    console.log(JSON.stringify(milestones));
-  }, [contentToggled, habit_ids.length]);
+    fetchSingleGoal();
+    console.log(goalData.habit_ids.length);
+  }, [contentToggled, habit_ids.length, milestones.length]);
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
@@ -110,19 +129,30 @@ const InnerGoalView = ({
       <View style={styles.descriptionContainer}>
         <Text style={styles.description}>"{description}"</Text>
       </View>
-      <View style={{marginBottom:20}}>
+      <View style={{ marginBottom: 20, paddingHorizontal: 20, borderRadius:1, borderColor:'black' }}>
+        <View style={{ flexDirection: "row", justifyContent:'flex-start' }}>
+          <AntDesign name="dotchart" size={20} color={color} />
+          <Text style={styles.label}> Habit Tracking</Text>
+        </View>
         <GoalHabitsView
-          habit_ids={habit_ids}
-          created_at={created_at}
-          expected_end_date={expected_end_date}
-          color={color}
+          habit_ids={goalData.habit_ids}
+          created_at={goalData.created_at}
+          expected_end_date={goalData.expected_end_date}
+          color={goalData.color}
         />
       </View>
-        <MilestoneList
-          data={goalData.milestones}
-          onCheckMilestone={handleCheckMilestone}
-          checkmarkColor={goalData.color}
-        />
+      <View style={{paddingHorizontal: 20 }}>
+        <View style={{ flexDirection: "row", justifyContent:'flex-start'}}>
+          <AntDesign name="checkcircleo" size={20} color={color}/>
+          <Text style={styles.label}> Milestones</Text>
+        </View>
+      </View>
+
+      <MilestoneList
+        data={goalData.milestones}
+        onCheckMilestone={handleCheckMilestone}
+        checkmarkColor={goalData.color}
+      />
     </SafeAreaView>
   );
 };
@@ -147,5 +177,11 @@ const styles = StyleSheet.create({
   description: {
     textAlign: "center",
     fontWeight: "200",
+    fontSize:12
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: "500",
+    marginBottom: 14,
   },
 });

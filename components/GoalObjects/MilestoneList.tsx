@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +20,10 @@ const MilestonesList: React.FC<MilestonesListProps> = ({ data, onCheckMilestone,
     ...data,
     ...Array(5 - data.length).fill({ checked: false, milestone: '' })
   ].slice(0, 5);
+
+  useEffect(()=>{
+
+  }, [data.length])
 
   const renderItem = ({ item, index }: { item: Milestone; index: number }) => {
     return (
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 19,
   },
   checkbox: {
     marginRight: 10,
@@ -82,7 +86,8 @@ const styles = StyleSheet.create({
     color: 'black',
     flex: 1,
     flexShrink: 1,
-    textAlign:'center'
+    textAlign:'center',
+    fontWeight:'200'
   },
   checkedText: {
     textDecorationLine: 'line-through',

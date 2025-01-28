@@ -4,6 +4,7 @@ import { getHabitTrackingCount } from '@/lib/supabase_progress';
 import { FlashList } from '@shopify/flash-list';
 import ProgressRaceBar from './ProgressRaceBar';
 
+
 type GoalHabitsViewProps = {
     habit_ids: { [key: string]: any };
     created_at: Date;
@@ -62,13 +63,13 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
         };
 
         fetchHabitTracking();
-    }, []);
+    }, [habit_ids.length]);
 
     const trackingData = Object.entries(habitsTracking);
 
-    const ITEM_HEIGHT = 60; // Approximate height of one row
-    const MIN_HEIGHT = 100; // Minimum height of container
-    const MAX_ROWS = 3; // Max rows to display without scroll
+    const ITEM_HEIGHT = 55; // Approximate height of one row
+    const MIN_HEIGHT = 75; // Minimum height of container
+    const MAX_ROWS = 2.7; // Max rows to display without scroll
     const calculatedHeight = Math.min(trackingData.length, MAX_ROWS) * ITEM_HEIGHT;
     const containerHeight = Math.max(calculatedHeight, MIN_HEIGHT);
 
@@ -82,13 +83,6 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
 
     return (
         <View style={[styles.container, { height: containerHeight }]}>
-            <Text style={styles.labelKey}>
-                <Text style={{ color: color }}>Tracked</Text>
-                <Text style={{ color: '#bababa' }}> / </Text>
-                <Text style={{ color: '#afd2fc' }}>Expected</Text>
-                <Text style={{ color: '#bababa' }}> / </Text>
-                <Text style={{ color: '#6f6e79' }}>Days Left</Text>
-            </Text>
             <FlashList
                 data={trackingData}
                 keyExtractor={([habitName]) => habitName}
@@ -107,8 +101,16 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
                 estimatedItemSize={ITEM_HEIGHT}
                 numColumns={2}
                 contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={true}
+                indicatorStyle='black'
             />
+            <Text style={styles.labelKey}>
+                <Text style={{ color: color }}>Tracked</Text>
+                <Text style={{ color: '#bababa' }}> / </Text>
+                <Text style={{ color: '#afd2fc' }}>Expected</Text>
+                <Text style={{ color: '#bababa' }}> / </Text>
+                <Text style={{ color: '#6f6e79' }}>Days Left</Text>
+            </Text>
         </View>
     );
 };
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
     },
     habitName: {
         fontSize: 14,
-        fontWeight: '500',
+        fontWeight: '200',
         color: 'black',
         textAlign: 'center',
     },
@@ -149,11 +151,10 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     labelKey: {
-        fontSize: 10,
+        fontSize: 12,
         color: '#666',
         textAlign: 'center',
         fontWeight: '600',
-        marginBottom: 4,
     },
     listContent: {
         padding: 2,
