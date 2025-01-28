@@ -1,57 +1,109 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // For checkboxes
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { Milestones } from '@/types/types';
+import { Ionicons } from '@expo/vector-icons';
 
-
-interface MilestoneListProps {
-  data: Milestones[];
+interface Milestone {
+  checked: boolean;
+  milestone: string;
 }
 
-const MilestoneList: React.FC<MilestoneListProps> = ({ data }) => {
-  const [milestones, setMilestones] = useState(data);
+interface MilestonesListProps {
+  data: Milestone[];
+  onCheckMilestone: (index: number) => void;
+  checkmarkColor: string;
+}
 
-  const toggleCheck = (index: number) => {
-    const updatedMilestones = [...milestones];
-    updatedMilestones[index].checked = !updatedMilestones[index].checked;
-    setMilestones(updatedMilestones);
+const MilestonesList: React.FC<MilestonesListProps> = ({ data, onCheckMilestone, checkmarkColor }) => {
+  // Ensure always 5 milestones, filling extras with empty milestones
+  const filledData = [
+    ...data,
+    ...Array(5 - data.length).fill({ checked: false, milestone: '' })
+  ].slice(0, 5);
+
+  useEffect(()=>{
+
+  }, [data.length])
+
+  const renderItem = ({ item, index }: { item: Milestone; index: number }) => {
+    return (
+      <View style={styles.itemContainer}>
+        <TouchableOpacity
+          style={styles.checkbox}
+          onPress={() => onCheckMilestone(index)}
+          disabled={!item.milestone}
+        >
+          <Ionicons
+            name={item.checked ? 'checkmark-circle' : 'ellipse-outline'}
+            size={24}
+            color={item.checked ? checkmarkColor : '#ccc'}
+          />
+        </TouchableOpacity>
+        <View style={styles.textContainer}>
+          <Text 
+            style={[
+              styles.milestoneText, 
+              item.checked && styles.checkedText,
+              !item.milestone && styles.emptyMilestone
+            ]} 
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
+            {item.milestone}
+          </Text>
+          {item.milestone && <View style={styles.underline} />}
+        </View>
+      </View>
+    );
   };
-
-  const renderItem = ({ item, index }: { item: Milestones; index: number }) => (
-    <View style={styles.item}>
-      <TouchableOpacity onPress={() => toggleCheck(index)} style={styles.checkbox}>
-        <MaterialCommunityIcons
-          name={item.checked ? 'checkbox-marked' : 'checkbox-blank-outline'}
-          size={24}
-          color={item.checked ? 'green' : 'gray'}
-        />
-      </TouchableOpacity>
-      <Text style={styles.text}>{item.milestone}</Text>
-    </View>
-  );
 
   return (
     <FlashList
-      data={milestones}
-      keyExtractor={(item, index) => index.toString()}
+      data={filledData}
       renderItem={renderItem}
+      estimatedItemSize={100}
+      keyExtractor={(_, index) => index.toString()}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  item: {
+  itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 19,
   },
   checkbox: {
     marginRight: 10,
   },
-  text: {
+  textContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  milestoneText: {
     fontSize: 16,
+    color: 'black',
+    flex: 1,
+    flexShrink: 1,
+    textAlign:'center',
+    fontWeight:'200'
+  },
+  checkedText: {
+    textDecorationLine: 'line-through',
+    color: '#aaa',
+  },
+  emptyMilestone: {
+    color: '#ccc',
+  },
+  underline: {
+    position: 'absolute',
+    bottom: -2,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#e0e0e0',
   },
 });
 
-export default MilestoneList;
+export default MilestonesList;

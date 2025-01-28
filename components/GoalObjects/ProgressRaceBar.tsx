@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#666',
     fontWeight:'600'
   },

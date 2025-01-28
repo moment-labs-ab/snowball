@@ -22,6 +22,7 @@ import { useGlobalContext } from "@/context/Context";
 import { newHabitEmitter } from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import GoalColorPicker from "@/components/GoalObjects/GoalColorPicker";
+import HabitSelector from "./HabitSelector";
 
 interface NewHabitProps {
   visible: boolean;
@@ -58,27 +59,50 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const submit = async () => {
-    if (habit.name === "Habit" || habit.frequency === 0) {
-      Alert.alert("Error", "Please fill in all the fields");
-    } else {
-      setisSubmitting(true);
-      try {
-        const result = await insertHabit(
-          user.userId,
-          habit.name,
-          habit.reminder,
-          habit.frequency,
-          habit.frequency_rate
-        );
-        if (result.success == false) {
-          console.log(result.message);
-        } else if (result.data) {
-          console.log(result);
-        }
-      } catch (error) {
-        Alert.alert(String(error));
-        setisSubmitting(false);
+    // Create an array to track missing fields
+    const missingFields: string[] = [];
+  
+    // Validate mandatory fields
+    if (habit.name.trim() === "" || habit.name === "Habit") {
+      missingFields.push("Habit Name");
+    }
+    if (habit.frequency <= 0) {
+      missingFields.push("Frequency");
+    }
+    if (!habit.frequency_rate) {
+      missingFields.push("Frequency Rate");
+    }
+  
+    // If any mandatory fields are missing, show an alert
+    if (missingFields.length > 0) {
+      Alert.alert(
+        "Incomplete Habit",
+        `Please complete the following fields:\n\n${missingFields.join('\n')}`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    // Existing submission logic
+    setisSubmitting(true);
+    try {
+      const result = await insertHabit(
+        user.userId,
+        habit.name,
+        habit.reminder,
+        habit.frequency,
+        habit.frequency_rate
+      );
+      
+      if (result.success == false) {
+        console.log(result.message);
+        Alert.alert("Error", result.message);
+      } else if (result.data) {
+        console.log(result);
       }
+    } catch (error) {
+      Alert.alert("Submission Error", String(error));
+    } finally {
       setisSubmitting(false);
       setHabit({
         name: "Habit",
@@ -123,17 +147,19 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
           backgroundColor: "#E6F0FA",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          paddingVertical:30
           
         }}
       >
         <View style={{ marginBottom: 5 }}>
-          <Text style={styles.label}>I want to ...</Text>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.miniLabel}>What action do you want to track?</Text>
         </View>
         <View >
           <TextInput
             style={{
               borderWidth: 1,
-              borderColor: "#ccc",
+              borderColor: "#E6F0F",
               padding: 10,
               borderRadius: 5,
             }}
@@ -144,6 +170,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             textAlignVertical="center"
           />
         </View>
+        <HabitSelector setHabit={setHabit} />
 
         
         <NumberInput
@@ -289,6 +316,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
     marginTop: 5,
+    marginBottom: 1,
+    paddingLeft:2
+  },
+  miniLabel: {
+    fontSize: 11,
+    fontWeight: '200',
     marginBottom: 5,
     paddingLeft:2
   },
