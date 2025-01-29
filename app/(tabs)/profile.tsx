@@ -1,281 +1,275 @@
-import { View, Text, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import CustomButton from '@/components/CustomButtom';
-import { signOut } from '@/lib/supabase';
-import { router } from 'expo-router';
-import { useGlobalContext } from '@/context/Context';
-import { getUserLoginCount } from '@/lib/supabase_profile';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import ProfileSettings from '@/components/ProfileSettings';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { LifetimeHabitStats } from '@/types/types';
-import { getLifetimeHabitStats } from '@/lib/supabase_profile';
-import ProfileButton from '@/components/ProfileButton';
-import EditProfile from '@/components/ProfileSettings/EditProfile';
-import ProfileStats from '@/components/ProfileSettings/ProfileStats';
-import ProfileHabits from '@/components/ProfileSettings/ProfileHabits';
-import Feedback from '@/components/ProfileSettings/Feedback';
+import { View, Text, StyleSheet, SafeAreaView, Alert, ActivityIndicator, TouchableOpacity, Image } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { getCurrentUser, handleUserDeletion, signOut } from '@/lib/supabase'
+import { currentUserType } from '@/types/types'
+import CustomButton from '@/components/CustomButtom'
+import { useGlobalContext } from '@/context/Context'
+import { router } from 'expo-router'
+import icons from '@/constants/icons'
+import { ImageSourcePropType } from 'react-native'
+import ProfileCard from '@/components/ProfileSettings/ProfileCard'
+import SettingsButton from '@/components/SettingsButton'
+import Settings from '@/components/ProfileSettings/Settings'
+import SettingsNew from '@/components/ProfileSettings/SettingsNew'
+
 const Profile = () => {
-  const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [userLoginCount, setUserLoginCount] = useState(0);
-  const [lifetimeStats, setLifetimeStats] = useState<LifetimeHabitStats>();
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+    const { isLoggedIn, setUser, user } = useGlobalContext()
+    const [userData, setUserData] = useState<currentUserType | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
-  // Refs for tooltip positioning
-  const completionRateRef = useRef(null);
-  const streakRef = useRef(null);
-  const consistentHabitRef = useRef(null);
-  const daysTrackedRef = useRef(null);
-  const joinDateRef = useRef(null);
-  const loginCountRef = useRef(null);
-
-  const tooltipData = {
-    completionRate: {
-      title: "Completion Rate",
-      value: `${lifetimeStats?.completionRate}%`,
-      description: "The percentage of habits you've successfully completed out of all tracked habits.",
-      calculation: "Completed Habits ÷ Total Habits Tracked × 100"
-    },
-    streak: {
-      title: "Longest Streak",
-      value: `${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Days'}`,
-      description: "Your longest consecutive period of completing at least one habit daily.",
-    },
-    consistentHabit: {
-      title: "Most Consistent Habit",
-      value: lifetimeStats?.mostConsistentHabit,
-      description: "The habit you've maintained most regularly over time.",
-    },
-    daysTracked: {
-      title: "Total Days Tracked",
-      value: lifetimeStats?.totalDaysTracked,
-      description: "The total number of days you've logged into the app and tracked your habits.",
-    },
-    joinDate: {
-      title: "Join Date",
-      value: lifetimeStats?.joinDate?.toLocaleDateString(),
-      description: "The date you started your habit tracking journey with us.",
-    },
-    loginCount: {
-      title: "Account Logins",
-      value: userLoginCount,
-      description: "Total number of times you've accessed your account.",
-    },
-  };
-
-  // Rest of the fetch functions remain the same...
-  const fetchLoginCounts = async(user_id: string) => {
-    const data = await getUserLoginCount(user_id);
-    if(data) {
-      setUserLoginCount(data);
-    }
-    return data;
-  };
-
-  const fetchLifetimeStats = async (user_id:string) => {
-    const data = await getLifetimeHabitStats(user_id);
-    if(data) {
-      setLifetimeStats(data);
-    } else {
-      console.log("Error fetching lifetime stats");
-    }
-  };
-
-  useEffect(() => {
-    if(user) {
-      fetchLoginCounts(user.userId);
-      fetchLifetimeStats(user.userId);
-    }
-  }, [userLoginCount, lifetimeStats?.completionRate]);
-
-  // Functions for handling modals and tooltips
-  const handleOpenModal = () => setModalVisible(true);
-  const handleCloseModal = () => setModalVisible(false);
-  const showTooltip = (tooltipId: string) => setActiveTooltip(tooltipId);
-  const hideTooltip = () => setActiveTooltip(null);
-
-  // Rest of the logout function remains the same...
-  const logout = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Sign Out canceled'),
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          onPress: async () => {
-            const result = await signOut();
-            if (result.success) {
-              console.log('User Signed out successfully');
-              isLoggedIn.isLoggedIn = false;
-              setUser({
-                email: '',
-                username: '',
-                userId: ''
-              });
-              router.replace('/sign-in');
+    const getUserData = async () => {
+        try {
+            const userDataPull = await getCurrentUser()
+            if (userDataPull) {
+                setUserData(userDataPull)
             } else {
-              console.error('Error signing user out:', result.message);
+                Alert.alert('Error', 'Unable to fetch user data')
             }
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch user data')
+            console.error('Error fetching user data:', error)
+        }
+    }
 
-  const MetricItem = ({ 
-    icon, 
-    text, 
-    tooltipKey, 
-    reference 
-  }: { 
-    icon: JSX.Element, 
-    text: string, 
-    tooltipKey: string, 
-    reference: React.RefObject<any> 
-  }) => (
-    <View style={styles.singleMetricsContainer}>
-      <TouchableOpacity 
-        style={styles.metricCircle}
-        ref={reference}
-        onPress={() => showTooltip(tooltipKey)}
-      >
-        {icon}
-      </TouchableOpacity>
-      <Text>{text}</Text>
-      
-    </View>
-  );
+    useEffect(() => {
+        setIsLoading(true)
+        getUserData().finally(() => setIsLoading(false))
+    }, [])
 
-  
+    // Rest of the logout function remains the same...
+    const logout = async () => {
+        Alert.alert(
+            'Sign Out',
+            'Are you sure you want to sign out?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Sign Out canceled'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Sign Out',
+                    onPress: async () => {
+                        const result = await signOut();
+                        if (result.success) {
+                            console.log('User Signed out successfully');
+                            isLoggedIn.isLoggedIn = false;
+                            setUser({
+                                email: '',
+                                username: '',
+                                userId: ''
+                            });
+                            router.replace('/sign-in');
+                        } else {
+                            console.error('Error signing user out:', result.message);
+                        }
+                    },
+                    style: 'destructive',
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="bg-background h-full">
-        <View className='flex-1 align-center pl-2 pr-2'>
-          <View className="flex-row justify-between items-center mt-6">
-            <Text className="text-xl font-bold text-secondary pl-2">
-              Settings
-            </Text>
-            {/** SETTINGS BUTTON
-            <TouchableOpacity onPress={handleOpenModal} className='pr-1'>
-              <MaterialIcons name="settings" size={24} color="black" />
-            </TouchableOpacity>
-            */}
-          </View>
-          <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-l font-bold text-primary pl-2">& More</Text>
-          </View>
-          <View
-            style={{
-              height: 2,
-              width: '98%',
-              backgroundColor: '#3e4e88',
-              alignSelf: 'center',
-              marginTop: 4,
-            }}
-          />
-          <ScrollView>
-            <View className='px-3 mt-3'>
-            <ProfileButton 
-              label='Profile' 
-              action={() => { console.log("Profile Pressed") }}
-              content={<EditProfile/>} 
-            />
-            <ProfileButton 
-              label='Habits' 
-              action={() => { console.log("Habits Pressed") }}
-              content={<ProfileHabits/>}
-            />
-            <ProfileButton 
-              label='Terms & Conditions' 
-              action={() => { console.log("Terms Pressed") }} 
-            />
-            <ProfileButton 
-              label='Privacy Policy' 
-              action={() => { console.log("Privacy Policy Pressed") }} 
-            />
-            <ProfileButton 
-              label='Feedback' 
-              action={() => { console.log("Feedback Pressed") }} 
-              content={<Feedback/>}
-            />
-            {/**
-            <ProfileButton 
-              label='Donate' 
-              action={() => { console.log("Donate Pressed") }} 
-            />
-            */}
-            <ProfileButton 
-              label='Profile Stats' 
-              action={() => { console.log("Donate Pressed") }}
-              content={<ProfileStats/>}
-            />
-              
-              <CustomButton
-                title="Sign Out"
-                handlePress={logout}
-                containerStyles="mt-8 px-2 bg-secondary"
-                otherMethods={() => {}}
-              />
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+            'Delete Account',
+            'Are you sure you want to delete your account? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete Account',
+                    style: 'destructive',
+                    onPress: async () => {
+                        if (!user?.userId) {
+                            Alert.alert('Error', 'User ID not found')
+                            return
+                        }
+
+                        try {
+                            setIsDeletingAccount(true)
+                            const result = await handleUserDeletion(user.userId)
+
+                            if (result.success) {
+                                // Reset global state
+                                isLoggedIn.isLoggedIn = false;
+                                setUser({
+                                    email: '',
+                                    username: '',
+                                    userId: ''
+                                })
+
+                                // Show success message and redirect
+                                Alert.alert(
+                                    'Success',
+                                    'Your account has been deleted successfully',
+                                    [{
+                                        text: 'OK',
+                                        onPress: () => router.replace('/sign-in')
+                                    }]
+                                )
+                            } else {
+                                throw new Error(result.message)
+                            }
+                        } catch (error) {
+                            Alert.alert(
+                                'Error',
+                                'Failed to delete account. Please try again later.'
+                            )
+                            console.error('Error deleting account:', error)
+                        } finally {
+                            setIsDeletingAccount(false)
+                        }
+                    }
+                }
+            ],
+            { cancelable: true }
+        )
+    }
+    const changePasswordRequested = () => {
+        console.log("Change Password Requested")
+
+    }
+
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#3e4e88" />
             </View>
-          </ScrollView>
-        </View>
-        <ProfileSettings 
-          visible={modalVisible} 
-          onClose={handleCloseModal} 
-          title="Profile Settings"
-        />
-      </SafeAreaView>
-    </GestureHandlerRootView>
-  );
-};
+        )
+    }
 
-export default Profile;
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.content}>
+                {userData ? (
+                    <>
+                        <View style={styles.profileInfo}>
+                            <ProfileCard 
+                                profileImage={icons.profileImage}
+                                name={userData.username}
+                                description={"Some description placeholder"}
+                                onProfilePicturePress={() => console.log("Profile Picture Pressed")}
+                            />
+                            <SettingsButton
+                                label='Settings' 
+                                action={() => { console.log("Settings button Pressed") }}
+                                content={<Settings/>} 
+                            />
+                            <SettingsButton
+                                label='Settings' 
+                                action={() => { console.log("Settings button Pressed") }}
+                                content={<SettingsNew/>} 
+                            />
+                        </View>
+
+                        <View style={styles.signOut}>
+                            <CustomButton
+                                title="Sign Out"
+                                handlePress={logout}
+                                containerStyles="mt-8 px-2 bg-secondary"
+                                otherMethods={() => { }}
+                            />
+                        </View>
+
+
+                        <View style={styles.dangerZone}>
+                            <Text style={styles.dangerTitle}>Danger Zone</Text>
+                            <CustomButton
+                                title={isDeletingAccount ? "Deleting Account..." : "Delete Account & All User Data"}
+                                handlePress={handleDeleteAccount}
+                                containerStyles="px-2 bg-delete"
+                                isLoading={isDeletingAccount}
+                                otherMethods={() => { }}
+                            />
+                        </View>
+                    </>
+                ) : (
+                    <Text style={styles.errorText}>Unable to load user data</Text>
+                )}
+            </SafeAreaView>
+        </View>
+    )
+}
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 8,
-    backgroundColor: '#edf5fe',
-    borderRadius: 8,
-    height: 'auto',
-    marginBottom: 10,
-    justifyContent: 'center',
-    alignContent: 'center'
-  },
-  metricsContainer: {
-    flexWrap: 'wrap',
-    alignContent: 'center'
-  },
-  singleMetricsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  metricCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#e0e0e0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-    margin: 8,
-  },
-  metricText: {
-    color: 'gray',
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 5,
-  },
-});
+    passwordButton: {
+        alignItems: 'center'
+
+    },
+    password: {
+        color: 'blue',
+        textDecorationLine: 'underline',
+        fontSize: 16,
+        marginTop: 10
+
+    },
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        boxSizing: 'border-box',
+        backgroundColor: '#edf5fe',
+    },
+    content: {
+        padding: 16,
+
+    },
+    profileInfo: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: "flex-start",
+        marginBottom: 200
+    },
+    label: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#666',
+        marginBottom: 4,
+    },
+    value: {
+        fontSize: 20,
+        color: 'black',
+        fontWeight: '800',
+        paddingLeft: 10
+    },
+    signOut: {
+        marginTop: 10,
+        padding: 16,
+    },
+    dangerZone: {
+        marginTop: 10,
+        padding: 16,
+        borderRadius: 6,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ff4444',
+    },
+    dangerTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#ff4444',
+        marginBottom: 16,
+    },
+    errorText: {
+        color: '#ff4444',
+        textAlign: 'center',
+        marginTop: 16,
+    },
+    settingsButton: {
+        alignSelf: 'flex-start',
+        backgroundColor: 'black',
+        width: 50,
+        height: 50,
+        borderRadius: 25, // Makes the image circular
+        marginRight: 20,
+        marginTop: 15
+    }
+})
+
+export default Profile
