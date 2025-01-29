@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet, Switch } from 'react-native';
+import { View, Text, StyleSheet, Switch, Alert, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useGlobalContext } from '@/context/Context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import { currentUserType } from '@/types/types';
+import { getCurrentUser } from '@/lib/supabase';
 
 const SECTION = [
     {
@@ -41,9 +43,32 @@ const SECTION = [
 ];
 
 const SettingsNew = () => {
-    const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();
-    const [modalVisible, setModalVisible] = useState(false);
+    const { isLoggedIn, setUser, user } = useGlobalContext()
+    const [userData, setUserData] = useState<currentUserType | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
+    const getUserData = async () => {
+        try {
+            const userDataPull = await getCurrentUser()
+            if (userDataPull) {
+                setUserData(userDataPull)
+            } else {
+                Alert.alert('Error', 'Unable to fetch user data')
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch user data')
+            console.error('Error fetching user data:', error)
+        }
+    }
+
+    useEffect(() => {
+        setIsLoading(true)
+        getUserData().finally(() => {
+            setIsLoading(false),
+            setSelect({ name: userData?.username || '' })
+        })
+    }, []);
     
     type ToggleState = {
         logout: boolean;
@@ -56,64 +81,67 @@ const SettingsNew = () => {
         name: string
     };
     const [select, setSelect] = useState<SelectState>({
-        name: "Test Name",
+        name: ''
     });
 
-    useEffect(() => {
-        if (user) {
-
-        }
-    }, []);
-
-    // Functions for handling modals and tooltips
-    const handleOpenModal = () => setModalVisible(true);
-    const handleCloseModal = () => setModalVisible(false);
-
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#3e4e88" />
+            </View>
+        )
+    }
+    
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView className="bg-background h-full">
-                {SECTION.map(({header, items}) => (
-                    <View style={styles.section} key={header}>
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionHeaderText}>{header}</Text>
+            <ScrollView>
+                {userData ? (<SafeAreaView className="bg-background h-full">
+                    {SECTION.map(({header, items}) => (
+                        <View style={styles.section} key={header}>
+                            <View style={styles.sectionHeader}>
+                                <Text style={styles.sectionHeaderText}>{header}</Text>
+                            </View>
+
+                            <View>
+                                {items.map(({label, id, type, icon}, index) => (
+                                    <View style={[styles.rowWrapper, index === 0 && {borderTopWidth: 0}]} key={id}>
+                                        <TouchableOpacity onPress={() => {console.log(`${label} Pressed`)}}>
+                                            <View style={styles.row}>
+                                                <FeatherIcon name={icon} color="#616161" size={22} style={{marginRight: 12}}/>
+
+                                                <Text style={styles.rowLabel}>{label}</Text>
+                                                <View style={styles.rowSpacer} />
+
+                                                {type === 'select' && (
+                                                    <Text style={styles.rowValue}>{select[id as keyof typeof select]}</Text>
+                                                )}
+
+                                                {type === 'toggle' && (
+                                                    <Switch
+                                                        value={toggle[id as keyof typeof toggle]} 
+                                                        onValueChange={value => setToggle(prevForm => ({ ...prevForm, [id]: value }))}
+                                                    />
+                                                )}
+
+                                                {['select', 'link', 'page'].includes(type) && (
+                                                    <FeatherIcon name="chevron-right" color="#ababab" size={22} style={{marginLeft: 'auto'}}/>
+                                                )}
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            
+                            </View>
                         </View>
+                    ))}
+                    <View>
 
-                        <View>
-                            {items.map(({label, id, type, icon}, index) => (
-                                <View style={[styles.rowWrapper, index === 0 && {borderTopWidth: 0}]} key={id}>
-                                    <TouchableOpacity onPress={() => {console.log(`${label} Pressed`)}}>
-                                        <View style={styles.row}>
-                                            <FeatherIcon name={icon} color="#616161" size={22} style={{marginRight: 12}}/>
-
-                                            <Text style={styles.rowLabel}>{label}</Text>
-                                            <View style={styles.rowSpacer} />
-
-                                            {type === 'select' && (
-                                                <Text style={styles.rowValue}>{select[id as keyof typeof select]}</Text>
-                                            )}
-
-                                            {type === 'toggle' && (
-                                                <Switch
-                                                    value={toggle[id as keyof typeof toggle]} 
-                                                    onValueChange={value => setToggle(prevForm => ({ ...prevForm, [id]: value }))}
-                                                />
-                                            )}
-
-                                            {['select', 'link', 'page'].includes(type) && (
-                                                <FeatherIcon name="chevron-right" color="#ababab" size={22} style={{marginLeft: 'auto'}}/>
-                                            )}
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        
-                        </View>
                     </View>
-                ))}
-                <View>
-
-                </View>
-            </SafeAreaView>
+                </SafeAreaView>
+                ) : (
+                    <Text style={styles.errorText}>Unable to load user data</Text>
+                )}
+            </ScrollView>
         </GestureHandlerRootView>
     );
 };
@@ -121,6 +149,13 @@ const SettingsNew = () => {
 export default SettingsNew;
 
 const styles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        boxSizing: 'border-box',
+        backgroundColor: '#edf5fe',
+    },
     section: {
         paddingTop: 12
     },
@@ -161,5 +196,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#616161',
         marginRight: 4,
-    }
+    },
+    errorText: {
+        color: '#ff4444',
+        textAlign: 'center',
+        marginTop: 16,
+    },
 });
