@@ -9,7 +9,7 @@ import icons from '@/constants/icons'
 import { ImageSourcePropType } from 'react-native'
 import ProfileCard from '@/components/ProfileSettings/ProfileCard'
 import SettingsButton from '@/components/SettingsButton'
-import Settings from '@/components/ProfileSettings/settings'
+import Settings from '@/components/ProfileSettings/Settings'
 import SettingsNew from '@/components/ProfileSettings/SettingsNew'
 
 const Profile = () => {
