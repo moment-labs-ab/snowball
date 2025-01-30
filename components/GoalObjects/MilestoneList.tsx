@@ -23,7 +23,7 @@ const MilestonesList: React.FC<MilestonesListProps> = ({ data, onCheckMilestone,
 
   useEffect(()=>{
 
-  }, [data.length])
+  }, [data.length, checkmarkColor])
 
   const renderItem = ({ item, index }: { item: Milestone; index: number }) => {
     return (

@@ -11,8 +11,9 @@ import React, { useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { deleteGoal } from "@/lib/supabase_goals";
+import { archiveGoal, deleteGoal } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
+import Octicons from '@expo/vector-icons/Octicons';
 
 interface GoalButtonProps {
   label: string;
@@ -78,10 +79,40 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
               //deleteHabitEmitter.emit('deleteHabit')
             } else {
               console.error('Error deleting goal:', result.message);
-              // Handle deletion error, e.g., show a message to the user
             }
           },
           style: 'destructive', // Optional: gives a red color to the button on iOS
+        },
+      ],
+      { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+    );
+
+  }
+
+  const handleArchive = async (goal_id: string, user_id:string)=>{
+    Alert.alert(
+      'Archive Goal',
+      'Are you sure you want to Archive? You will not be able to re-activate this goal.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Archive canceled'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, I want to archive',
+          onPress: async () => {
+            const result = await archiveGoal(goal_id, user_id);
+            if (result.success) {
+              console.log('Goal archived successfully');
+              // Handle successful deletion, e.g., refresh the habit list
+              //deleteHabitEmitter.emit('deleteHabit')
+            } else {
+              console.error('Error Archiving goal:', result.message);
+              // Handle deletion error, e.g., show a message to the user
+            }
+          },
+          style: 'default', // Optional: gives a red color to the button on iOS
         },
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it

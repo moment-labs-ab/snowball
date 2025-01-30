@@ -12,7 +12,6 @@ import {
   Alert,
 } from "react-native";
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
-import { insertNewGoal } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { Habit } from "@/types/types";
@@ -24,7 +23,11 @@ import NewHabitButton from "@/modals/NewHabitButton";
 import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
-import { updateGoal } from "@/lib/supabase_goals";
+import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
+import Octicons from '@expo/vector-icons/Octicons';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+
+
 
 export interface Goal {
   name: string;
@@ -185,6 +188,16 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       );
       return;
     }
+    
+    const today = new Date()
+    if (expectedEndDate < today){
+      Alert.alert(
+        "Invalid Date",
+        `Please select a valid end date.`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
   
     // If all validations pass, proceed with goal update
     updateGoal(
@@ -289,6 +302,38 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
+  //Archiving
+  const handleArchive = async (goal_id: string, user_id:string)=>{
+    Alert.alert(
+      'Archive Goal',
+      'Are you sure you want to Archive? You will not be able to re-activate this goal.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Archive canceled'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, I want to archive',
+          onPress: async () => {
+            const result = await archiveGoal(goal_id, user_id);
+            if (result.success) {
+              console.log('Goal archived successfully');
+              // Handle successful deletion, e.g., refresh the habit list
+              //deleteHabitEmitter.emit('deleteHabit')
+            } else {
+              console.error('Error Archiving goal:', result.message);
+              // Handle deletion error, e.g., show a message to the user
+            }
+          },
+          style: 'default', // Optional: gives a red color to the button on iOS
+        },
+      ],
+      { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+    );
+
+  }
 
   if (!habits) {
     return <View></View>;
@@ -458,7 +503,18 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
             style={[styles.submitButton, { backgroundColor: color }]}
             onPress={handleSubmit}
           >
-            <Text style={styles.submitButtonText}>Update Goal</Text>
+          <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+            <Text style={[styles.submitButtonText, {marginRight:5, flex:1, textAlign:'center'}]}>Update Goal</Text>
+            <SimpleLineIcons name="refresh" size={24} color="white" />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={()=>{handleArchive(id, user.userId)}}
+          style={[styles.archiveButton, {borderColor: color}]}>
+            <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+              <Text style={[styles.submitButtonText, {color:'black', marginRight:5, flex:1, textAlign:'center'}]}>Archive Goal</Text>
+              <Octicons name="archive" size={24} color="black" />
+            </View>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -559,8 +615,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
-    marginBottom: 200,
+    marginBottom: 10,
     width: "100%",
+  },
+  archiveButton: {
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 150,
+    width: "100%",
+    borderWidth:4
   },
   submitButtonText: {
     color: "white",

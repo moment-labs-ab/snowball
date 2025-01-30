@@ -63,7 +63,7 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
         };
 
         fetchHabitTracking();
-    }, [habit_ids.length]);
+    }, [habit_ids.length, color]);
 
     const trackingData = Object.entries(habitsTracking);
 
@@ -82,6 +82,7 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
     }
 
     return (
+        <View>
         <View style={[styles.container, { height: containerHeight }]}>
             <FlashList
                 data={trackingData}
@@ -104,13 +105,8 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
                 showsVerticalScrollIndicator={true}
                 indicatorStyle='black'
             />
-            <Text style={styles.labelKey}>
-                <Text style={{ color: color }}>Tracked</Text>
-                <Text style={{ color: '#bababa' }}> / </Text>
-                <Text style={{ color: '#afd2fc' }}>Expected</Text>
-                <Text style={{ color: '#bababa' }}> / </Text>
-                <Text style={{ color: '#6f6e79' }}>Days Left</Text>
-            </Text>
+            </View>
+        
         </View>
     );
 };
@@ -122,6 +118,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height:'5%',
+        justifyContent:'center',
     },
     scrollView: {
         padding: 10,

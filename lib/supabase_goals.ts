@@ -109,6 +109,9 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   const { data, error } = await supabase.from('goal_objects')
   .select('*')
   .eq('user_id', userId)
+  .eq('accomplished', false)
+  .eq('archived', false)
+
   .order('expected_end_date', { ascending: true });
   if (error && userId) {
     console.error('Error fetching habits:', error);
@@ -213,6 +216,40 @@ export const updateUserMilestones= async(userId: string, goalId: string, updated
   } catch (error) {
     console.error('Failed to update milestones:', error);
     throw error;
+  }
+}
+
+export const archiveGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
+  
+    const {data, error} = await supabase
+    .from('goal_objects')
+    .update({archived: true})
+    .eq('user_id', userId)
+    .eq('id', goal_id)
+
+    if (error) {
+      console.error('Error archiving goal:', error);
+      return { success: false, message: 'Error archiving goal', data: error };
+    } else {
+      console.log('Goal archived successfully:', data);
+      return { success: true, message: 'Goal archived successfully', data };
+    }
+}
+
+export const accomplishGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
+  
+  const {data, error} = await supabase
+  .from('goal_objects')
+  .update({accomplished: true})
+  .eq('user_id', userId)
+  .eq('id', goal_id)
+
+  if (error) {
+    console.error('Error accomplishing goal:', error);
+    return { success: false, message: 'Error accomplishing goal', data: error };
+  } else {
+    console.log('Goal accomplished successfully:', data);
+    return { success: true, message: 'Goal accomplished successfully', data };
   }
 }
 

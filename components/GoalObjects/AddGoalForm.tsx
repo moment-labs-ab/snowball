@@ -165,6 +165,16 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       );
       return;
     }
+
+    const today = new Date()
+    if (expectedEndDate < today){
+      Alert.alert(
+        "Invalid Date",
+        `Please select a valid end date.`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
   
     // If all validations pass, proceed with goal creation
     insertNewGoal(
