@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 
 interface ProgressRaceBarProps {
@@ -28,6 +28,10 @@ const ProgressRaceBar: React.FC<ProgressRaceBarProps> = ({
   const actualWidth = (safeActual / total) * 100;
   const expectedWidth = ((safeExpected - safeActual) / total) * 100;
   const remainingWidth = 100 - actualWidth - expectedWidth;
+
+  useEffect(()=>{
+
+  }, [color])
 
   return (
     <View style={[styles.container, style]}>
@@ -93,7 +97,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#6f6e79', // Light Gray
   },
   labelsContainer: {
-    marginTop: 2,
     alignItems: 'center',
   },
   label: {
