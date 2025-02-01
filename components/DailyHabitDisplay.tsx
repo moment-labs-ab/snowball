@@ -84,6 +84,7 @@ const DailyHabitDisplay = ({selectedDate, editHabitOrder}: dailyHabitDisplayProp
     <FlashList 
             data={habits}
             keyExtractor={(item) => item.id}
+            indicatorStyle='black'
             renderItem={({ item }) => (
             <View className='flex-row mb-30'>
                 <HabitCard
@@ -99,6 +100,7 @@ const DailyHabitDisplay = ({selectedDate, editHabitOrder}: dailyHabitDisplayProp
             </View>
             )}
             estimatedItemSize={80}
+            
             />
 
   )

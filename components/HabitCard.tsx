@@ -165,13 +165,13 @@ const HabitCard = ({
         backgroundColor: '#edf5fe',
         borderRadius: 15,
         minHeight: 62,
-        justifyContent: 'center', // Center content vertically
-        borderWidth: 1,
+        justifyContent: 'center',
+        borderWidth: 0.9,
         marginHorizontal: 16,
         marginBottom: 16,
         overflow: 'hidden',
         position: 'relative',
-        flex: 1,
+        flex:1
     }}
 >
     <Animated.View style={{
@@ -214,20 +214,7 @@ const HabitCard = ({
             selectedDate={date}
             trackingCount={trackingCount}
             onTrackingCountChange={handleTrackingCountChange}/>}/>
-            {/**
-        <TouchableOpacity onPress={() => {handleOpenModal()}} style={{ paddingRight: 5 }}>
-            <Entypo name="dots-three-vertical" size={24} color="black" />
-        </TouchableOpacity>
-        <View>
-            <EditHabit visible={modalVisible}
-            onClose={handleCloseModal}
-            title={"Edit "}
-            habit_id={id}
-            selectedDate={date}
-            trackingCount={trackingCount}
-            onTrackingCountChange={handleTrackingCountChange} />
-        </View>
-        */}
+          
     </View>
 </TouchableOpacity>
 

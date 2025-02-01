@@ -19,6 +19,7 @@ import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";
 import HeatCalendar5x7 from "./HeatCalendar5x7";
 import { habitEmitter } from "@/events/eventEmitters";
+import HeatmapComponent from "./ProfileSettings/HeatmapComponent";
 type TrackingDisplayProps = {
   today: Date;
   oneMonthAgo: Date;
@@ -44,7 +45,7 @@ const TrackingDisplay = () => {
 
   function getLastMonth(date: Date): Date {
     const lastMonthDate = new Date(date);
-    lastMonthDate.setDate(lastMonthDate.getDate() - 34);
+    lastMonthDate.setDate(lastMonthDate.getDate() - 100);
     return lastMonthDate;
   }
 
@@ -177,6 +178,8 @@ const TrackingDisplay = () => {
           <View style={{ marginBottom: 50 }}>
             <View>
               {habitData ? (
+                <View>
+                  
                 <HeatCalendar5x7
                   data={habitData}
                   habitName={item.name}
@@ -184,6 +187,9 @@ const TrackingDisplay = () => {
                   frequencyRate={item.frequency_rate}
                   id={item.id}
                 />
+                <HeatmapComponent data={habitData}/>
+                 
+                </View>
               ) : (
                 <View style={styles.container}>
                   <ActivityIndicator size="large" color="#3e4e88" />

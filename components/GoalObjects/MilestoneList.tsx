@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 19,
+    paddingHorizontal: 10,
   },
   checkbox: {
     marginRight: 10,

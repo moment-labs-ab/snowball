@@ -67,9 +67,9 @@ const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: Goa
 
     const trackingData = Object.entries(habitsTracking);
 
-    const ITEM_HEIGHT = 55; // Approximate height of one row
+    const ITEM_HEIGHT = 65; // Approximate height of one row
     const MIN_HEIGHT = 75; // Minimum height of container
-    const MAX_ROWS = 2.7; // Max rows to display without scroll
+    const MAX_ROWS = 2.6; // Max rows to display without scroll
     const calculatedHeight = Math.min(trackingData.length, MAX_ROWS) * ITEM_HEIGHT;
     const containerHeight = Math.max(calculatedHeight, MIN_HEIGHT);
 

@@ -166,7 +166,7 @@ const Profile = () => {
                                 content={<SettingsNew/>} 
                             />
                         </View>
-
+{/**
                         <View style={styles.signOut}>
                             <CustomButton
                                 title="Sign Out"
@@ -187,12 +187,16 @@ const Profile = () => {
                                 otherMethods={() => { }}
                             />
                         </View>
+                        */}
                     </>
                 ) : (
                     <Text style={styles.errorText}>Unable to load user data</Text>
                 )}
+                
             </SafeAreaView>
+            
         </View>
+        
     )
 }
 
