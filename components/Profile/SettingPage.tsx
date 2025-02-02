@@ -3,12 +3,17 @@ import React from 'react'
 
 interface SettingPageProps{
     currentSettingValue: string
+    label: string,
+    action?: () => void
+    content?: React.ReactNode;
 }
 
-const SettingPage: React.FC<SettingPageProps> = ({ currentSettingValue }) => {
+const SettingPage: React.FC<SettingPageProps> = ({ currentSettingValue, label, action, content }) => {
   return (
     <View>
-      <Text>{currentSettingValue}</Text>
+      <Text>{label}</Text>
+
+      {content}
     </View>
   )
 }

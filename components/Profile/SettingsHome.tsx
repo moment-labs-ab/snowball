@@ -7,22 +7,25 @@ import { currentUserType } from '@/types/types';
 import { getCurrentUser } from '@/lib/supabase';
 import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Types';
 import Setting from '@/components/Profile/Setting';
+import SettingsGoals from './SettingsGoals';
+import SettingsHabits from './SettingsHabits';
 
 const SECTION = [
     {
         header: 'Profile',
         items: [
-            { id: 'name', icon: 'user', label: 'Name', type: 'select' },
-            { id: 'email', icon: 'mail', label: 'Email', type: 'select' },
-            { id: 'change-password', icon: 'lock', label: 'Password', type: 'select' },
-            { id: 'logout', icon: 'power', label: 'Logout', type: 'toggle' },
-            { id: 'delete-account', icon: 'trash', label: 'Delete Account', type: 'danger' },
+            { id: 'name', icon: 'user', label: 'Name', type: 'select', content: <View/>},
+            { id: 'email', icon: 'mail', label: 'Email', type: 'select' , content: <View/>},
+            { id: 'change-password', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
+            { id: 'logout', icon: 'power', label: 'Logout', type: 'toggle', content: <View/> },
+            { id: 'delete-account', icon: 'trash', label: 'Delete Account', type: 'danger', content: <View/> },
         ]
     },
     {
         header: 'Snowball',
         items: [
-            { id: 'habits', icon: 'alert-circle', label: 'Habits', type: 'page' },
+            { id: 'habits', icon: 'alert-circle', label: 'Habits', type: 'page', content:<SettingsHabits/> },
+            { id: 'goals', icon: 'alert-circle', label: 'Goals', type: 'page', content:<SettingsGoals/>  },
         ]
     },
     /*{
@@ -102,7 +105,7 @@ const SettingsHome = () => {
                             </View>
 
                             <View>
-                                {items.map(({ label, id, type, icon }, index) => (
+                                {items.map(({ label, id, type, icon, content}, index) => (
                                     <Setting
                                         label={label}
                                         accountSetting={type}
@@ -112,6 +115,7 @@ const SettingsHome = () => {
                                         selectValue={select[id as keyof typeof select]}
                                         toggleValue={toggle[id as keyof typeof toggle]}
                                         toggleSetState={setToggle}
+                                        content={content}
                                     />
                                 ))}
 

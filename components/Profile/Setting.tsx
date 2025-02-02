@@ -8,15 +8,17 @@ import SettingPage from './SettingPage';
 interface SettingProps{
     label: string
     accountSetting: string,
+
     index: number,
     icon: string,
     id: string
     selectValue?: string,
     toggleValue?: boolean,
     toggleSetState?: React.Dispatch<React.SetStateAction<ProfileToggleState>>
+    content?:React.ReactNode;
 }
 
-const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id, selectValue, toggleValue, toggleSetState}) => {
+const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id, selectValue, toggleValue, toggleSetState, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -71,7 +73,7 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id
                 )}
 
                 {accountSetting === 'page' && (
-                    <SettingPage currentSettingValue={"Page props from Setting.tsx"} />
+                    <SettingPage currentSettingValue={"Page props from Setting.tsx"} label={label} content={content}/>
                 )}
               </Modal>
           </View>
