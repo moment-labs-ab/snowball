@@ -73,7 +73,7 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id
                 )}
 
                 {accountSetting === 'page' && (
-                    <SettingPage currentSettingValue={"Page props from Setting.tsx"} label={label} content={content}/>
+                    <SettingPage currentSettingValue={"Page props from Setting.tsx"} label={label} content={content} toggleContent={toggleContent}/>
                 )}
               </Modal>
           </View>

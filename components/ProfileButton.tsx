@@ -43,7 +43,7 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({label, action, content, us
                               style={styles.backButton}
                               onPress={toggleContent}
                           >
-                              <AntDesign name="arrowdown" size={24} color="black" />
+                              <AntDesign name="close" size={24} color="black" />
                               
                           </TouchableOpacity>
                           <Text style={styles.headerText}>{label}</Text>

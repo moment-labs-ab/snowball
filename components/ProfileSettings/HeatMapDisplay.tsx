@@ -207,6 +207,7 @@ const HeatMapDisplay = () => {
   }
 
   return (
+    <ScrollView>
     <FlashList
       data={habits}
       keyExtractor={(item) => item.id}
@@ -247,11 +248,13 @@ const HeatMapDisplay = () => {
               )}
             </View>
           </View>
+         
         );
       }}
       estimatedItemSize={100}
       nestedScrollEnabled={true}
     />
+     </ScrollView>
   );
 };
 
@@ -267,6 +270,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: "center",
     alignContent: "center",
+  },
+  viewContainer: {
+    height: Dimensions.get("window").height,
+    width: "100%",
   },
   habitContainer: {
     borderWidth: 0.5,

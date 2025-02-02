@@ -69,7 +69,11 @@ export interface Goal{
   description: string,
   expected_end_date: Date,
   milestones:Milestones[],
-  color: string
+  color: string,
+  accomplished: boolean,
+  archived: boolean,
+  accomplished_at: Date,
+  archived_at: Date
 }
 
 export interface Milestones {

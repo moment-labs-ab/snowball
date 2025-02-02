@@ -38,7 +38,7 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({ label, action, content}
                               style={styles.backButton}
                               onPress={toggleContent}
                           >
-                              <AntDesign name="arrowdown" size={24} color="black" />
+                              <AntDesign name="close" size={24} color="black" />
                               
                           </TouchableOpacity>
                           <Text style={styles.headerText}>{label}</Text>
