@@ -156,35 +156,34 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.content}>
-        <View className='flex-1 align-center pl-2 pr-2'>
-      <View>
-        {userData ? (
-          <>
-            <View style={styles.profileInfo}>
-              <ProfileCard
-                profileImage={icons.profileImage}
-                name={userData.username}
-                description={"Some description placeholder"}
-                onProfilePicturePress={() =>
-                  console.log("Profile Picture Pressed")
-                }
-              />
-              <SettingsButton
-                label="Settings"
-                action={() => {
-                  console.log("Settings button Pressed");
-                }}
-                content={<Settings />}
-              />
-              <SettingsButton
-                label="Settings"
-                action={() => {
-                  console.log("Settings button Pressed");
-                }}
-                content={<SettingsNew />}
-              />
-            </View>
-            {/**
+      <View className="flex-1 align-center pl-2 pr-2">
+        <View>
+          {userData ? (
+            <>
+              <View style={[styles.shadowContainer]}>
+                <View style={styles.profileInfo}>
+                  <ProfileCard
+                    profileImage={icons.profileImage}
+                    name={userData.username}
+                    description={"Some description placeholder"}
+                    onProfilePicturePress={() =>
+                      console.log("Profile Picture Pressed")
+                    }
+                  />
+                  <SettingsButton
+                    label="Settings"
+                    action={() => console.log("Settings button Pressed")}
+                    content={<Settings />}
+                  />
+                  <SettingsButton
+                    label="Settings"
+                    action={() => console.log("Settings button Pressed")}
+                    content={<SettingsNew />}
+                  />
+                </View>
+              </View>
+
+              {/**
                         <View style={styles.signOut}>
                             <CustomButton
                                 title="Sign Out"
@@ -206,13 +205,13 @@ const Profile = () => {
                             />
                         </View>
                         */}
-          </>
-        ) : (
-          <Text style={styles.errorText}>Unable to load user data</Text>
-        )}
+            </>
+          ) : (
+            <Text style={styles.errorText}>Unable to load user data</Text>
+          )}
         </View>
+        <View style={{}}></View>
         <HeatMapDisplay />
-      
       </View>
     </SafeAreaView>
   );
@@ -236,15 +235,32 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    height:'100%',
-    backgroundColor:'#edf5fe'
+    height: "100%",
+    backgroundColor: "#edf5fe",
   },
   profileInfo: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom:20
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    borderLeftWidth: 1,
+    borderLeftColor: "black",
+    borderBottomLeftRadius: 5,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, // For Android
+  },
+  shadowContainer: {
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // For Android
   },
   label: {
     fontSize: 18,

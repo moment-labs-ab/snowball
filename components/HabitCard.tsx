@@ -224,9 +224,9 @@ const HabitCard = ({
           </Text>
           <Text
             style={{
-              color: "grey",
+              color: "#525756",
               fontSize: 10,
-              fontWeight: "100",
+              fontWeight: "200",
             }}
           >
             {trackingCount}/{frequency}
