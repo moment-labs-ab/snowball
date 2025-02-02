@@ -154,37 +154,39 @@ const Profile = () => {
         );
     }
 
-    return (
-        <SafeAreaView style={styles.content}>
-            <View className='flex-1 align-center pl-2 pr-2'>
-                <View>
-                    {userData ? (
-                        <>
-                            <View style={styles.profileInfo}>
-                                <ProfileCard
-                                    profileImage={icons.profileImage}
-                                    name={userData.username}
-                                    description={"Some description placeholder"}
-                                    onProfilePicturePress={() =>
-                                        console.log("Profile Picture Pressed")
-                                    }
-                                />
-                                {/**<SettingsButton
-                                    label="Settings"
-                                    action={() => {
-                                        console.log("Settings button Pressed");
-                                    }}
-                                    content={<Settings />}
-                                />*/}
-                                <SettingsButton
-                                    label="Settings"
-                                    action={() => {
-                                        console.log("New Settings button Pressed");
-                                    }}
-                                    content={<SettingsHome />}
-                                />
-                            </View>
-                            {/**
+  return (
+    <SafeAreaView style={styles.content}>
+        <View className='flex-1 align-center pl-2 pr-2'>
+      <View>
+        {userData ? (
+          <>
+            <View style={styles.profileInfo}>
+              <ProfileCard
+                profileImage={icons.profileImage}
+                name={userData.username}
+                description={"Some description placeholder"}
+                onProfilePicturePress={() =>
+                  console.log("Profile Picture Pressed")
+                }
+              />
+              {/** 
+              <SettingsButton
+                label="Settings"
+                action={() => {
+                  console.log("Settings button Pressed");
+                }}
+                content={<Settings />}
+              />
+              */}
+              <SettingsButton
+                label="Settings"
+                action={() => {
+                  console.log("Settings button Pressed");
+                }}
+                content={<SettingsHome />}
+              />
+            </View>
+            {/**
                         <View style={styles.signOut}>
                             <CustomButton
                                 title="Sign Out"
@@ -206,90 +208,90 @@ const Profile = () => {
                             />
                         </View>
                         */}
-                        </>
-                    ) : (
-                        <Text style={styles.errorText}>Unable to load user data</Text>
-                    )}
-                </View>
-                <HeatMapDisplay />
-
-            </View>
-        </SafeAreaView>
-    );
+          </>
+        ) : (
+          <Text style={styles.errorText}>Unable to load user data</Text>
+        )}
+        </View>
+        <HeatMapDisplay />
+      
+      </View>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    passwordButton: {
-        alignItems: "center",
-    },
-    password: {
-        color: "blue",
-        textDecorationLine: "underline",
-        fontSize: 16,
-        marginTop: 10,
-    },
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        boxSizing: "border-box",
-    },
-    content: {
-        padding: 16,
-        height: '100%',
-        backgroundColor: '#edf5fe'
-    },
-    profileInfo: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-        marginBottom: 20
-    },
-    label: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#666",
-        marginBottom: 4,
-    },
-    value: {
-        fontSize: 20,
-        color: "black",
-        fontWeight: "800",
-        paddingLeft: 10,
-    },
-    signOut: {
-        marginTop: 10,
-        padding: 16,
-    },
-    dangerZone: {
-        marginTop: 10,
-        padding: 16,
-        borderRadius: 6,
-        backgroundColor: "#fff",
-        borderWidth: 1,
-        borderColor: "#ff4444",
-    },
-    dangerTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#ff4444",
-        marginBottom: 16,
-    },
-    errorText: {
-        color: "#ff4444",
-        textAlign: "center",
-        marginTop: 16,
-    },
-    settingsButton: {
-        alignSelf: "flex-start",
-        backgroundColor: "black",
-        width: 50,
-        height: 50,
-        borderRadius: 25, // Makes the image circular
-        marginRight: 20,
-        marginTop: 15,
-    },
+  passwordButton: {
+    alignItems: "center",
+  },
+  password: {
+    color: "blue",
+    textDecorationLine: "underline",
+    fontSize: 16,
+    marginTop: 10,
+  },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    boxSizing: "border-box",
+  },
+  content: {
+    padding: 16,
+    height:'100%',
+    backgroundColor:'#edf5fe'
+  },
+  profileInfo: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom:20
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#666",
+    marginBottom: 4,
+  },
+  value: {
+    fontSize: 20,
+    color: "black",
+    fontWeight: "800",
+    paddingLeft: 10,
+  },
+  signOut: {
+    marginTop: 10,
+    padding: 16,
+  },
+  dangerZone: {
+    marginTop: 10,
+    padding: 16,
+    borderRadius: 6,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ff4444",
+  },
+  dangerTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ff4444",
+    marginBottom: 16,
+  },
+  errorText: {
+    color: "#ff4444",
+    textAlign: "center",
+    marginTop: 16,
+  },
+  settingsButton: {
+    alignSelf: "flex-start",
+    backgroundColor: "black",
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Makes the image circular
+    marginRight: 20,
+    marginTop: 15,
+  },
 });
 
 export default Profile;

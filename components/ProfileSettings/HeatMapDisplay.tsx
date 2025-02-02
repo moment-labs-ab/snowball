@@ -260,9 +260,10 @@ export default HeatMapDisplay;
 const styles = StyleSheet.create({
   container: {
     padding: 8,
+    borderWidth:1,
     borderRadius: 8,
     width: Dimensions.get("window").width - 20,
-    height: 200,
+    height: 300,
     marginBottom: 10,
     justifyContent: "center",
     alignContent: "center",
