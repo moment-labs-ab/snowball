@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     Image,
+    Dimensions
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getCurrentUser, handleUserDeletion, signOut } from "@/lib/supabase";
@@ -156,7 +157,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.content}>
-        <View className='flex-1 align-center pl-2 pr-2'>
+        <View style={styles.container}>
       <View>
         {userData ? (
           <>
@@ -213,8 +214,9 @@ const Profile = () => {
           <Text style={styles.errorText}>Unable to load user data</Text>
         )}
         </View>
+        
         <HeatMapDisplay />
-      
+        <View style={styles.divider} />
       </View>
     </SafeAreaView>
   );
@@ -231,22 +233,22 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    boxSizing: "border-box",
+    flex: 1,
+    paddingHorizontal: 8, // Equivalent to pl-2 and pr-2
   },
   content: {
-    padding: 16,
-    height:'100%',
-    backgroundColor:'#edf5fe'
+    backgroundColor: '#edf5fe', // Replace with your bg-background class color if different
+    flex: 1,
   },
   profileInfo: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom:20
+    marginBottom:20,
+    borderLeftWidth:1,
+    borderBottomWidth:1,
+    borderBottomLeftRadius:5
   },
   label: {
     fontSize: 18,
@@ -291,6 +293,12 @@ const styles = StyleSheet.create({
     borderRadius: 25, // Makes the image circular
     marginRight: 20,
     marginTop: 15,
+  },
+  divider: {
+    height: 10,
+    alignSelf: 'center',
+    marginTop: 10,
+    width: '100%',
   },
 });
 

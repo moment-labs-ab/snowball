@@ -121,6 +121,22 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
   return data as Goal[];
 };
 
+export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
+  const { data, error } = await supabase
+  .from('goal_objects')
+  .select('*')
+  .eq('user_id', userId)
+  .or('accomplished.eq.true, archived.eq.true')
+  
+
+  if (error && userId) {
+    console.error('Error fetching habits:', error);
+    return [];
+  }
+  console.log(data)
+  return data as Goal[];
+};
+
 export const getUserSingleGoal = async (userId: string, goal_id: string): Promise<Goal | null> => {
   const { data, error } = await supabase.from('goal_objects')
   .select('*')

@@ -121,7 +121,7 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose, title }) => {
               alignItems: "center",
             }}
           >
-            <AntDesign name="arrowdown" size={24} color="black" />
+            <AntDesign name="close" size={24} color="black" />
           </TouchableOpacity>
 
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>

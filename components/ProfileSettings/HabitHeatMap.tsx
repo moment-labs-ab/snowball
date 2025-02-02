@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Dimensions, StyleSheet } from "react-native";
-import Svg, { Rect, Text, G } from "react-native-svg";
+import Svg, { Rect, Text, G, Line } from "react-native-svg";
 import * as d3 from "d3";
 import { HabitTrackingEntry } from "@/types/types";
 import HeatMapStats from "./HeatMapStats";
@@ -31,7 +31,6 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
   
   const entriesKey = data.map(entry => `${entry.date}:${entry.count}`).join('|');
 
-
   useEffect(() => {
     if (!data.length) return;
 
@@ -40,7 +39,6 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
         new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
-    // Correctly type the color scale using d3.ScaleLinear
     const maxCount =
       d3.max(sortedData, (d: HabitTrackingEntry) => d.count) || 1;
     const colorScale = d3
@@ -50,7 +48,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
 
     const today: Date = new Date();
     const startDate: Date = new Date(today);
-    startDate.setDate(startDate.getDate() - 90); // Changed from 365 to 90 days (approximately 3 months)
+    startDate.setDate(startDate.getDate() - 90);
 
     const calculatedDates: Date[] = d3.timeDays(startDate, today);
     setDates(calculatedDates);
@@ -87,12 +85,9 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
     return colorScale(count);
   };
 
-  
-
   return (
     <View>
       <View style={{ marginVertical: 1 }}>
-    
         <Svg width={width} height={height}>
           {/* Month labels */}
           <G transform={`translate(40, 0)`}>
@@ -127,6 +122,22 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
             ))}
           </G>
 
+          {/* Month separator lines */}
+          <G transform={`translate(40, 30)`}>
+            {monthLabels.map((month: MonthLabel, i: number) => (
+              <Line
+                key={`separator-${i}`}
+                x1={month.x - cellPadding}
+                y1={0}
+                x2={month.x - cellPadding}
+                y2={7 * (cellSize + cellPadding)}
+                stroke="#8BBDFA"
+                strokeWidth={4}
+                strokeOpacity={0.5}
+              />
+            ))}
+          </G>
+
           {/* Heat map cells */}
           <G transform={`translate(40, 30)`}>
             {dates.map((date: Date, i: number) => {
@@ -158,4 +169,3 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
 };
 
 export default HabitHeatMap;
-

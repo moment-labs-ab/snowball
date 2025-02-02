@@ -42,8 +42,8 @@ const TabsLayout = () => {
                     tabBarStyle: {
                         backgroundColor: "#EDF5FE",
                         borderTopWidth: 0,
-                        borderTopColor: "#EDF5FE",
-                        height: 55,
+                        borderTopColor: "#8BBDFA",
+                        height: 60,
                         marginTop: 0
                     },
                 }}
@@ -62,22 +62,7 @@ const TabsLayout = () => {
                         )
                     }}
                 />
-{/** 
-                <Tabs.Screen name='progress_two'
-                    options={{
-                        title: 'Progress',
-                        headerShown: false,
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabIcon
-                                icon={icons.progress}
-                                color={color}
-                                name={"Progress"}
-                                focused={focused}
-                            />
-                        )
-                    }}
-                />
-*/}
+
                 <Tabs.Screen name='goals'
                     options={{
                         title: 'Goals',
