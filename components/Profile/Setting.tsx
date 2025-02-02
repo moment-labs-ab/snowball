@@ -69,7 +69,7 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id
                   
               >
                 {accountSetting === 'select' &&  selectValue && (
-                    <SettingUpdate currentSettingValue={selectValue} />
+                    <SettingUpdate isVisible={setIsVisible} settingId={id} settingName={label} settingValue={selectValue} />
                 )}
 
                 {accountSetting === 'page' && (
