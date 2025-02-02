@@ -169,13 +169,13 @@ const Profile = () => {
                                         console.log("Profile Picture Pressed")
                                     }
                                 />
-                                <SettingsButton
+                                {/**<SettingsButton
                                     label="Settings"
                                     action={() => {
                                         console.log("Settings button Pressed");
                                     }}
                                     content={<Settings />}
-                                />
+                                />*/}
                                 <SettingsButton
                                     label="Settings"
                                     action={() => {
