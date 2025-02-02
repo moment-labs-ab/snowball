@@ -6,6 +6,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit, HabitTrackingEntry } from "@/types/types";
@@ -17,16 +18,13 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";
-import HeatCalendar5x7 from "./HeatCalendar5x7";
 import { habitEmitter } from "@/events/eventEmitters";
-import HabitHeatMap from "./ProfileSettings/HabitHeatMap";
+import HabitHeatMap from "./HabitHeatMap";
+import CalendarButton from "../CalendarButton";
+import HabitYearView from "../HabitYearView";
+import dayjs from "dayjs";
 
-type TrackingDisplayProps = {
-  today: Date;
-  oneMonthAgo: Date;
-};
-
-const TrackingDisplay = () => {
+const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [lastHabit, setLastHabit] = useState("");
@@ -37,6 +35,12 @@ const TrackingDisplay = () => {
   const [gridData, setGridData] = useState<{
     [key: string]: HabitTrackingEntry[];
   }>({});
+
+  const [metrics, setMetrics] = useState({
+    totalTracked: 0,
+      consistencyPercentage: "0",
+      longestStreak:0,
+  })
 
   const luxonDate = DateTime; // Automatically uses user's local time zone
 
@@ -167,6 +171,41 @@ const TrackingDisplay = () => {
     };
   }, [habits.length]);
 
+  function calculateMetrics(data: HabitTrackingEntry[]) {
+    let totalTracked = 0;
+    let longestStreak = 0;
+    let currentStreak = 0;
+
+    
+    const startDate = dayjs().subtract(100, "day").startOf("day");
+    const validData = data.filter(
+      (entry) =>
+        (dayjs(entry.date).isAfter(startDate) ||
+          dayjs(entry.date).isSame(startDate)) &&
+        dayjs(entry.date).isBefore(dayjs().endOf("day"))
+    );
+
+    validData.forEach((entry) => {
+      if (entry.count > 0) {
+        totalTracked++;
+        currentStreak++;
+        longestStreak = Math.max(longestStreak, currentStreak);
+      } else {
+        currentStreak = 0;
+      }
+    });
+
+    const totalDays = validData.length;
+    const consistencyPercentage =
+      totalDays > 0 ? (totalTracked / totalDays) * 100 : 0;
+    
+    setMetrics({totalTracked, 
+        consistencyPercentage: consistencyPercentage.toFixed(0),
+        longestStreak,})
+
+    return metrics
+  }
+
   return (
     <FlashList
       data={habits}
@@ -174,24 +213,33 @@ const TrackingDisplay = () => {
       extraData={gridData}
       renderItem={({ item }) => {
         const habitData = gridData[item.id];
-
         return (
-          <View style={{ marginBottom: 50 }}>
+          <View style={{ marginBottom: 40 }}>
             <View>
               {habitData ? (
-                <View>
-                  <HeatCalendar5x7
-                    data={habitData}
-                    habitName={item.name}
-                    frequency={item.frequency}
-                    frequencyRate={item.frequency_rate}
-                    id={item.id}
-                  />
-                  <HabitHeatMap
-                    data={habitData}
-
-                  />
-                </View>
+                  <View style={styles.habitContainer}>
+                    <View
+                      style={{
+                        width: "100%",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        padding: 8,
+                      }}
+                    >
+                      <View style={{ flex: 1, flexDirection: "column" }}>
+                        <Text style={styles.habitName}>{item.name}</Text>
+                        <Text>
+                          {item.frequency}x {item.frequency_rate}
+                        </Text>
+                      </View>
+                      <CalendarButton
+                        label={item.name + " Year In Review"}
+                        content={<HabitYearView id={item.id} />}
+                      />
+                    </View>
+                    <HabitHeatMap data={habitData} />
+                    
+                  </View>
               ) : (
                 <View style={styles.container}>
                   <ActivityIndicator size="large" color="#3e4e88" />
@@ -201,73 +249,56 @@ const TrackingDisplay = () => {
           </View>
         );
       }}
-      estimatedItemSize={80}
+      estimatedItemSize={100}
       nestedScrollEnabled={true}
     />
   );
 };
 
-export default TrackingDisplay;
+export default HeatMapDisplay;
 
 const styles = StyleSheet.create({
   container: {
     padding: 8,
-    backgroundColor: "#b4bac6",
     borderRadius: 8,
-    height: 380,
+    width: Dimensions.get("window").width - 20,
+    height: 200,
     marginBottom: 10,
     justifyContent: "center",
     alignContent: "center",
   },
+  habitContainer: {
+    borderWidth: 0.5,
+    borderColor: "gray",
+    borderRadius: 5,
+    paddingBottom: 10,
+  },
+  habitName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#8BBDFA",
+  },
+  statsContainer: {
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  metricContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  metric: {
+    fontWeight: "bold",
+    color: "#5a626f",
+    fontSize: 18,
+  },
+  metricText: {
+    fontWeight: "bold",
+    color: "#788599",
+    justifyContent: "center",
+    alignContent: "center",
+    fontSize: 12,
+  },
 });
-
-{
-  /**<View>
-                    {habitData ? (
-                      <HeatCalendar data={habitData} />
-                    ) : (
-                      <Text>Loading...</Text>
-                    )}
-                  </View> */
-}
-
-{
-  /**   useEffect(() => {
-        console.log("USEEFFECT: DailyHabitDisplay")
-        const fetchHabits = async () => {
-        const habitsData = await getUserHabits(user.userId);
-        setHabits(habitsData);
-        setLoading(false);
-        };
-
-        fetchHabits();
-        const unsubscribe = listenToHabitsTable((payload) => {
-            console.log('Change received!', payload);
-
-            switch (payload.eventType) {
-              case 'INSERT':
-                if (payload.new) {
-                    setHabits(prevHabits => [...prevHabits, payload.new]);
-                }
-                break;
-              case 'UPDATE':
-                if (payload.new) {
-                    setHabits(prevHabits => 
-                        prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
-                      );
-                }
-                break;
-              case 'DELETE':
-                if (payload.old) {
-                    setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
-                }
-                break;
-            }
-          });
-
-          // Cleanup subscription on unmount
-          return () => {
-            unsubscribe();
-          };
-    }, []); */
-}

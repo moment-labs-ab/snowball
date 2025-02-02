@@ -62,7 +62,7 @@ const TabsLayout = () => {
                         )
                     }}
                 />
-
+{/** 
                 <Tabs.Screen name='progress_two'
                     options={{
                         title: 'Progress',
@@ -77,6 +77,7 @@ const TabsLayout = () => {
                         )
                     }}
                 />
+*/}
                 <Tabs.Screen name='goals'
                     options={{
                         title: 'Goals',
