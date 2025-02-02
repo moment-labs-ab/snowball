@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useGlobalContext } from '@/context/Context';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import { currentUserType } from '@/types/types';
 import { getCurrentUser } from '@/lib/supabase';
+import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Types';
+import Setting from '@/components/Profile/Setting';
 
 const SECTION = [
     {
@@ -15,17 +15,17 @@ const SECTION = [
             { id: 'name', icon: 'user', label: 'Name', type: 'select' },
             { id: 'email', icon: 'mail', label: 'Email', type: 'select' },
             { id: 'change-password', icon: 'lock', label: 'Password', type: 'select' },
-            { id: 'logout', icon: 'power', label: 'Logout', type: 'toggle' }
+            { id: 'logout', icon: 'power', label: 'Logout', type: 'toggle' },
+            { id: 'delete-account', icon: 'trash', label: 'Delete Account', type: 'danger' },
         ]
     },
     {
         header: 'Snowball',
         items: [
-            { id: 'habits', icon: 'frown', label: 'Habits', type: 'link' },
-            { id: 'Goals', icon: 'frown', label: 'Goals', type: 'link' },
+            { id: 'habits', icon: 'alert-circle', label: 'Habits', type: 'page' },
         ]
     },
-    {
+    /*{
         header: 'Stats',
         items: [
             { id: 'stats', icon: 'frown', label: 'Stats', type: 'select' },
@@ -39,10 +39,10 @@ const SECTION = [
             { id: 'terms', icon: 'frown', label: 'Terms & Conditions', type: 'select' },
             { id: 'privacy', icon: 'frown', label: 'Privacy Policy', type: 'select' },
         ]
-    }
+    }*/
 ];
 
-const SettingsNew = () => {
+const SettingsHome = () => {
     const { isLoggedIn, setUser, user } = useGlobalContext()
     const [userData, setUserData] = useState<currentUserType | null>(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -64,24 +64,23 @@ const SettingsNew = () => {
 
     useEffect(() => {
         setIsLoading(true)
-        getUserData().finally(() => {
-            setIsLoading(false),
-            setSelect({ name: userData?.username || '' })
-        })
+        getUserData().finally(() => setIsLoading(false));
     }, []);
-    
-    type ToggleState = {
-        logout: boolean;
-    };
-    const [toggle, setToggle] = useState<ToggleState>({
+
+    useEffect(() => {
+        setSelect({
+            name: userData?.username || '',
+            email: userData?.email || ''
+        });
+    }, [userData]);
+
+    const [toggle, setToggle] = useState<ProfileToggleState>({
         logout: false
     });
 
-    type SelectState = {
-        name: string
-    };
-    const [select, setSelect] = useState<SelectState>({
-        name: ''
+    const [select, setSelect] = useState<ProfileSelectState>({
+        name: '',
+        email: '',
     });
 
     if (isLoading) {
@@ -91,46 +90,31 @@ const SettingsNew = () => {
             </View>
         )
     }
-    
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView>
                 {userData ? (<SafeAreaView className="bg-background h-full">
-                    {SECTION.map(({header, items}) => (
+                    {SECTION.map(({ header, items }) => (
                         <View style={styles.section} key={header}>
                             <View style={styles.sectionHeader}>
                                 <Text style={styles.sectionHeaderText}>{header}</Text>
                             </View>
 
                             <View>
-                                {items.map(({label, id, type, icon}, index) => (
-                                    <View style={[styles.rowWrapper, index === 0 && {borderTopWidth: 0}]} key={id}>
-                                        <TouchableOpacity onPress={() => {console.log(`${label} Pressed`)}}>
-                                            <View style={styles.row}>
-                                                <FeatherIcon name={icon} color="#616161" size={22} style={{marginRight: 12}}/>
-
-                                                <Text style={styles.rowLabel}>{label}</Text>
-                                                <View style={styles.rowSpacer} />
-
-                                                {type === 'select' && (
-                                                    <Text style={styles.rowValue}>{select[id as keyof typeof select]}</Text>
-                                                )}
-
-                                                {type === 'toggle' && (
-                                                    <Switch
-                                                        value={toggle[id as keyof typeof toggle]} 
-                                                        onValueChange={value => setToggle(prevForm => ({ ...prevForm, [id]: value }))}
-                                                    />
-                                                )}
-
-                                                {['select', 'link', 'page'].includes(type) && (
-                                                    <FeatherIcon name="chevron-right" color="#ababab" size={22} style={{marginLeft: 'auto'}}/>
-                                                )}
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
+                                {items.map(({ label, id, type, icon }, index) => (
+                                    <Setting
+                                        label={label}
+                                        accountSetting={type}
+                                        index={index}
+                                        icon={icon}
+                                        id={id}
+                                        selectValue={select[id as keyof typeof select]}
+                                        toggleValue={toggle[id as keyof typeof toggle]}
+                                        toggleSetState={setToggle}
+                                    />
                                 ))}
-                            
+
                             </View>
                         </View>
                     ))}
@@ -146,7 +130,7 @@ const SettingsNew = () => {
     );
 };
 
-export default SettingsNew;
+export default SettingsHome;
 
 const styles = StyleSheet.create({
     container: {
@@ -174,14 +158,17 @@ const styles = StyleSheet.create({
         paddingLeft: 24,
         borderTopWidth: 1,
         borderColor: '#e3e3e3',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        marginLeft: 5,
+        marginRight: 5,
+        borderRadius: 10,
     },
     row: {
         height: 50,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        paddingRight: 24
+        paddingRight: 24,
     },
     rowLabel: {
         fontSize: 17,
