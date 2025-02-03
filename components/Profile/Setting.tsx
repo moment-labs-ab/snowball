@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal, Switch } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal, Switch, Image } from 'react-native'
 import React, {useState} from 'react'
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { ProfileToggleState } from './Types';
@@ -8,9 +8,9 @@ import SettingPage from './SettingPage';
 interface SettingProps{
     label: string
     accountSetting: string,
-
     index: number,
-    icon: string,
+    iconType: string,
+    icon: Object,
     id: string
     selectValue?: string,
     toggleValue?: boolean,
@@ -18,7 +18,7 @@ interface SettingProps{
     content?:React.ReactNode;
 }
 
-const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id, selectValue, toggleValue, toggleSetState, content}) => {
+const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -26,15 +26,15 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, icon, id
     };
 
     return (
-      <SafeAreaView>
+      <SafeAreaView key={id}>
           <View style={styles.container}>
-            <View style={[styles.rowWrapper, index === 0 && { borderTopWidth: 0 }]} key={id}>
+            <View style={[styles.rowWrapper, index === 0 && { borderTopWidth: 0 }]}>
                 <TouchableOpacity onPress={() => {
-                    setIsVisible(true);
-                    console.log(`${label} Pressed`) 
+                    setIsVisible(true); 
                     }}>
                     <View style={styles.row}>
-                        <FeatherIcon name={icon} color="#616161" size={22} style={{ marginRight: 12 }} />
+                        {iconType === "feather" && <FeatherIcon name={icon as string} color="#616161" size={22} style={{ marginRight: 12 }} />}
+                        {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5 ' style={{ marginRight: 12 }}/>}
 
                         <Text style={styles.rowLabel}>{label}</Text>
                         <View style={styles.rowSpacer} />

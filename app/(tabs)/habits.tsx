@@ -56,6 +56,7 @@ const Habits = () => {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
   return (
     <SafeAreaView className="bg-background h-full">
           <View className="flex-row justify-between items-center mt-6 mb-6">
