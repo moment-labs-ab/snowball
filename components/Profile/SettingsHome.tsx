@@ -9,23 +9,24 @@ import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Typ
 import Setting from '@/components/Profile/Setting';
 import SettingsGoals from './SettingsGoals';
 import SettingsHabits from './SettingsHabits';
+import icons from '@/constants/icons';
 
 const SECTION = [
     {
         header: 'Profile',
         items: [
-            { id: 'name', icon: 'user', label: 'Name', type: 'select', content: <View/>},
-            { id: 'email', icon: 'mail', label: 'Email', type: 'select' , content: <View/>},
-            { id: 'change-password', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
-            { id: 'logout', icon: 'power', label: 'Logout', type: 'toggle', content: <View/> },
-            { id: 'delete-account', icon: 'trash', label: 'Delete Account', type: 'danger', content: <View/> },
+            { id: 'name', iconType: 'feather', icon: 'user', label: 'Name', type: 'select', content: <View/>},
+            { id: 'email', iconType: 'feather', icon: 'mail', label: 'Email', type: 'select' , content: <View/>},
+            { id: 'change-password', iconType: 'feather', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
+            { id: 'logout', iconType: 'feather', icon: 'power', label: 'Logout', type: 'toggle', content: <View/> },
+            { id: 'delete-account', iconType: 'feather', icon: 'trash', label: 'Delete Account', type: 'danger', content: <View/> },
         ]
     },
     {
         header: 'Snowball',
         items: [
-            { id: 'habits', icon: 'alert-circle', label: 'Habits', type: 'page', content:<SettingsHabits/> },
-            { id: 'goals', icon: 'alert-circle', label: 'Goals', type: 'page', content:<SettingsGoals/>  },
+            { id: 'habits', iconType: 'local', icon: icons.snowflake, label: 'Habits', type: 'page', content:<SettingsHabits/> },
+            { id: 'goals', iconType: 'local', icon: icons.mountain, label: 'Goals', type: 'page', content:<SettingsGoals/>  },
         ]
     },
     /*{
@@ -105,11 +106,12 @@ const SettingsHome = () => {
                             </View>
 
                             <View>
-                                {items.map(({ label, id, type, icon, content}, index) => (
+                                {items.map(({ label, id, type, iconType, icon, content}, index) => (
                                     <Setting
                                         label={label}
                                         accountSetting={type}
                                         index={index}
+                                        iconType={iconType}
                                         icon={icon}
                                         id={id}
                                         selectValue={select[id as keyof typeof select]}
