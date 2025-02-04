@@ -8,13 +8,17 @@ import GoalObject from "./GoalObject";
 import { goalEmitter } from "@/events/eventEmitters";
 import { listenToGoalsTable } from "@/lib/supabase_goals";
 import { ActivityIndicator } from "react-native";
+import GoalsWelcome from "./GoalsWelcome";
 
 const AllGoalsView = () => {
-  const { user, isLoading } = useGlobalContext();
+  const { user } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [orderedGoals, setOrderedGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
 
   const fetchUserGoals = async () => {
+    setLoading(true)
     const data = await getUserGoals(user.userId);
   
     // Sort by expected_end_date first and then by name
@@ -32,6 +36,7 @@ const AllGoalsView = () => {
     });
   
     setGoals(sortedData);
+    setLoading(false)
   };
 
   useEffect(() => {
@@ -81,9 +86,14 @@ const AllGoalsView = () => {
     };
   }, [goals.length]);
 
-  if (goals.length == 0) {
+  if (!loading && goals.length === 0) {
+    return (
+     <GoalsWelcome />
+    )
+  }
+  if (loading) {
     return <ActivityIndicator size="large" color="#3e4e88" />;
-  } else {
+  }else {
     return (
       <ScrollView>
       <View style={styles.container}>
@@ -103,6 +113,10 @@ const AllGoalsView = () => {
                 expected_end_date={item.expected_end_date}
                 milestones={item.milestones}
                 color={item.color}
+                accomplished={item.accomplished}
+                archived={item.archived}
+                accomplished_at={item.accomplished_at}
+                archived_at={item.archived_at}
                 refreshGoals={fetchUserGoals}
                 
               />

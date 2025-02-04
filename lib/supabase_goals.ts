@@ -32,77 +32,152 @@ AppState.addEventListener('change', (state) => {
   }
 })
 
-export const insertNewGoal= async(
-    name: string,
-    emoji:string,
-    habit_ids:object,
-    user_id: string,
-    description: string,
-    expectedEndDate: Date,
-    milestones: object,
-    color: string,
-    tags?:object):Promise<{ success: boolean; message: string; data?: any }>=>{
-    const { data, error } = await supabase
-      .from('goal_objects')
+export const insertNewGoal = async (
+  name: string,
+  emoji: string,
+  habit_ids: { id: string; name: string }[], // Expecting an array of habit objects
+  user_id: string,
+  description: string,
+  expectedEndDate: Date,
+  milestones: object,
+  color: string,
+  tags?: object
+): Promise<{ success: boolean; message: string; data?: any }> => {
+  // Insert the goal into goal_objects
+  const { data, error } = await supabase
+    .from("goal_objects")
+    .insert([
+      {
+        name,
+        emoji,
+        tags,
+        user_id,
+        description,
+        expected_end_date: expectedEndDate,
+        milestones,
+        color,
+      },
+    ])
+    .select("id") // Get the new goal's ID
+    .single();
+
+  if (error || !data) {
+    console.error("Error inserting goal:", error);
+    return { success: false, message: "Error inserting goal", data: error };
+  }
+
+  const goalId = data.id;
+
+  // If habit_ids exist, insert them into goal_habits
+  if (habit_ids.length > 0) {
+    const { error: habitError } = await supabase
+      .from("goal_habits_reference")
       .insert(
-        {
-          name,
-          emoji,
-          habit_ids,
-          tags,
-          user_id,
-          description,
-          expected_end_date: expectedEndDate,
-          milestones,
-          color
-        },
+        habit_ids.map((habit) => ({
+          goal_id: goalId,
+          habit_id: habit.id,
+          habit_name: habit.name,
+        }))
       );
 
-      if (error) {
-        console.error('Error inserting goal:', error);
-        return { success: false, message: 'Error inserting goal', data: error };
-      } else {
-        console.log('Goal inserted successfully:', data, error);
-        return { success: true, message: 'Goal inserted successfully', data };
-      }
-}
+    if (habitError) {
+      console.error("Error inserting habits:", habitError);
+      return { success: false, message: "Goal created, but habit linking failed", data: habitError };
+    }
+  }
+
+  console.log("Goal inserted successfully with habits");
+  return { success: true, message: "Goal inserted successfully", data: { goalId } };
+};
+
 
 export const updateGoal = async (
   id: string,
   user_id: string,
   name?: string,
   emoji?: string,
-  habit_ids?: object,
+  habit_ids?: { id: string; name: string }[], // Expecting an array of habit objects
   description?: string,
   expectedEndDate?: Date,
   milestones?: object,
   color?: string,
   tags?: object
 ): Promise<{ success: boolean; message: string; data?: any }> => {
-  const { data, error } = await supabase
-    .from('goal_objects')
+  const supabaseClient = supabase; // Ensure supabase is correctly imported
+
+  // Step 1: Update goal_objects (excluding habit_ids)
+  const { data, error } = await supabaseClient
+    .from("goal_objects")
     .update({
       ...(name && { name }),
       ...(emoji && { emoji }),
-      ...(habit_ids && { habit_ids }),
       ...(description && { description }),
       ...(expectedEndDate && { expected_end_date: expectedEndDate }),
       ...(milestones && { milestones }),
       ...(color && { color }),
       ...(tags && { tags }),
     })
-    .eq('id', id)
-    .eq('user_id', user_id);
+    .eq("id", id)
+    .eq("user_id", user_id);
 
   if (error) {
-    console.error('Error updating goal:', error);
-    return { success: false, message: 'Error updating goal', data: error };
-  } else {
-    console.log('Goal updated successfully:', data);
-    return { success: true, message: 'Goal updated successfully', data };
+    console.error("Error updating goal:", error);
+    return { success: false, message: "Error updating goal", data: error };
   }
+
+  // Step 2: If habit_ids are provided, update goal_habits table
+  if (habit_ids) {
+    // Start a transaction-like sequence to ensure consistency
+    const { error: deleteError } = await supabaseClient
+      .from("goal_habits_reference")
+      .delete()
+      .eq("goal_id", id);
+
+    if (deleteError) {
+      console.error("Error deleting existing habit links:", deleteError);
+      return { success: false, message: "Failed to update habits", data: deleteError };
+    }
+
+    if (habit_ids.length > 0) {
+      const { error: insertError } = await supabaseClient
+        .from("goal_habits_reference")
+        .insert(
+          habit_ids.map((habit) => ({
+            goal_id: id,
+            habit_id: habit.id,
+            habit_name: habit.name,
+          }))
+        );
+
+      if (insertError) {
+        console.error("Error inserting new habits:", insertError);
+        return { success: false, message: "Failed to update habits", data: insertError };
+      }
+    }
+  }
+
+  console.log("Goal updated successfully");
+  return { success: true, message: "Goal updated successfully", data };
 };
 
+const getUserHabitsForGoal = async (
+  goal_id: string
+): Promise<{ id: string; name: string }[]> => {
+  const { data, error } = await supabase
+    .from("goal_habits_reference")
+    .select("habit_id, habit_name")
+    .eq("goal_id", goal_id);
+
+  if (error) {
+    console.error("Error fetching habits for goal:", error);
+    return [];
+  }
+
+  return data.map((habit) => ({
+    id: habit.habit_id,
+    name: habit.habit_name,
+  }));
+};
 
 
 export const getUserGoals = async (userId: string): Promise<Goal[]> => {
@@ -117,8 +192,17 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
     console.error('Error fetching habits:', error);
     return [];
   }
-  console.log(data)
-  return data as Goal[];
+  if(data){
+    const goalsWithHabits = await Promise.all(
+      data.map(async (goal) => ({
+        ...goal,
+        habit_ids: await getUserHabitsForGoal(goal.id),
+      }))
+    );
+    return goalsWithHabits as Goal[];
+  }else{
+    return [];
+  }
 };
 
 export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
@@ -134,23 +218,47 @@ export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
     return [];
   }
   console.log(data)
-  return data as Goal[];
+  if(data){
+    const goalsWithHabits = await Promise.all(
+      data.map(async (goal) => ({
+        ...goal,
+        habit_ids: await getUserHabitsForGoal(goal.id),
+      }))
+    );
+    return goalsWithHabits as Goal[];
+  }else{
+    return [];
+  }
 };
 
-export const getUserSingleGoal = async (userId: string, goal_id: string): Promise<Goal | null> => {
-  const { data, error } = await supabase.from('goal_objects')
-  .select('*')
-  .eq('user_id', userId)
-  .eq('id', goal_id)
-  .order('expected_end_date', { ascending: true })
-  .single()
-  if (error && userId) {
-    console.error('Error fetching habits:', error);
+export const getUserSingleGoal = async (
+  userId: string,
+  goal_id: string
+): Promise<Goal | null> => {
+  const { data, error } = await supabase
+    .from("goal_objects")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("id", goal_id)
+    .order("expected_end_date", { ascending: true })
+    .single();
+
+  if (error) {
+    console.error("Error fetching goal:", error);
     return null;
   }
-  console.log(data)
-  return data as Goal;
+
+  if (!data) return null;
+
+  // Fetch associated habits for the goal
+  const habits = await getUserHabitsForGoal(goal_id);
+
+  return {
+    ...data,
+    habit_ids: habits, // Add habits array to the goal object
+  } as Goal;
 };
+
 
 export const addCheckToMilestone = async(userId: string, milestone_name:string)=>{
 
@@ -267,6 +375,31 @@ export const accomplishGoal = async (goal_id: string, userId:string): Promise<{ 
     console.log('Goal accomplished successfully:', data);
     return { success: true, message: 'Goal accomplished successfully', data };
   }
+}
+
+type HabitIds = {
+  id: string;
+  name: string;
+};
+
+async function getHabitsForGoal(goalId: string): Promise<HabitIds[] | null> {
+  const { data, error } = await supabase
+    .from("goals_habits_reference")
+    .select("habit_id, habit_name")
+    .eq("goal_id", goalId);
+
+  if (error) {
+    console.error("Error fetching habits for goal:", error);
+    return null;
+  }
+
+  // Transform data into desired format
+  const habitList: HabitIds[] = data.map((habit) => ({
+    id: habit.habit_id,
+    name: habit.habit_name,
+  }));
+
+  return habitList;
 }
 
   
