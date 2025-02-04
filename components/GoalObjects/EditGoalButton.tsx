@@ -143,7 +143,7 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
               <Text style={[styles.headerText, {color:color}]}>
                 {label} {" "}
               </Text>
-              <TouchableOpacity onPress={()=>{handleDelete(goalId,user.userId)}}
+              <TouchableOpacity onPress={()=>{handleDelete(goalId, user.userId)}}
           style={styles.deleteButton}>
             <Ionicons name="trash-outline" size={28} color="red" style={{ marginLeft: 10 }} />
           </TouchableOpacity>

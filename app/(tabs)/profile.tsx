@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getCurrentUser, handleUserDeletion, signOut } from "@/lib/supabase";
-import { currentUserType } from "@/types/types";
+import { User } from "@/types/types";
 import CustomButton from "@/components/CustomButtom";
 import { useGlobalContext } from "@/context/Context";
 import { router } from "expo-router";
@@ -24,8 +24,8 @@ import SettingsHome from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
 
 const Profile = () => {
-    const { isLoggedIn, setUser, user } = useGlobalContext();
-    const [userData, setUserData] = useState<currentUserType | null>(null);
+    const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext();
+    const [userData, setUserData] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
@@ -65,7 +65,7 @@ const Profile = () => {
                         const result = await signOut();
                         if (result.success) {
                             console.log("User Signed out successfully");
-                            isLoggedIn.isLoggedIn = false;
+                            setIsLoggedIn(false);
                             setUser({
                                 email: "",
                                 username: "",
@@ -107,7 +107,7 @@ const Profile = () => {
 
                             if (result.success) {
                                 // Reset global state
-                                isLoggedIn.isLoggedIn = false;
+                                setIsLoggedIn(false);
                                 setUser({
                                     email: "",
                                     username: "",

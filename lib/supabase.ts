@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, currentUserType } from '@/types/types'
+import { Habit, HabitTracking, User } from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -184,39 +184,46 @@ export const getUsername = async (userId: string) =>{
       
     }
   }
+
 //**
  /* Gets the current user on the app.
  * @returns current_user data 
  */
-export const getCurrentUser = async () =>{
-  try {
-    const {data} = await supabase.auth.getUser()
-    if(!data){
-      Alert.alert("User data not found")
-    }else{
-      let username: string
-      let userId: string
-      let email: string
-      userId = data.user?.id || ''
-      email = data.user?.email || ''
-      username = await getUsername(userId);
+ export const getCurrentUser = async (): Promise<User> => {
+    try {
+        const { data } = await supabase.auth.getUser();
+        if (!data) {
+            Alert.alert("User data not found");
+            let defaultUser = {
+                userId: "",
+                username: "",
+                email: "",
+            } as User;
+            
+            return defaultUser;
+        } else {
+            const userId = data.user?.id || "";
+            const username = await getUsername(userId);
 
-      
-      let current_user: currentUserType;
-      current_user = {
-        username: username,
-        email: email,
-        userId: userId
-      }
-      return current_user
+            let currentUser = {
+                userId: userId,
+                username: username,
+                email: data.user?.email || "",
+            } as User;
 
+            return currentUser;
+        }
+    } catch (error) {
+        Alert.alert("Issue fetching current user info.");
+        let defaultUser = {
+            userId: "",
+            username: "",
+            email: "",
+        } as User;
+        
+        return defaultUser;
     }
-    
-  } catch (error) {
-    Alert.alert("Issue fetching current user info.")
-    
-  }
-}
+};
 
 //** Refreshs the current users session.
  /* 

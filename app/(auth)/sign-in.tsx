@@ -21,6 +21,7 @@ const SignIn = () => {
 
   const [isSubmitting, setisSubmitting] = useState(false)
 
+  // TODO: The following needs to be refactored and account for sign in failing.
   const submit = async () =>{
     if(form.email === "" || form.password === ""){
       Alert.alert('Error', 'Please fill in all the fields')
@@ -28,15 +29,10 @@ const SignIn = () => {
     setisSubmitting(true);
     try{
       await signInWithEmail(form.email, form.password)
-      //const { data, error } = await supabase.auth.getSession()
       const result = await getCurrentUser();
       console.log(result)
-      setUser({
-          email: result?.email || '',
-          username: result?.username || '',
-          userId: result?.userId || ''
-        })
-      setIsLoggedIn({isLoggedIn:true});
+      setUser(result)
+      setIsLoggedIn(true);
 
 
     if(result?.username != undefined){

@@ -34,7 +34,7 @@ const SignUp = () => {
         username: form.username,
         userId: result?.id || ''
       })
-      setIsLoggedIn({isLoggedIn: true})
+      setIsLoggedIn(true);
       if(result){
         router.replace('/habits')
 
