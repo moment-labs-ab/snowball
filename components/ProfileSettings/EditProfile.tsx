@@ -1,14 +1,13 @@
 import { View, Text, StyleSheet, SafeAreaView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getCurrentUser, handleUserDeletion } from '@/lib/supabase'
-import { currentUserType } from '@/types/types'
+import { User } from '@/types/types'
 import CustomButton from '../CustomButtom'
 import { useGlobalContext } from '@/context/Context'
 import { router } from 'expo-router'
 
 const EditProfile = () => {
-  const { isLoggedIn, setUser, user } = useGlobalContext()
-  const [userData, setUserData] = useState<currentUserType | null>(null)
+  const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
@@ -16,7 +15,7 @@ const EditProfile = () => {
     try {
       const userDataPull = await getCurrentUser()
       if (userDataPull) {
-        setUserData(userDataPull)
+        setUser(userDataPull)
       } else {
         Alert.alert('Error', 'Unable to fetch user data')
       }
@@ -55,7 +54,7 @@ const EditProfile = () => {
 
               if (result.success) {
                 // Reset global state
-                isLoggedIn.isLoggedIn = false;
+                setIsLoggedIn(false);
                 setUser({
                   email: '',
                   username: '',
@@ -105,14 +104,14 @@ const EditProfile = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
-        {userData ? (
+        {user ? (
           <>
             <View style={styles.profileInfo}>
               <Text style={styles.label}>Email:</Text>
-              <Text style={styles.value}>{userData.email}</Text>
+              <Text style={styles.value}>{user.email}</Text>
               
               <Text style={styles.label}>Name:</Text>
-              <Text style={styles.value}>{userData.username}</Text>
+              <Text style={styles.value}>{user.username}</Text>
 
               <TouchableOpacity onPress={changePasswordRequested} style={styles.passwordButton}>
                 <Text style={styles.password}>Change Password</Text>

@@ -115,7 +115,7 @@ const Settings = () => {
             const result = await signOut();
             if (result.success) {
               console.log('User Signed out successfully');
-              isLoggedIn.isLoggedIn = false;
+              setIsLoggedIn(false);
               setUser({
                 email: '',
                 username: '',

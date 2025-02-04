@@ -1,10 +1,11 @@
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
-export interface currentUserType {
-  username?: string,
-  email:string,
-  userId: string
-}
+export type User = {
+    username?: string;
+    email: string;
+    userId: string;
+};
+
 export interface Habit {
     id: string;
     created_at: string;

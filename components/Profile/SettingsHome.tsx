@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useGlobalContext } from '@/context/Context';
-import { currentUserType } from '@/types/types';
+import { User } from '@/types/types';
 import { getCurrentUser } from '@/lib/supabase';
 import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Types';
 import Setting from '@/components/Profile/Setting';
@@ -47,8 +47,7 @@ const SECTION = [
 ];
 
 const SettingsHome = () => {
-    const { isLoggedIn, setUser, user } = useGlobalContext()
-    const [userData, setUserData] = useState<currentUserType | null>(null)
+    const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext()
     const [isLoading, setIsLoading] = useState(false)
     const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
@@ -56,7 +55,7 @@ const SettingsHome = () => {
         try {
             const userDataPull = await getCurrentUser()
             if (userDataPull) {
-                setUserData(userDataPull)
+                setUser(userDataPull)
             } else {
                 Alert.alert('Error', 'Unable to fetch user data')
             }
@@ -73,10 +72,10 @@ const SettingsHome = () => {
 
     useEffect(() => {
         setSelect({
-            name: userData?.username || '',
-            email: userData?.email || ''
+            name: user.username || '',
+            email: user.email || ''
         });
-    }, [userData]);
+    }, [user]);
 
     const [toggle, setToggle] = useState<ProfileToggleState>({
         logout: false
@@ -98,7 +97,7 @@ const SettingsHome = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView>
-                {userData ? (<SafeAreaView className="bg-background h-full">
+                {user ? (<SafeAreaView className="bg-background h-full">
                     {SECTION.map(({ header, items }) => (
                         <View style={styles.section} key={header}>
                             <View style={styles.sectionHeader}>
