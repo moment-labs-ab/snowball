@@ -1,123 +1,59 @@
-import { Dispatch, SetStateAction, createContext, useState, ReactNode, useContext, useEffect } from "react";
+import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { getCurrentUser } from "@/lib/supabase";
+import { User } from "@/types/types";
 
-//User and setUser
-export type User = {
-    username: string,
-    email:string,
-    userId: string
-}
-export interface UserContextInterface{
-    user: User,
-    setUser: Dispatch<SetStateAction<User>>
-}
-const userDefaultState = {
-    user: {
-    username:'',
-    email:'',
-    userId: ''
-},
-setUser: (user: User) => { }
-} as UserContextInterface
-
-//IsLoggedIn and setIsLoggedIn
-export type IsLoggedIn = {
-    isLoggedIn: boolean
-}
-export interface IsLoggedInContextInterface{
-    isLoggedIn: IsLoggedIn,
-    setIsLoggedIn: Dispatch<SetStateAction<IsLoggedIn>>
-}
-const isLoggedInDefaultState = {
-    isLoggedIn:{
-        isLoggedIn: false
-    },
-    setIsLoggedIn: (isLoggedIn: IsLoggedIn) => { }
-} as IsLoggedInContextInterface
-
-//isLoading and setIsLoading
-export type IsLoading = {
-    isLoading: boolean
-}
-export interface IsLoadingInterface{
-    isLoading: IsLoading
-    setIsLoading: Dispatch<SetStateAction<IsLoading>>
-}
-const isLoadingDefaultState = {
-    isLoading:{
-        isLoading: true
-    },
-    setIsLoading: (isLoading: IsLoading) => { }
-} as IsLoadingInterface
-
-// Create a combined context type
 interface GlobalContextInterface {
-    user: User;
-    setUser: Dispatch<SetStateAction<User>>;
-    isLoggedIn: IsLoggedIn;
-    setIsLoggedIn: Dispatch<SetStateAction<IsLoggedIn>>;
-    isLoading: IsLoading;
-    setIsLoading: Dispatch<SetStateAction<IsLoading>>;
-  }
-  
-  const GlobalContext = createContext<GlobalContextInterface>({
-    user: userDefaultState.user,
-    setUser: userDefaultState.setUser,
-    isLoggedIn: isLoggedInDefaultState.isLoggedIn,
-    setIsLoggedIn: isLoggedInDefaultState.setIsLoggedIn,
-    isLoading: isLoadingDefaultState.isLoading,
-    setIsLoading: isLoadingDefaultState.setIsLoading
-
-
-  });
-export const useGlobalContext = () => useContext(GlobalContext)
-
-type GlobalProviderProps={
-    children: ReactNode
+  user: User;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function GlobalProvider({children}: GlobalProviderProps){
-    const [user, setUser] = useState<User>(
-        userDefaultState.user
-    );
-    const [isLoggedIn, setIsLoggedIn] = useState<IsLoggedIn>(isLoggedInDefaultState.isLoggedIn);
-    const [isLoading, setIsLoading ] = useState<IsLoading>(isLoadingDefaultState.isLoading)
+const defaultUser: User = { username: "", email: "", userId: "" };
 
-    useEffect(()=>{
-        getCurrentUser()
-        .then((result)=>{
-            if(result){
-                setIsLoggedIn({isLoggedIn:true})
-                setUser({
-                    email: result?.email || '',
-                    username: result?.username || '',
-                    userId: result?.userId || ''
-                    })
-            }else{
-                setIsLoggedIn({isLoggedIn:false})
-                setUser(userDefaultState.user)
-            }
-        })
-        .catch((error)=>{
-            console.log(error)
-        })
-        .finally(()=>{
-            setIsLoading({isLoading:false})
-        })
-      }, [])
+const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 
-    return(
-        <GlobalContext.Provider
-        value={{
-            isLoggedIn,
-            setIsLoggedIn,
-            user,
-            setUser,
-            isLoading,
-            setIsLoading}}>
-            {children}
-        </GlobalContext.Provider>
-        
-    )
+export const useGlobalContext = () => {
+  const context = useContext(GlobalContext);
+  if (!context) {
+    throw new Error("useGlobalContext must be used within a GlobalProvider");
+  }
+  return context;
+};
 
+interface GlobalProviderProps {
+  children: ReactNode;
+}
+
+export default function GlobalProvider({ children }: GlobalProviderProps) {
+  const [user, setUser] = useState<User>(defaultUser);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((result) => {
+        if (result) {
+          setIsLoggedIn(true);
+          setUser({
+            email: result.email || "",
+            username: result.username || "",
+            userId: result.userId || "",
+          });
+        } else {
+          setIsLoggedIn(false);
+          setUser(defaultUser);
+        }
+      })
+      .catch((error) => console.error("Error fetching user:", error))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  return (
+    <GlobalContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, isLoading, setIsLoading }}>
+      {children}
+    </GlobalContext.Provider>
+  );
 }
