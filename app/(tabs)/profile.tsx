@@ -22,7 +22,6 @@ import SettingsButton from "@/components/SettingsButton";
 import Settings from "@/components/ProfileSettings/Settings";
 import SettingsHome from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
-import TempLogoutView from "@/components/Profile/TempLogoutView";
 
 const Profile = () => {
     const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext();
@@ -217,7 +216,6 @@ const Profile = () => {
         </View>
         
         <HeatMapDisplay />
-        <TempLogoutView />
         <View style={styles.divider} />
       </View>
     </SafeAreaView>
