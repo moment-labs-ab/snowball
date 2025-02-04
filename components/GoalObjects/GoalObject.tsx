@@ -31,6 +31,10 @@ type GoalObjectProps = {
   expected_end_date: Date;
   milestones: Milestones[];
   color: string;
+  accomplished: boolean;
+  archived: boolean;
+  accomplished_at: Date;
+  archived_at: Date;
   refreshGoals: () => Promise<void>;
 };
 
@@ -50,6 +54,10 @@ const GoalObject = ({
   expected_end_date,
   milestones,
   color,
+  accomplished,
+  archived,
+  accomplished_at,
+  archived_at,
   refreshGoals
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
@@ -125,6 +133,10 @@ const GoalObject = ({
             expected_end_date={expected_end_date}
             milestones={milestones}
             color={color}
+            accomplished={accomplished}
+            archived={archived}
+            accomplished_at={accomplished_at}
+            archived_at={archived_at}
             contentToggled={isVisible}
             refreshGoals={refreshGoals}
           />

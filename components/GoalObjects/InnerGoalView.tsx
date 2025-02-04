@@ -1,4 +1,11 @@
-import { View, Text, SafeAreaView, StyleSheet, Alert, TouchableOpacity} from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import GoalHabitsView from "./GoalHabitsView";
 import { Milestones } from "@/types/types";
@@ -29,6 +36,10 @@ type InnerGoalViewProps = {
   expected_end_date: Date;
   milestones: Milestones[];
   color: string;
+  accomplished: boolean;
+  archived: boolean;
+  accomplished_at: Date;
+  archived_at: Date;
   contentToggled: boolean;
   refreshGoals: () => Promise<void>;
 };
@@ -44,6 +55,11 @@ const InnerGoalView = ({
   expected_end_date,
   milestones,
   color,
+  accomplished,
+  archived,
+  accomplished_at,
+  archived_at,
+
   contentToggled,
   refreshGoals,
 }: InnerGoalViewProps) => {
@@ -60,6 +76,10 @@ const InnerGoalView = ({
     expected_end_date,
     milestones,
     color,
+    accomplished,
+    archived,
+    accomplished_at,
+    archived_at,
   });
 
   const updateMilestones = (updatedMilestones: typeof goalData.milestones) => {
@@ -131,115 +151,127 @@ const InnerGoalView = ({
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
-      <View style={{flex:1}}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          padding: 10,
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={[styles.title, { color: color, flex: 1, textAlign: "center" }]}
-        >
-          {emoji} {name}
-        </Text>
-        <EditGoalButton
-          label="Edit Goal"
-          goalName={name}
-          color={color}
-          goalId={id}
-          content={
-            <EditGoalForm
-              id={goalData.id}
-              originalName={goalData.name}
-              originalDescription={goalData.description}
-              originalEmoji={goalData.emoji}
-              originalColor={goalData.color}
-              originalMilestones={goalData.milestones}
-              originalTags={goalData.tags}
-              original_expected_end_date={goalData.expected_end_date}
-              original_habit_ids={goalData.habit_ids}
-              refreshGoals={refreshGoals}
-            />
-          }
-        />
-      </View>
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.description}>"{description}"</Text>
-      </View>
-      <View
-        style={{
-          marginBottom: 20,
-          paddingHorizontal: 20,
-          borderRadius: 1,
-          borderColor: "black",
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <AntDesign name="dotchart" size={20} color={color} />
-            <Text style={styles.label}> Habit Tracking </Text>
-          </View>
-          <View>
-            <Text style={styles.labelKey}>
-              <Text style={{ color: color }}>Tracked</Text>
-              <Text style={{ color: "#bababa" }}> / </Text>
-              <Text style={{ color: "#afd2fc" }}>Expected</Text>
-              <Text style={{ color: "#bababa" }}> / </Text>
-              <Text style={{ color: "#6f6e79" }}>Days Left</Text>
-            </Text>
-          </View>
-        </View>
-        <View style={styles.line} />
-        <GoalHabitsView
-          habit_ids={goalData.habit_ids}
-          created_at={goalData.created_at}
-          expected_end_date={goalData.expected_end_date}
-          color={goalData.color}
-        />
-      </View>
-      <View style={{ paddingHorizontal: 20, marginTop: 15 }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <AntDesign name="checkcircleo" size={20} color={color} />
-            <Text style={styles.label}> Milestones</Text>
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
-
-      <MilestoneList
-        data={goalData.milestones}
-        onCheckMilestone={handleCheckMilestone}
-        checkmarkColor={goalData.color}
-      />
-      </View>
-      <View style={{paddingHorizontal:18}}>
-      <TouchableOpacity
-        onPress={() => {
-          handleAccomplish(id, user.userId);
-        }}
-        style={[styles.archiveButton, { backgroundColor: color }]}
-      >
+      <View style={{ flex: 1 }}>
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
+            padding: 10,
             alignItems: "center",
           }}
         >
           <Text
             style={[
-              styles.submitButtonText,
-              { color: "black", marginRight: 5, flex: 1, textAlign: "center" },
+              styles.title,
+              { color: color, flex: 1, textAlign: "center" },
             ]}
           >
-            Accomplish Goal 🎉
+            {emoji} {name}
           </Text>
+          <EditGoalButton
+            label="Edit Goal"
+            goalName={name}
+            color={color}
+            goalId={id}
+            content={
+              <EditGoalForm
+                id={goalData.id}
+                originalName={goalData.name}
+                originalDescription={goalData.description}
+                originalEmoji={goalData.emoji}
+                originalColor={goalData.color}
+                originalMilestones={goalData.milestones}
+                originalTags={goalData.tags}
+                original_expected_end_date={goalData.expected_end_date}
+                original_habit_ids={goalData.habit_ids}
+                refreshGoals={refreshGoals}
+              />
+            }
+          />
         </View>
-      </TouchableOpacity>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.description}>"{description}"</Text>
+        </View>
+        <View
+          style={{
+            marginBottom: 20,
+            paddingHorizontal: 20,
+            borderRadius: 1,
+            borderColor: "black",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+            >
+              <AntDesign name="dotchart" size={20} color={color} />
+              <Text style={styles.label}> Habit Tracking </Text>
+            </View>
+            <View>
+              <Text style={styles.labelKey}>
+                <Text style={{ color: color }}>Tracked</Text>
+                <Text style={{ color: "#bababa" }}> / </Text>
+                <Text style={{ color: "#afd2fc" }}>Expected</Text>
+                <Text style={{ color: "#bababa" }}> / </Text>
+                <Text style={{ color: "#6f6e79" }}>Days Left</Text>
+              </Text>
+            </View>
+          </View>
+          <View style={styles.line} />
+          <GoalHabitsView
+            habit_ids={goalData.habit_ids}
+            created_at={goalData.created_at}
+            expected_end_date={goalData.expected_end_date}
+            color={goalData.color}
+          />
+        </View>
+        <View style={{ paddingHorizontal: 20, marginTop: 15 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+            >
+              <AntDesign name="checkcircleo" size={20} color={color} />
+              <Text style={styles.label}> Milestones</Text>
+            </View>
+          </View>
+          <View style={styles.line} />
+        </View>
+
+        <MilestoneList
+          data={goalData.milestones}
+          onCheckMilestone={handleCheckMilestone}
+          checkmarkColor={goalData.color}
+        />
+      </View>
+      <View style={{ paddingHorizontal: 18 }}>
+        <TouchableOpacity
+          onPress={() => {
+            handleAccomplish(id, user.userId);
+          }}
+          style={[styles.archiveButton, { backgroundColor: color }]}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={[
+                styles.submitButtonText,
+                {
+                  color: "black",
+                  marginRight: 5,
+                  flex: 1,
+                  textAlign: "center",
+                },
+              ]}
+            >
+              Accomplish Goal 🎉
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
