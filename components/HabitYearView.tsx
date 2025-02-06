@@ -29,7 +29,7 @@ const HabitYearView = ({id}: HabitYearViewProps) => {
       }
     const fetchHabitTrackingData = async(startDate:Date, endDate:Date)=>{
         const data = await getGridTrackingHistory(user.userId, id,startDate, endDate)
-        console.log(data)
+        //console.log(data)
         if(data){
             setGridData(data)
         }

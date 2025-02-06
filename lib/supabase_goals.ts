@@ -86,7 +86,7 @@ export const insertNewGoal = async (
     }
   }
 
-  console.log("Goal inserted successfully with habits");
+  //console.log("Goal inserted successfully with habits");
   return { success: true, message: "Goal inserted successfully", data: { goalId } };
 };
 
@@ -156,7 +156,7 @@ export const updateGoal = async (
     }
   }
 
-  console.log("Goal updated successfully");
+  //console.log("Goal updated successfully");
   return { success: true, message: "Goal updated successfully", data };
 };
 
@@ -217,7 +217,6 @@ export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
     console.error('Error fetching habits:', error);
     return [];
   }
-  console.log(data)
   if(data){
     const goalsWithHabits = await Promise.all(
       data.map(async (goal) => ({
@@ -311,7 +310,7 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
       console.error('Error deleting goal:', error);
       return { success: false, message: 'Error deleting goal', data: error };
     } else {
-      console.log('Goal deleted successfully:', data);
+      //console.log('Goal deleted successfully:', data);
       return { success: true, message: 'Goal deleted successfully', data };
     }
   };
@@ -336,7 +335,7 @@ export const updateUserMilestones= async(userId: string, goalId: string, updated
       throw new Error(`Error updating milestones: ${error.message}`);
     }
 
-    console.log('Milestones updated successfully:', data);
+    //console.log('Milestones updated successfully:', data);
   } catch (error) {
     console.error('Failed to update milestones:', error);
     throw error;
@@ -355,7 +354,7 @@ export const archiveGoal = async (goal_id: string, userId:string): Promise<{ suc
       console.error('Error archiving goal:', error);
       return { success: false, message: 'Error archiving goal', data: error };
     } else {
-      console.log('Goal archived successfully:', data);
+      //console.log('Goal archived successfully:', data);
       return { success: true, message: 'Goal archived successfully', data };
     }
 }
@@ -372,7 +371,7 @@ export const accomplishGoal = async (goal_id: string, userId:string): Promise<{ 
     console.error('Error accomplishing goal:', error);
     return { success: false, message: 'Error accomplishing goal', data: error };
   } else {
-    console.log('Goal accomplished successfully:', data);
+    //console.log('Goal accomplished successfully:', data);
     return { success: true, message: 'Goal accomplished successfully', data };
   }
 }

@@ -49,19 +49,19 @@ const AllGoalsView = () => {
     });
 
     const unsubscribe = listenToGoalsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
       fetchUserGoals();
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("IN INSERT");
+            //console.log("IN INSERT");
             setGoals((prevGoals) => [...prevGoals, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("IN UPDATE");
+            //console.log("IN UPDATE");
             setGoals((prevGoals) =>
               prevGoals.map((Goal) =>
                 Goal.id === payload.new.id ? payload.new : Goal
@@ -71,7 +71,7 @@ const AllGoalsView = () => {
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("IN DELETE");
+            //console.log("IN DELETE");
             setGoals((prevGoals) =>
               prevGoals.filter((Goal) => Goal.id !== payload.old.id)
             );
@@ -92,7 +92,10 @@ const AllGoalsView = () => {
     )
   }
   if (loading) {
-    return <ActivityIndicator size="large" color="#3e4e88" />;
+    return(
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+    <ActivityIndicator size="large" color="#3e4e88" />
+    </View>);
   }else {
     return (
       <ScrollView>

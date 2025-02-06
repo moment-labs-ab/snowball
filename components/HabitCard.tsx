@@ -62,11 +62,11 @@ const HabitCard = ({
   ).current;
 
   useEffect(() => {
-    console.log("USEEFFECT: HabitCard");
+    //console.log("USEEFFECT: HabitCard");
     const fetchTrackingCount = async () => {
       const count = await getTrackingCount(id, user.userId, date);
       setTrackingCount(count);
-      console.log("fetchTrackingCount", trackingCount);
+      //console.log("fetchTrackingCount", trackingCount);
       setLoading(false);
 
       const initialProgress = count / frequency;
@@ -79,11 +79,11 @@ const HabitCard = ({
     fetchTrackingCount();
     const unsubscribe = listenToHabitTrackingTable((payload) => {
       let newCount;
-      console.log("Pre Payload, habit_id:", payload.new?.habit_id, id);
+      //console.log("Pre Payload, habit_id:", payload.new?.habit_id, id);
 
       // Check if the update is for the current habit card
       if (payload.new?.habit_id === id || payload.old?.habit_id === id) {
-        console.log("Entering Payload, habit_id:", payload.new?.habit_id, id);
+        //console.log("Entering Payload, habit_id:", payload.new?.habit_id, id);
         switch (payload.eventType) {
           case "INSERT":
             if (payload.new) {
@@ -107,7 +107,7 @@ const HabitCard = ({
       }
       if (newCount !== trackingCount && newCount !== undefined) {
         setTrackingCount(newCount);
-        console.log("Listener", trackingCount);
+        //console.log("Listener", trackingCount);
 
         // Trigger the progress bar animation for the specific habit
         Animated.timing(animatedValue, {
@@ -132,7 +132,7 @@ const HabitCard = ({
     const trackingData = await addTracking(user.userId, id, date);
     //const newTrackingCount = trackingData/frequency;
     setTrackingCount(trackingData);
-    console.log("HandlingPress", trackingCount);
+    //console.log("HandlingPress", trackingCount);
   };
 
   const handleTrackingCountChange = (newTrackingCount: number) => {

@@ -37,7 +37,7 @@ const HabitProgressBar = ({ timeFrame, userId, date }: HabitProgressBarProps) =>
         const progressArray = Object.entries(fullProgressData);
         setHabitsArray(progressArray);
       }
-      console.log(Object.keys(fullProgressData)[0])
+      //console.log(Object.keys(fullProgressData)[0])
     } catch (error) {
       console.error("Error fetching progress data:", error);
     }
@@ -51,12 +51,12 @@ const HabitProgressBar = ({ timeFrame, userId, date }: HabitProgressBarProps) =>
   // useFocusEffect to refresh data when the screen is focused
   useFocusEffect(
     useCallback(() => {
-      console.log("Screen focused, refreshing progress data");
+      //console.log("Screen focused, refreshing progress data");
       setRefreshKey((prevKey) => prevKey + 1);
       getProgressData();
 
       const unsubscribe = listenToTrackingHistory((payload) => {
-        console.log('Change received in Progress!', payload);
+        //console.log('Change received in Progress!', payload);
         getProgressData();
         switch (payload.eventType) {
           case 'INSERT':

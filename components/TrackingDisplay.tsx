@@ -75,18 +75,18 @@ const TrackingDisplay = () => {
     });
 
     const unsubscribe = listenToHabitsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("Tracking Display Habit INSERT");
+            //console.log("Tracking Display Habit INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("Tracking Display Habit UPDATE");
+            //console.log("Tracking Display Habit UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -96,7 +96,7 @@ const TrackingDisplay = () => {
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("Tracking Display Habit DELETE");
+            //console.log("Tracking Display Habit DELETE");
             setHabits((prevHabits) =>
               prevHabits.filter((habit) => habit.id !== payload.old.id)
             );

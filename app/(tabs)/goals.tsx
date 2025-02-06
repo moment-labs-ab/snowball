@@ -8,9 +8,6 @@ import AddGoalForm from "@/components/GoalObjects/AddGoalForm";
 import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
 
 const goals = () => {
-  const handleOpenModal = () => {
-    console.log("Vision Object Add");
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>

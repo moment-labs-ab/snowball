@@ -61,7 +61,7 @@ const NewHabit: React.FC<NewHabitProps> = ({ visible, onClose, title }) => {
       if (result.success == false) {
         console.log(result.message);
       } else if (result.data) {
-        console.log(result);
+        //console.log(result);
       }
     } catch (error) {
       Alert.alert(String(error));

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, currentUserType, LifetimeHabitStats } from '@/types/types'
+import { Habit, HabitTracking, LifetimeHabitStats } from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -195,7 +195,7 @@ export const sendFeedback = async(
         console.error('Error Sending Feedback', error);
         return { success: false, message: 'Error Sending Feedback', data: error };
       } else {
-        console.log('Sent feedback successfully:', data, error);
+        //console.log('Sent feedback successfully:', data, error);
         return { success: true, message: 'Sent feedback successfully', data };
       }
 

@@ -50,7 +50,7 @@ useEffect(() =>{
 
   // Call the async function
     const unsubscribe = listenToTrackingHistory((payload) => {
-    console.log('Change received in Progress!', payload);
+    //console.log('Change received in Progress!', payload);
     switch (payload.eventType) {
       case 'INSERT':
         setRefreshKey(prevKey => prevKey + 1)

@@ -98,7 +98,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         console.log(result.message);
         Alert.alert("Error", result.message);
       } else if (result.data) {
-        console.log(result);
+        //console.log(result);
       }
     } catch (error) {
       Alert.alert("Submission Error", String(error));

@@ -104,19 +104,19 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     fetchHabits();
 
     const unsubscribe = listenToHabitsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
       fetchHabits();
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("IN INSERT");
+            //console.log("IN INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("IN UPDATE");
+            //console.log("IN UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -126,7 +126,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("IN DELETE");
+            //console.log("IN DELETE");
             setHabits((prevHabits) =>
               prevHabits.filter((habit) => habit.id !== payload.old.id)
             );
@@ -309,7 +309,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Archive canceled'),
           style: 'cancel',
         },
         {
@@ -317,7 +316,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
           onPress: async () => {
             const result = await archiveGoal(goal_id, user_id);
             if (result.success) {
-              console.log('Goal archived successfully');
+              //console.log('Goal archived successfully');
               // Handle successful deletion, e.g., refresh the habit list
               //deleteHabitEmitter.emit('deleteHabit')
             } else {

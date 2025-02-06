@@ -41,7 +41,7 @@ const Habits = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleDateChange = (date: Date) => {
-    console.log('Selected date:', date);
+    //console.log('Selected date:', date);
     setSelectedDate(date)
   };
 

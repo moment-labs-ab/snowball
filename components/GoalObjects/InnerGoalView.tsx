@@ -95,14 +95,10 @@ const InnerGoalView = ({
     updateMilestones(updatedMilestones);
     try {
       updateUserMilestones(user.userId, id, updatedMilestones);
-      console.log("Milestones update complete.");
+      //console.log("Milestones update complete.");
     } catch (error) {
       console.error("Error:", error);
     }
-    console.log(
-      `Milestone updated: ${updatedMilestones[index].milestone}`,
-      updatedMilestones
-    );
   };
 
   const fetchSingleGoal = async () => {
@@ -121,7 +117,7 @@ const InnerGoalView = ({
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Accomplish canceled"),
+          //onPress: () => console.log("Accomplish canceled"),
           style: "cancel",
         },
         {
@@ -129,7 +125,7 @@ const InnerGoalView = ({
           onPress: async () => {
             const result = await accomplishGoal(goal_id, user_id);
             if (result.success) {
-              console.log("Goal accomplished successfully");
+              //console.log("Goal accomplished successfully");
               // Handle successful deletion, e.g., refresh the habit list
               //deleteHabitEmitter.emit('deleteHabit')
             } else {
@@ -146,8 +142,7 @@ const InnerGoalView = ({
 
   useEffect(() => {
     fetchSingleGoal();
-    console.log(goalData.habit_ids.length);
-  }, [contentToggled, habit_ids.length, milestones.length, color]);
+  }, [contentToggled, habit_ids.length, milestones.length, color, name]);
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>

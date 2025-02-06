@@ -131,7 +131,7 @@ const EditHabit: React.FC<EditHabitProps> = ({ visible, onClose, title, habit_id
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Delete canceled'),
+          //onPress: () => console.log('Delete canceled'),
           style: 'cancel',
         },
         {
