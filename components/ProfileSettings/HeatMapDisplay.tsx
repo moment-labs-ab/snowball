@@ -79,18 +79,18 @@ const HeatMapDisplay = () => {
     });
 
     const unsubscribe = listenToHabitsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("Tracking Display Habit INSERT");
+            //console.log("Tracking Display Habit INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("Tracking Display Habit UPDATE");
+            //console.log("Tracking Display Habit UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -123,7 +123,7 @@ const HeatMapDisplay = () => {
       if (habits.length > 0) {
         for (const habit of habits) {
           try {
-            console.log("Calling getGridTrackingHistory", endDate);
+            //console.log("Calling getGridTrackingHistory", endDate);
             const habitData = await getGridTrackingHistory(
               user.userId,
               habit.id,
@@ -150,17 +150,17 @@ const HeatMapDisplay = () => {
     }
 
     const unsubscribe = listenToTrackingHistory((payload) => {
-      console.log("Change received in Progress!", payload);
+      //console.log("Change received in Progress!", payload);
       fetchGridData();
       switch (payload.eventType) {
         case "INSERT":
-          console.log("New Tracking Picked Up! INSERT");
+          //console.log("New Tracking Picked Up! INSERT");
         //handleRefresh(payload.habitId, payload.new);
         case "UPDATE":
-          console.log("New Tracking Picked Up! UPDATE");
+          //console.log("New Tracking Picked Up! UPDATE");
         //handleRefresh(payload.habitId, payload.new);
         case "DELETE":
-          console.log("New Tracking Picked Up! DELETE");
+          //console.log("New Tracking Picked Up! DELETE");
           //handleRefresh(payload.habitId, payload.new);
           break;
       }

@@ -37,9 +37,7 @@ export default function App() {
       />
 
       <View className='relative mt-5'>
-        <Text className = "text-5xl text-white font-bold text-center text-primary">Snowball
-        </Text>
-
+        <Text className = "text-5xl text-white font-bold text-center text-primary">Snowball</Text>
       </View>
 
       <Text className="text-medium font-pregular text-black-100 mt-4 text-center">Grow Your Habits. Grow Your Life.</Text>
@@ -55,7 +53,6 @@ export default function App() {
     </ScrollView>
 
     <StatusBar backgroundColor='#161622' style='light'/>
-    <Toast />
     </SafeAreaView>
   );
    }

@@ -107,7 +107,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({ visible, onClose, title, hab
   
       // Update tracking count if changed
       if (trackingCount !== tracking) {
-        console.log("Calling updateTracking...")
+        //console.log("Calling updateTracking...")
         const result = await updateTracking(user.userId, habit_id, selectedDate, tracking)
         onTrackingCountChange(tracking);
       }
@@ -136,7 +136,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({ visible, onClose, title, hab
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Delete canceled'),
+          //onPress: () => console.log('Delete canceled'),
           style: 'cancel',
         },
         {
@@ -144,7 +144,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({ visible, onClose, title, hab
           onPress: async () => {
             const result = await deleteHabit(habit_id, user_id);
             if (result.success) {
-              console.log('Habit deleted successfully');
+              //console.log('Habit deleted successfully');
               closeHabits()
               // Handle successful deletion, e.g., refresh the habit list
               deleteHabitEmitter.emit('deleteHabit')

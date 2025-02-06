@@ -39,9 +39,9 @@ const DailyHabitDisplay = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("USEEFFECT: DailyHabitDisplay");
+    //console.log("USEEFFECT: DailyHabitDisplay");
     if (editHabitOrder === true) {
-      console.log("Daily Habit Display Edit Request Received");
+      //console.log("Daily Habit Display Edit Request Received");
     }
     const fetchHabits = async () => {
       setLoading(true); 
@@ -64,7 +64,7 @@ const DailyHabitDisplay = ({
       }
     );
     const unsubscribe = listenToHabitsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
       habitEmitter.emit("dataChanged");
 
       fetchHabits();
@@ -72,13 +72,13 @@ const DailyHabitDisplay = ({
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("IN INSERT");
+            //console.log("IN INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("IN UPDATE");
+            //console.log("IN UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -88,7 +88,7 @@ const DailyHabitDisplay = ({
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("IN DELETE");
+            //console.log("IN DELETE");
             setHabits((prevHabits) =>
               prevHabits.filter((habit) => habit.id !== payload.old.id)
             );
@@ -107,7 +107,11 @@ const DailyHabitDisplay = ({
     )
   }
   if (loading) {
-    return <ActivityIndicator size="large" color="#3e4e88" />;
+    return(
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+    <ActivityIndicator size="large" color="#3e4e88" />
+    </View>
+    );
   }
   return (
     <FlashList

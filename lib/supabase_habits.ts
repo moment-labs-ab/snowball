@@ -103,7 +103,7 @@ AppState.addEventListener('change', (state) => {
       console.error('Error inserting habit:', error);
       return { success: false, message: 'Error inserting habit', data: error };
     } else {
-      console.log('Habit inserted successfully:', data, error);
+      //console.log('Habit inserted successfully:', data, error);
       return { success: true, message: 'Habit inserted successfully', data };
     }
   }
@@ -211,7 +211,7 @@ export const updateHabitIfChanged = async (
     console.error('Error updating habit:', error);
     return { success: false, message: 'Error updating habit', data: error };
   } else {
-    console.log('Habit updated successfully:', data);
+    //console.log('Habit updated successfully:', data);
     return { success: true, message: 'Habit updated successfully', data };
   }
 };
@@ -249,7 +249,7 @@ export const deleteHabit = async (
     console.error('Error deleting habit:', error);
     return { success: false, message: 'Error deleting habit', data: error };
   } else {
-    console.log('Habit deleted successfully:', data);
+    //console.log('Habit deleted successfully:', data);
     return { success: true, message: 'Habit deleted successfully', data };
   }
 };
@@ -282,7 +282,7 @@ export const deleteHabit = async (
       .single(); // Ensures only one record is returned
   
     if (error && userId) {
-      console.log('Error fetching habit:', error);
+      //console.log('Error fetching habit:', error);
       return null;
     }
   
@@ -375,7 +375,7 @@ export const getTrackingCount = async (habit_id: string, user_id: string, date: 
     .lte('time_frame_start', selectedDate.toISOString())
     .gte('time_frame_end', selectedDate.toISOString());
     if (error && user_id) {
-      console.log('Error fetching habits:', error, habit_id);
+      //console.log('Error fetching habits:', error, habit_id);
       return 0;
     }
     //console.log(existingTracking)
@@ -526,7 +526,7 @@ export const addTrackingHistory = async (tracking_id: string, habit_id: string, 
         if (insertError) {
             console.error('Error inserting tracking history data:', insertError);
         }else{
-            console.log("Habit Tracked in addTrackingHistory.")
+            //console.log("Habit Tracked in addTrackingHistory.")
         }
         
 
@@ -542,7 +542,7 @@ export const removeTracking = async (user_id: string, habit_id: string, date: Da
     return newValue - 1
   }
   const newTrackingCount = await deincrementCount()
-  console.log(newTrackingCount)
+  //console.log(newTrackingCount)
   
 
   const { data, error: updateError } = await supabase
@@ -580,7 +580,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
 
   if (existingTracking && existingTracking.length > 0) {
     const trackingId = existingTracking[0].id;
-    console.log("TrackingHistoryId:", existingTracking)
+    //console.log("TrackingHistoryId:", existingTracking)
     if(updatedValue === 0){
     const { data, error: updateError } = await supabase
       .from("habit_tracking")
@@ -593,7 +593,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
       if (updateError) {
         console.error('Error updating tracking data:', updateError);
       } else {
-        console.log("Habit Tracking Updated.");
+        //console.log("Habit Tracking Updated.");
         return updatedValue;
       }
 
@@ -611,7 +611,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
     if (updateError) {
       console.error('Error updating tracking data:', updateError);
     } else {
-      console.log("Habit Tracking Updated.");
+      //console.log("Habit Tracking Updated.");
       addTrackingHistory(trackingId, habit_id, selectedDate, user_id)
       return updatedValue;
     }
@@ -619,7 +619,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
 
   } else {
     // If the record does not exist, call addTracking
-    console.log("Record doesn't exist, adding new tracking record.");
+    //console.log("Record doesn't exist, adding new tracking record.");
     return await addTracking(user_id, habit_id, selectedDate, updatedValue);
   }
 };

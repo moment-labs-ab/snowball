@@ -90,11 +90,9 @@ const GoalObject = ({
     // day: 'numeric',
     //});
     //setDisplayDate(prettyDate)
-  }, [habit_ids]);
+  }, [habit_ids, name, color, emoji]);
 
-  const onPress = () => {
-    console.log(id, name, milestones, habit_ids);
-  };
+  
 
   const toggleContent = () => {
     setIsVisible(!isVisible);

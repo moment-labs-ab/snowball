@@ -150,7 +150,7 @@ export const getFullProgressData = async (userId: string, date: Date) => {
         createdAt: new Date(habitData.created_at)
       };
     } else {
-      console.log("Unable to process Habits Progress Data.");
+      //console.log("Unable to process Habits Progress Data.");
       return null;
     }
   });
@@ -314,8 +314,8 @@ export const getOneHabitTrackingProgress = async (habitId: string, date:Date, us
 
   return [weekCount, monthCount, yearToDate, yearCount, sinceJoinCount]
   }else{
-    console.log(habitData)
-    console.log("Habit ID was not accepted in getOneHabitTrackingProgress or Habit Tracking Does not Exist.")
+    //console.log(habitData)
+    //console.log("Habit ID was not accepted in getOneHabitTrackingProgress or Habit Tracking Does not Exist.")
   }
 
 }
@@ -339,7 +339,7 @@ export const listenToTrackingHistory = (handleChange: ChangeHandler) => {
         const id = payload.new.habit_id
         const user_id = payload.new.user_id
         const changed_habits_updated_progress = await getOneHabitTrackingProgress(id, now, user_id)
-        console.log("Changed DATA in Listener",changed_habits_updated_progress)
+        //console.log("Changed DATA in Listener",changed_habits_updated_progress)
 
         const newRecord = changed_habits_updated_progress as number[];
         const oldRecord = changed_habits_updated_progress as number[];

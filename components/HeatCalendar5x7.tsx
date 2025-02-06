@@ -80,7 +80,7 @@ const HeatCalendar5x7: React.FC<HeatCalendarProps> = ({ data, habitName, frequen
 
         return rows;
     };
-    console.log(data)
+    //console.log(data)
 
     const rows = organizeDataIntoRows(data);
 

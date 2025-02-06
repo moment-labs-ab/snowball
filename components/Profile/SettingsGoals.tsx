@@ -46,19 +46,19 @@ const SettingsGoals = () => {
     });
 
     const unsubscribe = listenToGoalsTable((payload) => {
-      console.log("Change received!", payload);
+      //console.log("Change received!", payload);
       fetchUserGoals();
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("IN INSERT");
+            //console.log("IN INSERT");
             setGoals((prevGoals) => [...prevGoals, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("IN UPDATE");
+            //console.log("IN UPDATE");
             setGoals((prevGoals) =>
               prevGoals.map((Goal) =>
                 Goal.id === payload.new.id ? payload.new : Goal
@@ -68,7 +68,7 @@ const SettingsGoals = () => {
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("IN DELETE");
+            //console.log("IN DELETE");
             setGoals((prevGoals) =>
               prevGoals.filter((Goal) => Goal.id !== payload.old.id)
             );
