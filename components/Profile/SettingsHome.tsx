@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useGlobalContext } from '@/context/Context';
-import { User } from '@/types/types';
-import { getCurrentUser } from '@/lib/supabase';
+import { router } from "expo-router";
+import { getCurrentUser, signOut } from '@/lib/supabase';
 import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Types';
 import Setting from '@/components/Profile/Setting';
 import SettingsGoals from './SettingsGoals';
@@ -18,7 +18,7 @@ const SECTION = [
             { id: 'name', iconType: 'feather', icon: 'user', label: 'Name', type: 'select', content: <View/>},
             { id: 'email', iconType: 'feather', icon: 'mail', label: 'Email', type: 'select' , content: <View/>},
             { id: 'change-password', iconType: 'feather', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
-            { id: 'logout', iconType: 'feather', icon: 'power', label: 'Logout', type: 'toggle', content: <View/> },
+            { id: 'logout', iconType: 'feather', icon: 'power', label: 'Logout', type: 'modal', content: <View/> },
             { id: 'delete-account', iconType: 'feather', icon: 'trash', label: 'Delete Account', type: 'danger', content: <View/> },
         ]
     },
@@ -64,6 +64,40 @@ const SettingsHome = () => {
             console.error('Error fetching user data:', error)
         }
     }
+
+    const logoutClicked = async () => {
+            Alert.alert(
+                "Sign Out",
+                "Are you sure you want to sign out?",
+                [
+                    {
+                        text: "Cancel",
+                        onPress: () => console.log("Sign Out canceled"),
+                        style: "cancel",
+                    },
+                    {
+                        text: "Sign Out",
+                        onPress: async () => {
+                            const result = await signOut();
+                            if (result.success) {
+                                console.log("User Signed out successfully");
+                                setIsLoggedIn(false);
+                                setUser({
+                                    email: "",
+                                    username: "",
+                                    userId: "",
+                                });
+                                router.replace("/sign-in");
+                            } else {
+                                console.error("Error signing user out:", result.message);
+                            }
+                        },
+                        style: "destructive",
+                    },
+                ],
+                { cancelable: true }
+            );
+        };
 
     useEffect(() => {
         setIsLoading(true)
@@ -117,6 +151,7 @@ const SettingsHome = () => {
                                         toggleValue={toggle[id as keyof typeof toggle]}
                                         toggleSetState={setToggle}
                                         content={content}
+                                        handleTouch={logoutClicked}
                                     />
                                 ))}
 

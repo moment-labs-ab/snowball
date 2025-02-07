@@ -187,18 +187,9 @@ const Profile = () => {
                 content={<SettingsHome />}
               />
             </View>
-            {/**
-                        <View style={styles.signOut}>
-                            <CustomButton
-                                title="Sign Out"
-                                handlePress={logout}
-                                containerStyles="mt-8 px-2 bg-secondary"
-                                otherMethods={() => { }}
-                            />
-                        </View>
 
 
-                        <View style={styles.dangerZone}>
+             {/**           <View style={styles.dangerZone}>
                             <Text style={styles.dangerTitle}>Danger Zone</Text>
                             <CustomButton
                                 title={isDeletingAccount ? "Deleting Account..." : "Delete Account & All User Data"}

@@ -14,11 +14,12 @@ interface SettingProps{
     id: string
     selectValue?: string,
     toggleValue?: boolean,
+    handleTouch?: () => void,
     toggleSetState?: React.Dispatch<React.SetStateAction<ProfileToggleState>>
     content?:React.ReactNode;
 }
 
-const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, content}) => {
+const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, handleTouch, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -30,7 +31,12 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
           <View style={styles.container}>
             <View style={[styles.rowWrapper, index === 0 && { borderTopWidth: 0 }]}>
                 <TouchableOpacity onPress={() => {
-                    setIsVisible(true); 
+                    if (accountSetting === 'modal' && handleTouch) {
+                        handleTouch();
+                    }
+                    else {
+                        setIsVisible(true); 
+                    }
                     }}>
                     <View style={styles.row}>
                         {iconType === "feather" && <FeatherIcon name={icon as string} color="#616161" size={22} style={{ marginRight: 12 }} />}
