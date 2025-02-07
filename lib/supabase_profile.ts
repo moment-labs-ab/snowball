@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, currentUserType, LifetimeHabitStats } from '@/types/types'
+import { Habit, HabitTracking, LifetimeHabitStats } from '@/types/types'
 
 
 const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
@@ -230,6 +230,19 @@ export const updateUserSetting = async (settingName: string, settingValue: strin
             return false;
         }
         return true;
+    }
+
+    if (data && settingName === 'password') {
+        const { error } = await supabase.auth.updateUser({
+            password: settingValue,
+          });
+        
+          if (error) {
+            Alert.alert("Error updating password");
+            console.log("Error updating password:", error.message);
+          } else {
+            Alert.alert("Password updated successfully!");
+          }
     }
     return false
 }

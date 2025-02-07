@@ -17,7 +17,7 @@ const SECTION = [
         items: [
             { id: 'name', iconType: 'feather', icon: 'user', label: 'Name', type: 'select', content: <View/>},
             { id: 'email', iconType: 'feather', icon: 'mail', label: 'Email', type: 'select' , content: <View/>},
-            { id: 'change-password', iconType: 'feather', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
+            { id: 'password', iconType: 'feather', icon: 'lock', label: 'Password', type: 'select', content: <View/> },
             { id: 'logout', iconType: 'feather', icon: 'power', label: 'Logout', type: 'modal', content: <View/> },
             { id: 'delete-account', iconType: 'feather', icon: 'trash', label: 'Delete Account', type: 'danger', content: <View/> },
         ]
@@ -107,7 +107,8 @@ const SettingsHome = () => {
     useEffect(() => {
         setSelect({
             name: user.username || '',
-            email: user.email || ''
+            email: user.email || '',
+            password: ''
         });
     }, [user]);
 
@@ -118,6 +119,7 @@ const SettingsHome = () => {
     const [select, setSelect] = useState<ProfileSelectState>({
         name: '',
         email: '',
+        password: ''
     });
 
     if (isLoading) {

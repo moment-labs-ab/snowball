@@ -36,16 +36,16 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({ settingId, settingName, s
             </View>
         )
     }
-    
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView className="bg-background h-full">
                 <View style={styles.section}>
                     <Text style={styles.header}>
-                        Update your {settingName} setting
+                        Update your {settingId}
                     </Text>
                     <Text style={styles.prompt}>
-                        Enter you your new {settingName}
+                        Enter you your new {settingId}
                     </Text>
 
                     <TextInput

@@ -48,41 +48,6 @@ const Profile = () => {
         getUserData().finally(() => setIsLoading(false));
     }, []);
 
-    // Rest of the logout function remains the same...
-    const logout = async () => {
-        Alert.alert(
-            "Sign Out",
-            "Are you sure you want to sign out?",
-            [
-                {
-                    text: "Cancel",
-                    onPress: () => console.log("Sign Out canceled"),
-                    style: "cancel",
-                },
-                {
-                    text: "Sign Out",
-                    onPress: async () => {
-                        const result = await signOut();
-                        if (result.success) {
-                            console.log("User Signed out successfully");
-                            setIsLoggedIn(false);
-                            setUser({
-                                email: "",
-                                username: "",
-                                userId: "",
-                            });
-                            router.replace("/sign-in");
-                        } else {
-                            console.error("Error signing user out:", result.message);
-                        }
-                    },
-                    style: "destructive",
-                },
-            ],
-            { cancelable: true }
-        );
-    };
-
     const handleDeleteAccount = async () => {
         Alert.alert(
             "Delete Account",
@@ -142,9 +107,6 @@ const Profile = () => {
             ],
             { cancelable: true }
         );
-    };
-    const changePasswordRequested = () => {
-        console.log("Change Password Requested");
     };
 
     if (isLoading) {

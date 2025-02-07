@@ -26,6 +26,8 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
         setIsVisible(!isVisible);
     };
 
+    console.log(`accountSetting: ${accountSetting} | id: ${id} | value: ${selectValue} `);
+
     return (
       <SafeAreaView key={id}>
           <View style={styles.container}>
@@ -74,8 +76,12 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
                   presentationStyle='pageSheet'
                   
               >
-                {accountSetting === 'select' &&  selectValue && (
+                {accountSetting === 'select' && selectValue && (
                     <SettingUpdate isVisible={setIsVisible} settingId={id} settingName={label} settingValue={selectValue} />
+                )}
+
+                {accountSetting === 'select' && id === "password" && (
+                    <SettingUpdate isVisible={setIsVisible} settingId={id} settingName={label} settingValue={""} />
                 )}
 
                 {accountSetting === 'page' && (
