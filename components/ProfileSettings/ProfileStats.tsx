@@ -163,55 +163,49 @@ const ProfileStats = () => {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="bg-background h-full">
-            
-          
-          <ScrollView>
-            <View className='px-3'>
-              <View style={styles.metricsContainer}>
-                <MetricItem
-                  icon={<Feather name="check-circle" size={30} color="black" />}
-                  text={`${Math.floor(lifetimeStats?.completionRate)}% Completion Rate`}
-                  tooltipKey="completionRate"
-                  reference={completionRateRef}
-                />
-                <MetricItem
-                  icon={<SimpleLineIcons name="fire" size={30} color="black" />}
-                  text={`${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Day'} Streak`}
-                  tooltipKey="streak"
-                  reference={streakRef}
-                />
-                <MetricItem
-                  icon={<SimpleLineIcons name="trophy" size={30} color="black" />}
-                  text={lifetimeStats?.mostConsistentHabit || ''}
-                  tooltipKey="consistentHabit"
-                  reference={consistentHabitRef}
-                />
-                <MetricItem
-                  icon={<Feather name="calendar" size={30} color="black" />}
-                  text={`${lifetimeStats?.totalDaysTracked} Total Days Tracked`}
-                  tooltipKey="daysTracked"
-                  reference={daysTrackedRef}
-                />
-                <MetricItem
-                  icon={<SimpleLineIcons name="login" size={30} color="black" />}
-                  text={`Join Date: ${lifetimeStats?.joinDate?.toLocaleDateString()}`}
-                  tooltipKey="joinDate"
-                  reference={joinDateRef}
-                />
-                <MetricItem
-                  icon={<MaterialIcons name="update" size={30} color="black" />}
-                  text={`${userLoginCount} Account Logins`}
-                  tooltipKey="loginCount"
-                  reference={loginCountRef}
-                />
-              </View>
-              
-            </View>
-          </ScrollView>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+    <ScrollView>
+    <View className='px-3'>
+        <View style={styles.metricsContainer}>
+        <MetricItem
+            icon={<Feather name="check-circle" size={30} color="black" />}
+            text={`${Math.floor(lifetimeStats?.completionRate)}% Completion Rate`}
+            tooltipKey="completionRate"
+            reference={completionRateRef}
+        />
+        <MetricItem
+            icon={<SimpleLineIcons name="fire" size={30} color="black" />}
+            text={`${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Day'} Streak`}
+            tooltipKey="streak"
+            reference={streakRef}
+        />
+        <MetricItem
+            icon={<SimpleLineIcons name="trophy" size={30} color="black" />}
+            text={lifetimeStats?.mostConsistentHabit || ''}
+            tooltipKey="consistentHabit"
+            reference={consistentHabitRef}
+        />
+        <MetricItem
+            icon={<Feather name="calendar" size={30} color="black" />}
+            text={`${lifetimeStats?.totalDaysTracked} Total Days Tracked`}
+            tooltipKey="daysTracked"
+            reference={daysTrackedRef}
+        />
+        <MetricItem
+            icon={<SimpleLineIcons name="login" size={30} color="black" />}
+            text={`Join Date: ${lifetimeStats?.joinDate?.toLocaleDateString()}`}
+            tooltipKey="joinDate"
+            reference={joinDateRef}
+        />
+        <MetricItem
+            icon={<MaterialIcons name="update" size={30} color="black" />}
+            text={`${userLoginCount} Account Logins`}
+            tooltipKey="loginCount"
+            reference={loginCountRef}
+        />
+        </View>
+        
+    </View>
+    </ScrollView>
   );
 };
 

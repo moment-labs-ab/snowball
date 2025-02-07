@@ -19,8 +19,7 @@ import icons from "@/constants/icons";
 import { ImageSourcePropType } from "react-native";
 import ProfileCard from "@/components/ProfileSettings/ProfileCard";
 import SettingsButton from "@/components/SettingsButton";
-import Settings from "@/components/ProfileSettings/Settings";
-import SettingsHome from "@/components/Profile/SettingsHome";
+import Settings from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
 
 const Profile = () => {
@@ -48,105 +47,6 @@ const Profile = () => {
         getUserData().finally(() => setIsLoading(false));
     }, []);
 
-    // Rest of the logout function remains the same...
-    const logout = async () => {
-        Alert.alert(
-            "Sign Out",
-            "Are you sure you want to sign out?",
-            [
-                {
-                    text: "Cancel",
-                    onPress: () => console.log("Sign Out canceled"),
-                    style: "cancel",
-                },
-                {
-                    text: "Sign Out",
-                    onPress: async () => {
-                        const result = await signOut();
-                        if (result.success) {
-                            console.log("User Signed out successfully");
-                            setIsLoggedIn(false);
-                            setUser({
-                                email: "",
-                                username: "",
-                                userId: "",
-                            });
-                            router.replace("/sign-in");
-                        } else {
-                            console.error("Error signing user out:", result.message);
-                        }
-                    },
-                    style: "destructive",
-                },
-            ],
-            { cancelable: true }
-        );
-    };
-
-    const handleDeleteAccount = async () => {
-        Alert.alert(
-            "Delete Account",
-            "Are you sure you want to delete your account? This action cannot be undone.",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
-                },
-                {
-                    text: "Delete Account",
-                    style: "destructive",
-                    onPress: async () => {
-                        if (!user?.userId) {
-                            Alert.alert("Error", "User ID not found");
-                            return;
-                        }
-
-                        try {
-                            setIsDeletingAccount(true);
-                            const result = await handleUserDeletion(user.userId);
-
-                            if (result.success) {
-                                // Reset global state
-                                setIsLoggedIn(false);
-                                setUser({
-                                    email: "",
-                                    username: "",
-                                    userId: "",
-                                });
-
-                                // Show success message and redirect
-                                Alert.alert(
-                                    "Success",
-                                    "Your account has been deleted successfully",
-                                    [
-                                        {
-                                            text: "OK",
-                                            onPress: () => router.replace("/sign-in"),
-                                        },
-                                    ]
-                                );
-                            } else {
-                                throw new Error(result.message);
-                            }
-                        } catch (error) {
-                            Alert.alert(
-                                "Error",
-                                "Failed to delete account. Please try again later."
-                            );
-                            console.error("Error deleting account:", error);
-                        } finally {
-                            setIsDeletingAccount(false);
-                        }
-                    },
-                },
-            ],
-            { cancelable: true }
-        );
-    };
-    const changePasswordRequested = () => {
-        console.log("Change Password Requested");
-    };
-
     if (isLoading) {
         return (
             <View style={styles.container}>
@@ -170,7 +70,7 @@ const Profile = () => {
                   console.log("Profile Picture Pressed")
                 }
               />
-              {/** 
+              
               <SettingsButton
                 label="Settings"
                 action={() => {
@@ -178,37 +78,7 @@ const Profile = () => {
                 }}
                 content={<Settings />}
               />
-              */}
-              <SettingsButton
-                label="Settings"
-                action={() => {
-                  console.log("Settings button Pressed");
-                }}
-                content={<SettingsHome />}
-              />
             </View>
-            {/**
-                        <View style={styles.signOut}>
-                            <CustomButton
-                                title="Sign Out"
-                                handlePress={logout}
-                                containerStyles="mt-8 px-2 bg-secondary"
-                                otherMethods={() => { }}
-                            />
-                        </View>
-
-
-                        <View style={styles.dangerZone}>
-                            <Text style={styles.dangerTitle}>Danger Zone</Text>
-                            <CustomButton
-                                title={isDeletingAccount ? "Deleting Account..." : "Delete Account & All User Data"}
-                                handlePress={handleDeleteAccount}
-                                containerStyles="px-2 bg-delete"
-                                isLoading={isDeletingAccount}
-                                otherMethods={() => { }}
-                            />
-                        </View>
-                        */}
           </>
         ) : (
           <Text style={styles.errorText}>Unable to load user data</Text>

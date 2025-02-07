@@ -14,29 +14,53 @@ interface SettingProps{
     id: string
     selectValue?: string,
     toggleValue?: boolean,
+    handleTouch?: () => void,
+    handleDeleteTouch?: () => void,
     toggleSetState?: React.Dispatch<React.SetStateAction<ProfileToggleState>>
     content?:React.ReactNode;
 }
 
-const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, content}) => {
+const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, handleTouch, handleDeleteTouch, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
         setIsVisible(!isVisible);
     };
 
+    console.log(`accountSetting: ${accountSetting} | id: ${id} | value: ${selectValue} `);
+
+    let iconColor;
+
+    if (id === "delete-account") {
+        iconColor = "#ff0000";
+    }
+    else if (id === "profile-stats") {
+        iconColor = "#8BBDFA";
+    }
+    else {
+        iconColor = "#616161";
+    }
+
     return (
       <SafeAreaView key={id}>
           <View style={styles.container}>
             <View style={[styles.rowWrapper, index === 0 && { borderTopWidth: 0 }]}>
                 <TouchableOpacity onPress={() => {
-                    setIsVisible(true); 
+                    if (accountSetting === 'modal' && handleTouch) {
+                        handleTouch();
+                    }
+                    else if (id === 'delete-account' && handleDeleteTouch) {
+                        handleDeleteTouch();
+                    }
+                    else {
+                        setIsVisible(true); 
+                    }
                     }}>
                     <View style={styles.row}>
-                        {iconType === "feather" && <FeatherIcon name={icon as string} color="#616161" size={22} style={{ marginRight: 12 }} />}
-                        {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5 ' style={{ marginRight: 12 }}/>}
+                        {iconType === "feather" && <FeatherIcon name={icon as string} color={iconColor} size={22} style={{ marginRight: 12 }} />}
+                        {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5' style={{ marginRight: 12 }}/>}
 
-                        <Text style={styles.rowLabel}>{label}</Text>
+                        <Text style={id === "delete-account" ? styles.rowLabelDelete : styles.rowLabel}>{label}</Text>
                         <View style={styles.rowSpacer} />
 
                         {accountSetting === 'select' && (
@@ -68,8 +92,12 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
                   presentationStyle='pageSheet'
                   
               >
-                {accountSetting === 'select' &&  selectValue && (
+                {accountSetting === 'select' && selectValue && (
                     <SettingUpdate isVisible={setIsVisible} settingId={id} settingName={label} settingValue={selectValue} />
+                )}
+
+                {accountSetting === 'select' && id === "password" && (
+                    <SettingUpdate isVisible={setIsVisible} settingId={id} settingName={label} settingValue={""} />
                 )}
 
                 {accountSetting === 'page' && (
@@ -162,6 +190,11 @@ rowLabel: {
     fontSize: 17,
     fontWeight: '500',
     color: '#212121'
+},
+rowLabelDelete: {
+    fontSize: 17,
+    fontWeight: '500',
+    color: '#ff0000'
 },
 rowSpacer: {
     flex: 1
