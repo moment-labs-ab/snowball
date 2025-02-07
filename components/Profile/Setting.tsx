@@ -4,6 +4,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { ProfileToggleState } from './Types';
 import SettingUpdate from './SettingUpdate';
 import SettingPage from './SettingPage';
+import { handleUserDeletion } from '@/lib/supabase';
 
 interface SettingProps{
     label: string
@@ -15,11 +16,12 @@ interface SettingProps{
     selectValue?: string,
     toggleValue?: boolean,
     handleTouch?: () => void,
+    handleDeleteTouch?: () => void,
     toggleSetState?: React.Dispatch<React.SetStateAction<ProfileToggleState>>
     content?:React.ReactNode;
 }
 
-const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, handleTouch, content}) => {
+const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType, icon, id, selectValue, toggleValue, toggleSetState, handleTouch, handleDeleteTouch, content}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -36,15 +38,18 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
                     if (accountSetting === 'modal' && handleTouch) {
                         handleTouch();
                     }
+                    else if (id === 'delete-account' && handleDeleteTouch) {
+                        handleDeleteTouch();
+                    }
                     else {
                         setIsVisible(true); 
                     }
                     }}>
                     <View style={styles.row}>
-                        {iconType === "feather" && <FeatherIcon name={icon as string} color="#616161" size={22} style={{ marginRight: 12 }} />}
-                        {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5 ' style={{ marginRight: 12 }}/>}
+                        {iconType === "feather" && <FeatherIcon name={icon as string} color={id === "delete-account" ? "#ff0000" : "#616161"} size={22} style={{ marginRight: 12 }} />}
+                        {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5' style={{ marginRight: 12 }}/>}
 
-                        <Text style={styles.rowLabel}>{label}</Text>
+                        <Text style={id === "delete-account" ? styles.rowLabelDelete : styles.rowLabel}>{label}</Text>
                         <View style={styles.rowSpacer} />
 
                         {accountSetting === 'select' && (
@@ -174,6 +179,11 @@ rowLabel: {
     fontSize: 17,
     fontWeight: '500',
     color: '#212121'
+},
+rowLabelDelete: {
+    fontSize: 17,
+    fontWeight: '500',
+    color: '#ff0000'
 },
 rowSpacer: {
     flex: 1

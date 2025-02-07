@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useGlobalContext } from '@/context/Context';
 import { router } from "expo-router";
-import { getCurrentUser, signOut } from '@/lib/supabase';
+import { getCurrentUser, handleUserDeletion, signOut } from '@/lib/supabase';
 import { ProfileSelectState, ProfileToggleState } from '@/components/Profile/Types';
 import Setting from '@/components/Profile/Setting';
 import SettingsGoals from './SettingsGoals';
@@ -99,6 +99,68 @@ const SettingsHome = () => {
             );
         };
 
+        // This needs to be done differently
+        const handleDeleteAccount = async () => {
+            Alert.alert(
+                "Delete Account",
+                "Are you sure you want to delete your account? This action cannot be undone.",
+                [
+                    {
+                        text: "Cancel",
+                        style: "cancel",
+                    },
+                    {
+                        text: "Delete Account",
+                        style: "destructive",
+                        onPress: async () => {
+                            if (!user?.userId) {
+                                Alert.alert("Error", "User ID not found");
+                                return;
+                            }
+    
+                            try {
+                                setIsDeletingAccount(true);
+                                const result = await handleUserDeletion(user.userId);
+    
+                                if (result.success) {
+                                    // Reset global state
+                                    setIsLoggedIn(false);
+                                    setUser({
+                                        email: "",
+                                        username: "",
+                                        userId: "",
+                                    });
+    
+                                    // Show success message and redirect
+                                    Alert.alert(
+                                        "Success",
+                                        "Your account has been deleted successfully",
+                                        [
+                                            {
+                                                text: "OK",
+                                                onPress: () => router.replace("/sign-in"),
+                                            },
+                                        ]
+                                    );
+                                } else {
+                                    throw new Error(result.message);
+                                }
+                            } catch (error) {
+                                Alert.alert(
+                                    "Error",
+                                    "Failed to delete account. Please try again later."
+                                );
+                                console.error("Error deleting account:", error);
+                            } finally {
+                                setIsDeletingAccount(false);
+                            }
+                        },
+                    },
+                ],
+                { cancelable: true }
+            );
+        };
+
     useEffect(() => {
         setIsLoading(true)
         getUserData().finally(() => setIsLoading(false));
@@ -154,6 +216,7 @@ const SettingsHome = () => {
                                         toggleSetState={setToggle}
                                         content={content}
                                         handleTouch={logoutClicked}
+                                        handleDeleteTouch={handleDeleteAccount}
                                     />
                                 ))}
 

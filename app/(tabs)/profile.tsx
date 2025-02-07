@@ -48,67 +48,6 @@ const Profile = () => {
         getUserData().finally(() => setIsLoading(false));
     }, []);
 
-    const handleDeleteAccount = async () => {
-        Alert.alert(
-            "Delete Account",
-            "Are you sure you want to delete your account? This action cannot be undone.",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
-                },
-                {
-                    text: "Delete Account",
-                    style: "destructive",
-                    onPress: async () => {
-                        if (!user?.userId) {
-                            Alert.alert("Error", "User ID not found");
-                            return;
-                        }
-
-                        try {
-                            setIsDeletingAccount(true);
-                            const result = await handleUserDeletion(user.userId);
-
-                            if (result.success) {
-                                // Reset global state
-                                setIsLoggedIn(false);
-                                setUser({
-                                    email: "",
-                                    username: "",
-                                    userId: "",
-                                });
-
-                                // Show success message and redirect
-                                Alert.alert(
-                                    "Success",
-                                    "Your account has been deleted successfully",
-                                    [
-                                        {
-                                            text: "OK",
-                                            onPress: () => router.replace("/sign-in"),
-                                        },
-                                    ]
-                                );
-                            } else {
-                                throw new Error(result.message);
-                            }
-                        } catch (error) {
-                            Alert.alert(
-                                "Error",
-                                "Failed to delete account. Please try again later."
-                            );
-                            console.error("Error deleting account:", error);
-                        } finally {
-                            setIsDeletingAccount(false);
-                        }
-                    },
-                },
-            ],
-            { cancelable: true }
-        );
-    };
-
     if (isLoading) {
         return (
             <View style={styles.container}>

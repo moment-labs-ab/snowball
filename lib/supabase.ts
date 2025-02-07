@@ -263,6 +263,7 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
   }
 
 
+  // This functionality needs to be handled on server. We could use Supabase edge function for now for this.
   export const handleUserDeletion = async(user_id: string): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
       // Delete user using admin client
