@@ -10,6 +10,8 @@ import Setting from '@/components/Profile/Setting';
 import SettingsGoals from './SettingsGoals';
 import SettingsHabits from './SettingsHabits';
 import icons from '@/constants/icons';
+import Feedback from './SettingsFeedback';
+import ProfileStats from '../ProfileSettings/ProfileStats';
 
 const SECTION = [
     {
@@ -27,23 +29,19 @@ const SECTION = [
         items: [
             { id: 'habits', iconType: 'local', icon: icons.snowflake, label: 'Habits', type: 'page', content:<SettingsHabits/> },
             { id: 'goals', iconType: 'local', icon: icons.mountain, label: 'Goals', type: 'page', content:<SettingsGoals/>  },
-        ]
-    },
-    /*{
-        header: 'Stats',
-        items: [
-            { id: 'stats', icon: 'frown', label: 'Stats', type: 'select' },
+            { id: 'profile-stats', iconType: 'feather', icon: 'bar-chart-2', label: 'Profile Stats', type: 'page', content:<ProfileStats/> },
         ]
     },
     {
-        header: 'Help',
+        header: 'Other',
         items: [
-            { id: 'report-bug', icon: 'frown', label: 'Report Bug', type: 'select' },
-            { id: 'feedback', icon: 'frown', label: 'Feedback', type: 'select' },
-            { id: 'terms', icon: 'frown', label: 'Terms & Conditions', type: 'select' },
-            { id: 'privacy', icon: 'frown', label: 'Privacy Policy', type: 'select' },
+            { id: 'terms', iconType: 'feather', icon: 'feather', label: 'Terms & Conditions', type: 'page', content:<View/> },
+            { id: 'privacy-policy', iconType: 'feather', icon: 'shield', label: 'Privacy Policy', type: 'page', content:<View/>  },
+            { id: 'feedback', iconType: 'feather', icon: 'inbox', label: 'Feedback', type: 'page', content:<Feedback/> },
+            { id: 'bug', iconType: 'feather', icon: 'alert-circle', label: 'Report Bug', type: 'page', content:<View/>  },
+            { id: 'donate', iconType: 'feather', icon: 'dollar-sign', label: 'Donate', type: 'page', content:<View/>  },
         ]
-    }*/
+    },
 ];
 
 const SettingsHome = () => {

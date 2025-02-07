@@ -4,7 +4,6 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { ProfileToggleState } from './Types';
 import SettingUpdate from './SettingUpdate';
 import SettingPage from './SettingPage';
-import { handleUserDeletion } from '@/lib/supabase';
 
 interface SettingProps{
     label: string
@@ -30,6 +29,18 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
 
     console.log(`accountSetting: ${accountSetting} | id: ${id} | value: ${selectValue} `);
 
+    let iconColor;
+
+    if (id === "delete-account") {
+        iconColor = "#ff0000";
+    }
+    else if (id === "profile-stats") {
+        iconColor = "#8BBDFA";
+    }
+    else {
+        iconColor = "#616161";
+    }
+
     return (
       <SafeAreaView key={id}>
           <View style={styles.container}>
@@ -46,7 +57,7 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
                     }
                     }}>
                     <View style={styles.row}>
-                        {iconType === "feather" && <FeatherIcon name={icon as string} color={id === "delete-account" ? "#ff0000" : "#616161"} size={22} style={{ marginRight: 12 }} />}
+                        {iconType === "feather" && <FeatherIcon name={icon as string} color={iconColor} size={22} style={{ marginRight: 12 }} />}
                         {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5' style={{ marginRight: 12 }}/>}
 
                         <Text style={id === "delete-account" ? styles.rowLabelDelete : styles.rowLabel}>{label}</Text>

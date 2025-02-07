@@ -16,7 +16,7 @@ import ProfileButton from '@/components/ProfileButton';
 import EditProfile from '@/components/ProfileSettings/EditProfile';
 import ProfileStats from '@/components/ProfileSettings/ProfileStats';
 import ProfileHabits from '@/components/ProfileSettings/ProfileHabits';
-import Feedback from '@/components/ProfileSettings/Feedback';
+import Feedback from '@/components/Profile/SettingsFeedback';
 
 const Settings = () => {
   const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();

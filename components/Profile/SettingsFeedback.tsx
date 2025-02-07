@@ -21,7 +21,7 @@ interface FormErrors {
   longDescription?: string;
 }
 
-const FeedbackFormComponent: React.FC = () => {
+const FeedbackFormComponent = () => {
   const { user } = useGlobalContext();
   const [formData, setFormData] = useState<FeedbackForm>({
     shortDescription: "",
@@ -99,8 +99,9 @@ const FeedbackFormComponent: React.FC = () => {
     }
   };
 
+  console.log("Feedback");
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView>
       <View style={styles.formContainer}>
         <Text style={styles.label}>Short Description</Text>
         <TextInput
@@ -138,7 +139,7 @@ const FeedbackFormComponent: React.FC = () => {
           <Text style={styles.submitButtonText}>Submit Feedback</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
   );
 };
 

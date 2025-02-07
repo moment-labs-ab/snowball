@@ -19,8 +19,7 @@ import icons from "@/constants/icons";
 import { ImageSourcePropType } from "react-native";
 import ProfileCard from "@/components/ProfileSettings/ProfileCard";
 import SettingsButton from "@/components/SettingsButton";
-import Settings from "@/components/ProfileSettings/Settings";
-import SettingsHome from "@/components/Profile/SettingsHome";
+import Settings from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
 
 const Profile = () => {
@@ -71,7 +70,7 @@ const Profile = () => {
                   console.log("Profile Picture Pressed")
                 }
               />
-              {/** 
+              
               <SettingsButton
                 label="Settings"
                 action={() => {
@@ -79,28 +78,7 @@ const Profile = () => {
                 }}
                 content={<Settings />}
               />
-              */}
-              <SettingsButton
-                label="Settings"
-                action={() => {
-                  console.log("Settings button Pressed");
-                }}
-                content={<SettingsHome />}
-              />
             </View>
-
-
-             {/**           <View style={styles.dangerZone}>
-                            <Text style={styles.dangerTitle}>Danger Zone</Text>
-                            <CustomButton
-                                title={isDeletingAccount ? "Deleting Account..." : "Delete Account & All User Data"}
-                                handlePress={handleDeleteAccount}
-                                containerStyles="px-2 bg-delete"
-                                isLoading={isDeletingAccount}
-                                otherMethods={() => { }}
-                            />
-                        </View>
-                        */}
           </>
         ) : (
           <Text style={styles.errorText}>Unable to load user data</Text>
