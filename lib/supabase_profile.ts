@@ -231,5 +231,18 @@ export const updateUserSetting = async (settingName: string, settingValue: strin
         }
         return true;
     }
+
+    if (data && settingName === 'password') {
+        const { error } = await supabase.auth.updateUser({
+            password: settingValue,
+          });
+        
+          if (error) {
+            Alert.alert("Error updating password");
+            console.log("Error updating password:", error.message);
+          } else {
+            Alert.alert("Password updated successfully!");
+          }
+    }
     return false
 }
