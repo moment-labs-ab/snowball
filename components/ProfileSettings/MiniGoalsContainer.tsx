@@ -168,7 +168,7 @@ const MiniGoalsContainer = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
+    borderWidth: .25,
     width: 120,
     height: 60,
     borderRadius: 8,

@@ -37,18 +37,19 @@ const DailyHabitDisplay = ({
   const [lastHabit, setLastHabit] = useState("");
   const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
-
+  
+  const fetchHabits = async () => {
+    setLoading(true); 
+    const habitsData = await getUserHabits(user.userId);
+    setHabits(habitsData);
+    setLoading(false);
+  };
   useEffect(() => {
     //console.log("USEEFFECT: DailyHabitDisplay");
     if (editHabitOrder === true) {
       //console.log("Daily Habit Display Edit Request Received");
     }
-    const fetchHabits = async () => {
-      setLoading(true); 
-      const habitsData = await getUserHabits(user.userId);
-      setHabits(habitsData);
-      setLoading(false);
-    };
+   
 
     fetchHabits();
 
@@ -72,13 +73,13 @@ const DailyHabitDisplay = ({
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            //console.log("IN INSERT");
+            console.log("IN INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            //console.log("IN UPDATE");
+            console.log("IN UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -88,7 +89,7 @@ const DailyHabitDisplay = ({
           break;
         case "DELETE":
           if (payload.old) {
-            //console.log("IN DELETE");
+            console.log("IN DELETE");
             setHabits((prevHabits) =>
               prevHabits.filter((habit) => habit.id !== payload.old.id)
             );
@@ -101,6 +102,8 @@ const DailyHabitDisplay = ({
       unsubscribe();
     };
   }, [user.userId, selectedDate, habits.length]);
+
+
   if (!loading && habits.length === 0) {
     return (
      <HabitsWelcome />
@@ -129,6 +132,8 @@ const DailyHabitDisplay = ({
             reminder={item.reminder}
             frequency_rate_int={item.frequency_rate_int}
             date={selectedDate}
+            emoji={item.emoji}
+            fetchHabits={fetchHabits}
           />
         </View>
       )}

@@ -47,8 +47,8 @@ const SettingsHabits = () => {
       <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
       {habits.map(habit => (
         <View key={habit.id} style={styles.habitItem}>
-          <Text style={styles.habitName}>{habit.name}</Text>
-          <Text style={styles.habitDate}>{formatDate(habit.created_at)}</Text>
+          <Text style={styles.habitName}>{habit.name} {habit.emoji}</Text>
+          <Text style={styles.habitDate}>Est.) {formatDate(habit.created_at)}</Text>
         </View>
       ))}
       {habits.length === 0 && (
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   habitItem: {
-    backgroundColor: '#bbd8fc',
+    backgroundColor: '#c2dcfc',
     padding: 12,
     borderRadius: 8,
   },

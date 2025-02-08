@@ -228,7 +228,7 @@ const HeatMapDisplay = () => {
                       }}
                     >
                       <View style={{ flex: 1, flexDirection: "column" }}>
-                        <Text style={styles.habitName}>{item.name}</Text>
+                        <Text style={styles.habitName}>{item.name} {item.emoji}</Text>
                         <Text>
                           {item.frequency}x {item.frequency_rate}
                         </Text>

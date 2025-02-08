@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '60%',
+    height: '80%',
   },
   closeButton: {
     alignSelf: "center",

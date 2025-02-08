@@ -15,6 +15,7 @@ interface HabitSelectorProps {
     frequency: number;
     frequency_rate: string;
     reminder: boolean;
+    emoji: string
   }>>;
 }
 
