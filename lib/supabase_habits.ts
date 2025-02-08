@@ -271,6 +271,7 @@ export const deleteHabit = async (
     const { data, error } = await supabase.from('habits')
     .select('*')
     .eq('user_id', userId)
+    .eq('archived', false)
     .order('order', { ascending: true });
     if (error && userId) {
       console.error('Error fetching habits:', error);
@@ -627,5 +628,43 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
     // If the record does not exist, call addTracking
     //console.log("Record doesn't exist, adding new tracking record.");
     return await addTracking(user_id, habit_id, selectedDate, updatedValue);
+  }
+};
+
+export const archiveHabit = async (habit_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
+  
+  const {data, error} = await supabase
+  .from('habits')
+  .update({archived: true})
+  .eq('user_id', userId)
+  .eq('id', habit_id)
+  
+
+  if (error) {
+    console.error('Error archiving goal:', error);
+    return { success: false, message: 'Error archiving goal', data: error };
+  } else {
+    //console.log('Goal archived successfully:', data);
+    return { success: true, message: 'Goal archived successfully', data };
+  }
+}
+
+export const getUserArchivedHabits= async (userId: string): Promise<Habit[]> => {
+  const { data, error } = await supabase
+  .from('habits')
+  .select('*')
+  .eq('user_id', userId)
+  .or('archived.eq.true')
+  
+
+  if (error && userId) {
+    console.error('Error fetching habits:', error);
+    return [];
+  }
+  if(data){
+    
+    return data as Habit[];
+  }else{
+    return [];
   }
 };

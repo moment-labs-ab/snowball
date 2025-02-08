@@ -8,15 +8,16 @@ interface HeatMapStatsProps {
 }
 
 type metrics = {
-    totalTracked: number,
-    consistencyPercentage: string,
-    longestStreak: number
-}
+  totalTracked: number;
+  consistencyPercentage: string;
+  longestStreak: number;
+};
 const HeatMapStats = ({ data }: HeatMapStatsProps) => {
+  const entriesKey = data
+    .map((entry) => `${entry.date}:${entry.count}`)
+    .join("|");
 
-    const entriesKey = data.map(entry => `${entry.date}:${entry.count}`).join('|');
-
-    useEffect(()=>{}, [entriesKey])
+  useEffect(() => {}, [entriesKey]);
   function calculateMetrics(data: HabitTrackingEntry[]) {
     let totalTracked = 0;
     let longestStreak = 0;
@@ -51,28 +52,31 @@ const HeatMapStats = ({ data }: HeatMapStatsProps) => {
     };
   }
 
-  const metrics = calculateMetrics(data)
+  const metrics = calculateMetrics(data);
 
   return (
     <View>
-    {metrics ? (
+      {metrics ? (
         <View style={styles.statsContainer}>
-      <View style={styles.metricContainer}>
-        <Text style={styles.metric}>❄️{metrics.totalTracked}</Text>
-        <Text style={styles.metricText}> Days Tracked</Text>
-      </View>
+          <View style={styles.metricContainer}>
+            <Text style={styles.metric}>❄️{metrics.totalTracked}</Text>
+            <Text style={styles.metricText}> Days Tracked</Text>
+          </View>
+          {/** 
       <View style={styles.metricContainer}>
         <Text style={styles.metric}> 🏔{metrics.consistencyPercentage}% </Text>
         <Text style={styles.metricText}> Consistency</Text>
       </View>
-      <View style={styles.metricContainer}>
-        <Text style={styles.metric}>🔥{metrics.longestStreak} Days</Text>
-        <Text style={styles.metricText}> Longest Streak</Text>
-      </View>
+      */}
+          <View style={styles.metricContainer}>
+            <Text style={styles.metric}>🔥{metrics.longestStreak} Days</Text>
+            <Text style={styles.metricText}> Longest Streak</Text>
+          </View>
+        </View>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </View>
-    ):(<Text>Loading...</Text>)}
-    </View>
-    
   );
 };
 

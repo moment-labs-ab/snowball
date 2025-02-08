@@ -37,20 +37,14 @@ const DailyHabitDisplay = ({
   const [lastHabit, setLastHabit] = useState("");
   const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
-  
+
   const fetchHabits = async () => {
-    setLoading(true); 
+    setLoading(true);
     const habitsData = await getUserHabits(user.userId);
     setHabits(habitsData);
     setLoading(false);
   };
   useEffect(() => {
-    //console.log("USEEFFECT: DailyHabitDisplay");
-    if (editHabitOrder === true) {
-      //console.log("Daily Habit Display Edit Request Received");
-    }
-   
-
     fetchHabits();
 
     const listener = newHabitEmitter.addListener("newHabit", () => {
@@ -66,7 +60,7 @@ const DailyHabitDisplay = ({
     );
     const unsubscribe = listenToHabitsTable((payload) => {
       //console.log("Change received!", payload);
-      habitEmitter.emit("dataChanged");
+      //habitEmitter.emit("dataChanged");
 
       fetchHabits();
 
@@ -103,17 +97,14 @@ const DailyHabitDisplay = ({
     };
   }, [user.userId, selectedDate, habits.length]);
 
-
   if (!loading && habits.length === 0) {
-    return (
-     <HabitsWelcome />
-    )
+    return <HabitsWelcome />;
   }
   if (loading) {
-    return(
-      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-    <ActivityIndicator size="large" color="#3e4e88" />
-    </View>
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#3e4e88" />
+      </View>
     );
   }
   return (
