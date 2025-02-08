@@ -105,6 +105,8 @@ const InnerGoalView = ({
     const goalData = await getUserSingleGoal(user.userId, id);
     if (goalData) {
       setGoalData(goalData);
+    }else{
+      refreshGoals()
     }
   };
 

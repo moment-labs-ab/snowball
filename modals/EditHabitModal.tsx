@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   TextInput,
   Modal,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
 import FormField from "@/components/FormField";
@@ -20,12 +20,13 @@ import {
   getHabit,
   updateHabitIfChanged,
   updateTracking,
+  archiveHabit,
 } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NumberBox from "@/components/NumberBox";
-import { deleteHabitEmitter } from "@/events/eventEmitters";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { deleteHabitEmitter, habitEmitter } from "@/events/eventEmitters";
+import Octicons from "@expo/vector-icons/Octicons";
 import EmojiSelector from "react-native-emoji-selector";
 
 interface EditHabitProps {
@@ -49,19 +50,17 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   onTrackingCountChange,
   closeModal,
 }) => {
-  
   const [time, setTime] = useState<Date>(new Date());
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [color, setColor] = useState("#3e4e88")
-  const [name, setName] = useState("Habit")
+  const [color, setColor] = useState("#3e4e88");
+  const [name, setName] = useState("Habit");
   const [frequency, setFrequency] = useState<number>(1);
   const [frequencyRate, setFrequencyRate] = useState("Daily");
-  const [reminder, setReminder] = useState(false)
+  const [reminder, setReminder] = useState(false);
   const [emoji, setEmoji] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-
 
   const [habit, setHabit] = useState({
     name: name,
@@ -133,7 +132,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       if (result.success === false) {
         //console.log(result.message);
       } else if (result) {
-        //console.log(result.message);
+        habitEmitter.emit("updatedHabit");
       }
 
       // Update tracking count if changed
@@ -196,8 +195,37 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
-    setHabit({ ...habit, emoji: selectedEmoji});
+    setHabit({ ...habit, emoji: selectedEmoji });
     setIsEmojiSelectorVisible(false);
+  };
+
+  //Archiving
+  const handleArchive = async (habit_id: string, user_id: string) => {
+    Alert.alert(
+      "Archive Habit",
+      "Are you sure you want to Archive? You will not be able to re-activate this habit.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes, I want to archive",
+          onPress: async () => {
+            const result = await archiveHabit(habit_id, user_id);
+            if (result.success) {
+              habitEmitter.emit("updatedHabit");
+              closeHabits();
+            } else {
+              console.error("Error Archiving habit:", result.message);
+              // Handle deletion error, e.g., show a message to the user
+            }
+          },
+          style: "default", // Optional: gives a red color to the button on iOS
+        },
+      ],
+      { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+    );
   };
 
   return (
@@ -274,58 +302,58 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             Habit Name
           </Text>
         </View>
-        <View style={{flexDirection:'row'}}>
-        <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{habit.emoji}</Text>
-            </TouchableOpacity>
-        <View style={{flex:1}}>
-          <TextInput
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
             style={{
+              width: 40,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
               borderWidth: 1,
               borderColor: "#ccc",
-              padding: 10,
               borderRadius: 5,
+              backgroundColor: color,
+              marginRight: 10,
             }}
-            value={habit.name}
-            onChangeText={(e) => setHabit({ ...habit, name: e })}
-            placeholder="Read, Meditate, Journal ..."
-            placeholderTextColor={"#898989"}
-            textAlignVertical="center"
-          />
-        </View>
-        <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                    <Text style={{ color: "white" }}>Close</Text>
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
+            onPress={() => setIsEmojiSelectorVisible(true)}
+          >
+            <Text style={{ color: "white" }}>{habit.emoji}</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: "#ccc",
+                padding: 10,
+                borderRadius: 5,
+              }}
+              value={habit.name}
+              onChangeText={(e) => setHabit({ ...habit, name: e })}
+              placeholder="Read, Meditate, Journal ..."
+              placeholderTextColor={"#898989"}
+              textAlignVertical="center"
+            />
+          </View>
+          <Modal
+            visible={isEmojiSelectorVisible}
+            transparent={true}
+            animationType="slide"
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsEmojiSelectorVisible(false)}
+                >
+                  <Text style={{ color: "white" }}>Close</Text>
+                </TouchableOpacity>
+                <EmojiSelector
+                  onEmojiSelected={handleEmojiSelect}
+                  columns={8}
+                />
               </View>
-            </Modal>
+            </View>
+          </Modal>
         </View>
         <NumberInput
           title="Frequency"
@@ -335,7 +363,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
         />
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-          otherStyles="px-2 mt-3"
+          otherStyles="mt-3"
           initialValue={habit.frequency_rate}
         />
 
@@ -347,6 +375,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             paddingLeft: 4,
           }}
         >
+          {/**
           <Text className="text-base text-black-100 font-pmedium">
             Add a Reminder{" "}
           </Text>
@@ -356,6 +385,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             trackColor={{ false: "gray", true: "#8BBDFA" }}
             className="pl-2"
           />
+           */}
         </View>
 
         <View
@@ -405,6 +435,35 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           isLoading={isSubmitting}
           otherMethods={onClose}
         />
+        <TouchableOpacity
+          onPress={() => {
+            handleArchive(habit_id, user.userId);
+          }}
+          style={[styles.archiveButton, { borderColor: color }]}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={[
+                styles.submitButtonText,
+                {
+                  color: "black",
+                  marginRight: 5,
+                  flex: 1,
+                  textAlign: "center",
+                },
+              ]}
+            >
+              Archive Habit
+            </Text>
+            <Octicons name="archive" size={24} color="black" />
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -431,4 +490,18 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     borderRadius: 5,
   },
-})
+  archiveButton: {
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 150,
+    width: "100%",
+    borderWidth: 4,
+  },
+  submitButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

@@ -16,7 +16,9 @@ export interface Habit {
     reminder: boolean;
     frequency_rate_int: number;
     order: number,
-    emoji: string
+    emoji: string,
+    archived: boolean,
+    archived_at: string
   }
 
 export interface HabitTracking {

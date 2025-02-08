@@ -18,7 +18,11 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";
-import { habitEmitter } from "@/events/eventEmitters";
+import {
+  newHabitEmitter,
+  deleteHabitEmitter,
+  habitEmitter,
+} from "@/events/eventEmitters";
 import HabitHeatMap from "./HabitHeatMap";
 import CalendarButton from "../CalendarButton";
 import HabitYearView from "../HabitYearView";
@@ -38,9 +42,9 @@ const HeatMapDisplay = () => {
 
   const [metrics, setMetrics] = useState({
     totalTracked: 0,
-      consistencyPercentage: "0",
-      longestStreak:0,
-  })
+    consistencyPercentage: "0",
+    longestStreak: 0,
+  });
 
   const luxonDate = DateTime; // Automatically uses user's local time zone
 
@@ -53,9 +57,6 @@ const HeatMapDisplay = () => {
     lastMonthDate.setDate(lastMonthDate.getDate() - 100);
     return lastMonthDate;
   }
-
-  // Automatically uses user's local time zone
-  //console.log(today.toString());
 
   useEffect(() => {
     //console.log(today)
@@ -72,11 +73,23 @@ const HeatMapDisplay = () => {
 
     fetchHabits();
 
-    const listener = habitEmitter.addListener("dataChanged", () => {
+    const listener = newHabitEmitter.addListener("newHabit", () => {
       // Perform refresh logic
       //console.log("Event Emitter")
       fetchHabits();
     });
+    const deleteHabitListener = deleteHabitEmitter.addListener(
+      "deleteHabit",
+      () => {
+        fetchHabits();
+      }
+    );
+    const updateHabitListener = deleteHabitEmitter.addListener(
+      "updateHabit",
+      () => {
+        fetchHabits();
+      }
+    );
 
     const unsubscribe = listenToHabitsTable((payload) => {
       //console.log("Change received!", payload);
@@ -84,18 +97,14 @@ const HeatMapDisplay = () => {
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            //console.log("Tracking Display Habit INSERT");
+            console.log("Tracking Display Habit INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
             //console.log("Tracking Display Habit UPDATE");
-            setHabits((prevHabits) =>
-              prevHabits.map((habit) =>
-                habit.id === payload.new.id ? payload.new : habit
-              )
-            );
+            setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "DELETE":
@@ -154,10 +163,10 @@ const HeatMapDisplay = () => {
       fetchGridData();
       switch (payload.eventType) {
         case "INSERT":
-          //console.log("New Tracking Picked Up! INSERT");
+        //console.log("New Tracking Picked Up! INSERT");
         //handleRefresh(payload.habitId, payload.new);
         case "UPDATE":
-          //console.log("New Tracking Picked Up! UPDATE");
+        //console.log("New Tracking Picked Up! UPDATE");
         //handleRefresh(payload.habitId, payload.new);
         case "DELETE":
           //console.log("New Tracking Picked Up! DELETE");
@@ -176,7 +185,6 @@ const HeatMapDisplay = () => {
     let longestStreak = 0;
     let currentStreak = 0;
 
-    
     const startDate = dayjs().subtract(100, "day").startOf("day");
     const validData = data.filter(
       (entry) =>
@@ -198,26 +206,28 @@ const HeatMapDisplay = () => {
     const totalDays = validData.length;
     const consistencyPercentage =
       totalDays > 0 ? (totalTracked / totalDays) * 100 : 0;
-    
-    setMetrics({totalTracked, 
-        consistencyPercentage: consistencyPercentage.toFixed(0),
-        longestStreak,})
 
-    return metrics
+    setMetrics({
+      totalTracked,
+      consistencyPercentage: consistencyPercentage.toFixed(0),
+      longestStreak,
+    });
+
+    return metrics;
   }
 
   return (
     <ScrollView>
-    <FlashList
-      data={habits}
-      keyExtractor={(item) => item.id}
-      extraData={gridData}
-      renderItem={({ item }) => {
-        const habitData = gridData[item.id];
-        return (
-          <View style={{ marginBottom: 40, padding:8 }}>
-            <View>
-              {habitData ? (
+      <FlashList
+        data={habits}
+        keyExtractor={(item) => item.id}
+        extraData={gridData}
+        renderItem={({ item }) => {
+          const habitData = gridData[item.id];
+          return (
+            <View style={{ marginBottom: 40, padding: 8 }}>
+              <View>
+                {habitData ? (
                   <View style={styles.habitContainer}>
                     <View
                       style={{
@@ -228,7 +238,9 @@ const HeatMapDisplay = () => {
                       }}
                     >
                       <View style={{ flex: 1, flexDirection: "column" }}>
-                        <Text style={styles.habitName}>{item.name} {item.emoji}</Text>
+                        <Text style={styles.habitName}>
+                          {item.name} {item.emoji}
+                        </Text>
                         <Text>
                           {item.frequency}x {item.frequency_rate}
                         </Text>
@@ -239,22 +251,20 @@ const HeatMapDisplay = () => {
                       />
                     </View>
                     <HabitHeatMap data={habitData} />
-                    
                   </View>
-              ) : (
-                <View style={styles.container}>
-                  <ActivityIndicator size="large" color="#3e4e88" />
-                </View>
-              )}
+                ) : (
+                  <View style={styles.container}>
+                    <ActivityIndicator size="large" color="#3e4e88" />
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-         
-        );
-      }}
-      estimatedItemSize={100}
-      nestedScrollEnabled={true}
-    />
-     </ScrollView>
+          );
+        }}
+        estimatedItemSize={100}
+        nestedScrollEnabled={true}
+      />
+    </ScrollView>
   );
 };
 
@@ -263,7 +273,7 @@ export default HeatMapDisplay;
 const styles = StyleSheet.create({
   container: {
     padding: 8,
-    borderWidth:1,
+    borderWidth: 1,
     borderRadius: 8,
     width: Dimensions.get("window").width - 20,
     height: 300,

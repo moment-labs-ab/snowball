@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, SafeAreaView, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
 import {
@@ -16,12 +24,10 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import SettingsGoals from "../Profile/SettingsGoals";
 import SettingsHabits from "../Profile/SettingsHabits";
 
-
-
 const MiniHabitContainer = () => {
   const { user } = useGlobalContext();
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [habitInitials, setHabitInitials] = useState<string[]>([])
+  const [habitInitials, setHabitInitials] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -30,10 +36,8 @@ const MiniHabitContainer = () => {
   };
 
   function getFirstThreeHabitInitials(habits: Habit[]): string[] {
-    return habits
-        .slice(0, 3)
-        .map(habit => habit.emoji)
-}
+    return habits.slice(0, 3).map((habit) => habit.emoji);
+  }
 
   useEffect(() => {
     const fetchHabits = async () => {
@@ -44,9 +48,9 @@ const MiniHabitContainer = () => {
     };
 
     fetchHabits();
-    if(habits){
-        const initials = getFirstThreeHabitInitials(habits)
-        setHabitInitials(initials)
+    if (habits) {
+      const initials = getFirstThreeHabitInitials(habits);
+      setHabitInitials(initials);
     }
 
     const listener = newHabitEmitter.addListener("newHabit", () => {
@@ -60,6 +64,13 @@ const MiniHabitContainer = () => {
         fetchHabits();
       }
     );
+    const updateHabitListener = deleteHabitEmitter.addListener(
+      "updateHabit",
+      () => {
+        fetchHabits();
+      }
+    );
+
     const unsubscribe = listenToHabitsTable((payload) => {
       //console.log("Change received!", payload);
       habitEmitter.emit("dataChanged");
@@ -76,11 +87,7 @@ const MiniHabitContainer = () => {
         case "UPDATE":
           if (payload.new) {
             //console.log("IN UPDATE");
-            setHabits((prevHabits) =>
-              prevHabits.map((habit) =>
-                habit.id === payload.new.id ? payload.new : habit
-              )
-            );
+            setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "DELETE":
@@ -99,65 +106,64 @@ const MiniHabitContainer = () => {
     };
   }, [user.userId, habits.length]);
   if (loading) {
-    return(
+    return (
       <View style={styles.container}>
         <View style={styles.content}>
-    <ActivityIndicator size="small" color="#3e4e88" />
-    </View>
-    </View>
+          <ActivityIndicator size="small" color="#3e4e88" />
+        </View>
+      </View>
     );
   }
   return (
-   
-
-<View>
-<TouchableOpacity onPress={toggleContent}>
-<View style={styles.container}>
-      <View style={styles.content}>
-      <View style={styles.circleContainer}>
-                {habitInitials.map((initial, index) => (
-                    <View 
-                        key={index}
-                        style={styles.circleStyle}
-                    >
-                        <Text>{initial}</Text>
-                    </View>
-                ))}
+    <View>
+      <TouchableOpacity onPress={toggleContent}>
+        <View style={styles.container}>
+          <View style={styles.content}>
+            <View style={styles.circleContainer}>
+              {habitInitials.map((initial, index) => (
+                <View key={index} style={styles.circleStyle}>
+                  <Text>{initial}</Text>
+                </View>
+              ))}
             </View>
-        <Text style={{fontWeight:'600'}}>{habits.length} {habits.length === 1 ? "Habit" : "Habits"}</Text>
-      </View>
-    </View>
-</TouchableOpacity>
-
-<Modal
-  visible={isVisible}
-  animationType="slide"
-  onRequestClose={toggleContent}
-  presentationStyle="pageSheet"
->
-  <SafeAreaView style={styles.modalContainer}>
-  <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
-          <AntDesign name="close" size={24} color="black" />
-        </TouchableOpacity>
-        <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerText, { color: "#3e4e88" }]}>Habits</Text>
+            <Text style={{ fontWeight: "600" }}>
+              {habits.length} {habits.length === 1 ? "Habit" : "Habits"}
+            </Text>
+          </View>
         </View>
-        {/* Add an empty View for balanced spacing */}
-        <View style={styles.spacer} />
-      </View>
-      <View>
-        <SettingsHabits />
-      </View>
-  </SafeAreaView>
-</Modal>
-</View>
+      </TouchableOpacity>
+
+      <Modal
+        visible={isVisible}
+        animationType="slide"
+        onRequestClose={toggleContent}
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.headerContainer}>
+            <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
+              <AntDesign name="close" size={24} color="black" />
+            </TouchableOpacity>
+            <View style={styles.headerTextContainer}>
+              <Text style={[styles.headerText, { color: "#3e4e88" }]}>
+                Habits
+              </Text>
+            </View>
+            {/* Add an empty View for balanced spacing */}
+            <View style={styles.spacer} />
+          </View>
+          <View>
+            <SettingsHabits />
+          </View>
+        </SafeAreaView>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: .25,
+    borderWidth: 0.25,
     width: 120,
     height: 60,
     borderRadius: 8,
@@ -167,25 +173,24 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  circleStyle : {
-    width: 30,          // w-8
-    height: 30,         // h-8
+  circleStyle: {
+    width: 30, // w-8
+    height: 30, // h-8
     borderRadius: 20, // rounded-full
-    flexDirection: 'row',   // flex-row
-    alignItems: 'center',   // items-center
-    justifyContent: 'center', // justify-center
-    color: '#FFFFFF',       // text-white
-    fontSize: 1.25,    // text-xl
-    fontWeight: '700', 
-    
-    
-    backgroundColor:'#c2dcfc'     // needed for flex properties to work
+    flexDirection: "row", // flex-row
+    alignItems: "center", // items-center
+    justifyContent: "center", // justify-center
+    color: "#FFFFFF", // text-white
+    fontSize: 1.25, // text-xl
+    fontWeight: "700",
+
+    backgroundColor: "#c2dcfc", // needed for flex properties to work
   },
-  circleContainer:{
-    gap:1,
-    justifyContent:'center',
-    alignItems:'center',
-    flexDirection:'row',
+  circleContainer: {
+    gap: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
   modalContainer: {
     flex: 1,

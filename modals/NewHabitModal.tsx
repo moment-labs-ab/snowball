@@ -53,7 +53,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
-    emoji: ""
+    emoji: "❄️"
   });
 
   const onTimeChange = (event: any, selectedTime?: Date) => {

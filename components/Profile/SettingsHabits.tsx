@@ -1,7 +1,7 @@
 import { View, Text, TextInput, FlatList, ScrollView, StyleSheet} from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Habit } from '@/types/types'
-import { getUserHabits, listenToHabitsTable, updateHabitOrder } from '@/lib/supabase_habits'
+import { getUserArchivedHabits, getUserHabits, listenToHabitsTable, updateHabitOrder } from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import HabitCard from './HabitCard'
 import { FlashList } from "@shopify/flash-list";
@@ -10,6 +10,7 @@ import { newHabitEmitter, deleteHabitEmitter, habitEmitter } from '@/events/even
 const SettingsHabits = () => {
   const { user, isLoading } = useGlobalContext();
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [archivedHabits, setArchivedHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
 
@@ -18,12 +19,21 @@ const SettingsHabits = () => {
     setHabits(habitsData);
     setLoading(false);
     };
+  
+    const fetchArchivedHabits = async () => {
+      const habitsData = await getUserArchivedHabits(user.userId);
+      setArchivedHabits(habitsData);
+      setLoading(false);
+      };
 
   useEffect(()=>{
 
     fetchHabits();
+    fetchArchivedHabits();
 
   }, [])
+
+  
 
   const formatDate = (date: string | null): string => {
     if (!date) return '';
@@ -44,17 +54,39 @@ const SettingsHabits = () => {
     <ScrollView>
     <View style={styles.container}>
     <View style={styles.section}>
-      <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
-      {habits.map(habit => (
-        <View key={habit.id} style={styles.habitItem}>
-          <Text style={styles.habitName}>{habit.name} {habit.emoji}</Text>
-          <Text style={styles.habitDate}>Est.) {formatDate(habit.created_at)}</Text>
-        </View>
-      ))}
-      {habits.length === 0 && (
-        <Text style={styles.emptyMessage}>No Habits</Text>
-      )}
+    <Text style={styles.sectionTitle}>Active Habits</Text>
+        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
+        {habits.map(habit => (
+          <View key={habit.id} style={styles.habitItem}>
+            <Text style={styles.habitName}>{habit.emoji} {habit.name}</Text>
+            <Text style={styles.habitDate}>
+              Habit Started: {formatDate(habit.created_at)}
+            </Text>
+            
+          </View>
+        ))}
+        {habits.length === 0 && (
+          <Text style={styles.emptyMessage}>No active goals</Text>
+        )}
     </View>
+
+    <View style={styles.section}>
+    <Text style={styles.sectionTitle}>Archived Habits</Text>
+        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
+        {archivedHabits.map(habit => (
+          <View key={habit.id} style={styles.habitItem}>
+            <Text style={styles.habitName}>{habit.emoji} {habit.name}</Text>
+            <Text style={styles.habitDate}>
+              Habit Archived: {formatDate(habit.archived_at)}
+            </Text>
+            
+          </View>
+        ))}
+        {habits.length === 0 && (
+          <Text style={styles.emptyMessage}>No active goals</Text>
+        )}
+    </View>
+
     </View>
     </ScrollView>
   )
@@ -65,6 +97,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 24,
+    marginBottom:40
   },
   section: {
     gap: 12,

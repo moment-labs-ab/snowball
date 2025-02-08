@@ -71,6 +71,17 @@ const MiniGoalsContainer = () => {
       //console.log("Event Emitter")
       fetchUserGoals();
     });
+    const goalListener = goalEmitter.addListener("updatedGoal", () => {
+      // Perform refresh logic
+      //console.log("Event Emitter")
+      fetchUserGoals();
+    });
+    const goalDeleteListener = goalEmitter.addListener("deleteGoal", () => {
+      // Perform refresh logic
+      //console.log("Event Emitter")
+      fetchUserGoals();
+    });
+
 
     const unsubscribe = listenToGoalsTable((payload) => {
       //console.log("Change received!", payload);

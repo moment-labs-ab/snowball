@@ -73,6 +73,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [color, setColor] = useState('#8BBDFA');
   const [showColorPicker, setShowColorPicker] = useState(false);
 
+  
+
   const fetchHabits = async () => {
     const data = await getUserHabits(user.userId);
     setHabits(data);
