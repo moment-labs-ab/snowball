@@ -73,7 +73,8 @@ AppState.addEventListener('change', (state) => {
     name: string,
     reminder: boolean,
     frequency: number,
-    frequency_rate: string
+    frequency_rate: string,
+    emoji: string
   ): Promise<{ success: boolean; message: string; data?: any }> => {
     if(name === 'Habit' || frequency === 0){
       return { success: false, message: 'Please fill both name and frequency fields', data: undefined }; 
@@ -95,7 +96,8 @@ AppState.addEventListener('change', (state) => {
           frequency_rate,
           reminder,
           frequency_rate_int,
-          'order':currentHabitCount
+          'order':currentHabitCount,
+          emoji
         },
       ]);
   
@@ -157,7 +159,8 @@ export const updateHabitIfChanged = async (
   name: string,
   reminder: boolean,
   frequency: number,
-  frequency_rate: string
+  frequency_rate: string,
+  emoji: string
 ): Promise<{ success: boolean; message: string; data?: any }> => {
   if (name === 'Habit' || frequency === 0) {
     return { success: false, message: 'Please fill both name and frequency fields', data: undefined };
@@ -184,12 +187,14 @@ export const updateHabitIfChanged = async (
   const frequency_rate_int = getFrequencyNumber(frequency_rate);
 
   // Check if any field has changed
+  //console.log(existingHabit.emoji != emoji)
   const hasChanged =
     existingHabit.name !== name ||
     existingHabit.reminder !== reminder ||
     existingHabit.frequency !== frequency ||
     existingHabit.frequency_rate !== frequency_rate ||
-    existingHabit.frequency_rate_int !== frequency_rate_int;
+    existingHabit.frequency_rate_int !== frequency_rate_int ||
+    existingHabit.emoji !== emoji;
 
   if (!hasChanged) {
     return { success: true, message: 'No changes detected', data: existingHabit };
@@ -204,6 +209,7 @@ export const updateHabitIfChanged = async (
       frequency,
       frequency_rate,
       frequency_rate_int,
+      "emoji":emoji
     })
     .eq('id', habit_id);
 

@@ -32,7 +32,7 @@ const MiniHabitContainer = () => {
   function getFirstThreeHabitInitials(habits: Habit[]): string[] {
     return habits
         .slice(0, 3)
-        .map(habit => habit.name.charAt(0))
+        .map(habit => habit.emoji)
 }
 
   useEffect(() => {
@@ -157,7 +157,7 @@ const MiniHabitContainer = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
+    borderWidth: .25,
     width: 120,
     height: 60,
     borderRadius: 8,
@@ -177,15 +177,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',       // text-white
     fontSize: 1.25,    // text-xl
     fontWeight: '700', 
-    borderColor:'black',
-    borderWidth:1       // needed for flex properties to work
+    
+    
+    backgroundColor:'#c2dcfc'     // needed for flex properties to work
   },
   circleContainer:{
-   
     gap:1,
     justifyContent:'center',
     alignItems:'center',
-    flexDirection:'row'
+    flexDirection:'row',
   },
   modalContainer: {
     flex: 1,

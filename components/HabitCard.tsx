@@ -30,6 +30,8 @@ type habitCardProps = {
   frequency_rate_int: number;
   date: Date;
   order?: number;
+  emoji: string
+  fetchHabits: ()=>{}
 };
 
 const HabitCard = ({
@@ -42,6 +44,8 @@ const HabitCard = ({
   frequency_rate_int,
   date,
   order,
+  emoji,
+  fetchHabits
 }: habitCardProps) => {
   const { user, isLoading } = useGlobalContext();
   const [trackingCount, setTrackingCount] = useState<number>(0);
@@ -122,7 +126,7 @@ const HabitCard = ({
     return () => {
       unsubscribe();
     };
-  }, [id, user.userId, date, frequency_rate_int, trackingCount]);
+  }, [id, user.userId, date, frequency_rate_int, trackingCount, name, frequency_rate]);
 
   const handlingPress = async (
     id: string,
@@ -160,6 +164,7 @@ const HabitCard = ({
 
   const handleCloseModal = () => {
     setModalVisible(false);
+    fetchHabits()
   };
 
   return (
@@ -210,7 +215,7 @@ const HabitCard = ({
               zIndex: 1,
             }}
           >
-            {name}
+            {name} {emoji}
           </Text>
           <Text
             style={{

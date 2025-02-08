@@ -6,12 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
   Alert,
   Platform,
   Switch,
   SafeAreaView,
+  Modal
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
 import FormField from "@/components/FormField";
@@ -23,6 +22,8 @@ import { newHabitEmitter } from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import GoalColorPicker from "@/components/GoalObjects/GoalColorPicker";
 import HabitSelector from "./HabitSelector";
+import EmojiSelector from "react-native-emoji-selector";
+
 
 interface NewHabitProps {
   visible: boolean;
@@ -43,12 +44,16 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const { user } = useGlobalContext();
   const [color, setColor] = useState("#3e4e88")
+  const [emoji, setEmoji] = useState("❄️")
+  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
+
 
   const [habit, setHabit] = useState({
     name: "",
     frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
+    emoji: ""
   });
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
@@ -91,7 +96,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         habit.name,
         habit.reminder,
         habit.frequency,
-        habit.frequency_rate
+        habit.frequency_rate,
+        habit.emoji
       );
       
       if (result.success == false) {
@@ -109,6 +115,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         frequency: 0,
         frequency_rate: "Daily",
         reminder: false,
+        emoji: '❄️'
       });
       newHabitEmitter.emit("newHabit");
       if (closeModal) {
@@ -124,11 +131,15 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       frequency: 0,
       frequency_rate: "Daily",
       reminder: false,
+      emoji: '❄️'
     });
   };
 
-  const handleColorChange = (color: string) => {
-    setColor(color);
+
+  const handleEmojiSelect = (selectedEmoji: string) => {
+    setEmoji(selectedEmoji);
+    setHabit({ ...habit, emoji: selectedEmoji })
+    setIsEmojiSelectorVisible(false);
   };
 
   return (
@@ -155,7 +166,25 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
           <Text style={styles.label}>Name</Text>
           <Text style={styles.miniLabel}>What action do you want to track?</Text>
         </View>
-        <View >
+
+        <View style={{flexDirection:'row'}}>
+        <TouchableOpacity
+              style={{
+                width: 40,
+                height: 40,
+                justifyContent: "center",
+                alignItems: "center",
+                borderWidth: 1,
+                borderColor: "#ccc",
+                borderRadius: 5,
+                backgroundColor: color,
+                marginRight: 10,
+              }}
+              onPress={() => setIsEmojiSelectorVisible(true)}
+            >
+              <Text style={{ color: "white" }}>{emoji}</Text>
+            </TouchableOpacity>
+           <View style={{flex:1}}>
           <TextInput
             style={{
               borderWidth: 1,
@@ -169,8 +198,30 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             placeholderTextColor={"#898989"}
             textAlignVertical="center"
           />
+          </View>
+          <Modal
+              visible={isEmojiSelectorVisible}
+              transparent={true}
+              animationType="slide"
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIsEmojiSelectorVisible(false)}
+                  >
+                    <Text style={{ color: "white" }}>Close</Text>
+                  </TouchableOpacity>
+                  <EmojiSelector
+                    onEmojiSelected={handleEmojiSelect}
+                    columns={8}
+                  />
+                </View>
+              </View>
+            </Modal>
         </View>
         <HabitSelector setHabit={setHabit} />
+
 
         
         <NumberInput
@@ -378,7 +429,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: "60%",
+    height: "80%",
   },
   closeButton: {
     alignSelf: "center",
