@@ -12,9 +12,33 @@ const SettingsGoals = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [archivedGoals, setArchivedGoals] = useState<Goal[]>([]);
   const [accomplishedGoals, setAccomplishedGoals] = useState<Goal[]>([]);
-  const { user, isLoading } = useGlobalContext();
+  const { user } = useGlobalContext();
+  const [loading, setLoading] = useState<boolean>(true);
+
 
   const fetchUserGoals = async () => {
+    setLoading(true)
+    const data = await getUserGoals(user.userId);
+  
+    // Sort by expected_end_date first and then by name
+    const sortedData = data.sort((a, b) => {
+      const dateA = new Date(a.expected_end_date).getTime();
+      const dateB = new Date(b.expected_end_date).getTime();
+  
+      // Compare dates first
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+  
+      // If dates are the same, compare names
+      return a.name.localeCompare(b.name);
+    });
+  
+    setGoals(sortedData);
+    setLoading(false)
+  };
+
+  const fetchArchivedGoals = async () => {
     const data = await getUserArchivedGoals(user.userId);
 
     // Sort by expected_end_date first and then by name
@@ -31,23 +55,23 @@ const SettingsGoals = () => {
       return a.name.localeCompare(b.name);
     });
 
-    setGoals(sortedData);
-    setAccomplishedGoals(goals.filter(goal => goal.accomplished))
-    setArchivedGoals(goals.filter(goal => goal.archived))
+    setAccomplishedGoals(sortedData.filter(goal => goal.accomplished))
+    setArchivedGoals(sortedData.filter(goal => goal.archived))
   };
 
   useEffect(() => {
+    fetchArchivedGoals();
     fetchUserGoals();
 
     const listener = goalEmitter.addListener("newHabitInGoals", () => {
       // Perform refresh logic
       //console.log("Event Emitter")
-      fetchUserGoals();
+      fetchArchivedGoals();
     });
 
     const unsubscribe = listenToGoalsTable((payload) => {
       //console.log("Change received!", payload);
-      fetchUserGoals();
+      fetchArchivedGoals();
 
       switch (payload.eventType) {
         case "INSERT":
@@ -100,6 +124,23 @@ const SettingsGoals = () => {
     return (
      <ScrollView>
       <View style={styles.container}>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Active Goals</Text>
+        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
+        {goals.map(goal => (
+          <View key={goal.id} style={[styles.goalItem, {backgroundColor: goal.color}]}>
+            <Text style={styles.goalName}>{goal.emoji} {goal.name}</Text>
+            <Text style={styles.goalDate}>
+              Goal Started: {formatDate(goal.created_at)}
+            </Text>
+            
+          </View>
+        ))}
+        {accomplishedGoals.length === 0 && (
+          <Text style={styles.emptyMessage}>No accomplished goals</Text>
+        )}
+      </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Accomplished Goals</Text>
         <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
@@ -144,6 +185,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 24,
+    marginBottom:100
   },
   section: {
     gap: 12,

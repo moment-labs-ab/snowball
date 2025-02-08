@@ -44,7 +44,6 @@ const SettingsHabits = () => {
     <ScrollView>
     <View style={styles.container}>
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>User Habits</Text>
       <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
       {habits.map(habit => (
         <View key={habit.id} style={styles.habitItem}>
@@ -73,9 +72,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 8,
   },
   habitItem: {
-    backgroundColor: '#c3ddfc',
+    backgroundColor: '#bbd8fc',
     padding: 12,
     borderRadius: 8,
   },

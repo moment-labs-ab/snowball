@@ -215,7 +215,7 @@ const HeatMapDisplay = () => {
       renderItem={({ item }) => {
         const habitData = gridData[item.id];
         return (
-          <View style={{ marginBottom: 40 }}>
+          <View style={{ marginBottom: 40, padding:8 }}>
             <View>
               {habitData ? (
                   <View style={styles.habitContainer}>

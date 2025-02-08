@@ -1,6 +1,10 @@
-import icons from '@/constants/icons';
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import icons from "@/constants/icons";
+import React from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import SettingsButton from "@/components/SettingsButton";
+import Settings from "@/components/Profile/SettingsHome";
+import MiniHabitContainer from "./MiniHabitContainer";
+import MiniGoalsContainer from "./MiniGoalsContainer";
 
 interface ProfileCardProps {
   profileImage: string; // URL for the profile picture
@@ -15,55 +19,87 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   description,
   onProfilePicturePress,
 }) => {
-    console.log("icons:",icons.settings)
+  console.log("icons:", icons.settings);
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onProfilePicturePress}>
-        <Image source={{ uri: profileImage }} style={styles.profileImage} />
-      </TouchableOpacity>
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.description}>{description}</Text>
-      </View>
+<View style={styles.container}>
+  <View style={styles.headerRow}>
+    <TouchableOpacity onPress={onProfilePicturePress}>
+      <Image source={{ uri: profileImage }} style={styles.profileImage} />
+    </TouchableOpacity>
+    
+    <View style={[styles.settingsContainer, { marginRight: -25, marginTop: -35 }]}>
+      <SettingsButton
+        label="Settings"
+        action={() => {
+          console.log("Settings button Pressed");
+        }}
+        content={<Settings />}
+      />
     </View>
+  </View>
+
+  <View style={styles.textContainer}>
+    <Text style={styles.name}>{name}</Text>
+    <Text style={styles.description}>{description}</Text>
+  </View>
+  <View style={{flexDirection:'row', justifyContent:'center', alignContent:'space-between', gap:20, marginTop:20}}>
+
+      <MiniHabitContainer />
+      <MiniGoalsContainer/>
+  </View>
+</View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 10,
     padding: 15,
+    borderBottomWidth: 1,
+    borderRightWidth:1,
+    borderLeftWidth:1,
+    borderBottomRightRadius:30,
+    borderBottomLeftRadius:30,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  settingsContainer: {
+    justifyContent: 'center',
   },
   profileImage: {
-    backgroundColor: 'lightblue',
-    width: 100,
-    height: 100,
-    borderRadius: 40, // Makes the image circular
+    backgroundColor: "lightblue",
+    width: 60,
+    height: 60,
+    borderRadius: 40,
     marginRight: 10,
   },
   textContainer: {
-    //backgroundColor: 'red',
+    marginTop: 5,
   },
   name: {
     fontSize: 25,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   description: {
     fontSize: 16,
-    color: 'gray',
+    color: "gray",
   },
   settingsButton: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     width: 50,
     height: 50,
-    borderRadius: 25, // Makes the image circular
-    marginLeft: 2,
-    marginBottom: 30,
+    borderRadius: 25,
   },
+  habitGoalContainer:{
+    borderWidth:1,
+    width:100,
+    height:60,
+    borderRadius:5
+  }
 });
 
 export default ProfileCard;
