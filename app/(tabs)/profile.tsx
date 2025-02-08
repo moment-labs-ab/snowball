@@ -187,7 +187,7 @@ const Profile = () => {
                 content={<SettingsHome />}
               />
             </View>
-            {/**
+            
                         <View style={styles.signOut}>
                             <CustomButton
                                 title="Sign Out"
@@ -196,7 +196,7 @@ const Profile = () => {
                                 otherMethods={() => { }}
                             />
                         </View>
-
+{/**
 
                         <View style={styles.dangerZone}>
                             <Text style={styles.dangerTitle}>Danger Zone</Text>
