@@ -24,7 +24,7 @@ const SettingsButton: React.FC<SettingButtonProps> = ({label, action, content, u
       <SafeAreaView>
           <View style={styles.container}>
               <TouchableOpacity style={styles.settingsButton} onPress={toggleContent}>
-                <Feather name="settings" size={35} color="grey" />
+                <Feather name="settings" size={30} color="black" />
               </TouchableOpacity>
 
               <Modal

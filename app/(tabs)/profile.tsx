@@ -21,6 +21,7 @@ import ProfileCard from "@/components/ProfileSettings/ProfileCard";
 import SettingsButton from "@/components/SettingsButton";
 import Settings from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
+import { StatusBar } from 'expo-status-bar';
 
 const Profile = () => {
     const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext();
@@ -57,6 +58,10 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.content}>
+      <StatusBar 
+        backgroundColor="#8BBDFA" 
+      />
+      
         <View style={styles.container}>
       <View>
         {userData ? (
@@ -70,15 +75,10 @@ const Profile = () => {
                   console.log("Profile Picture Pressed")
                 }
               />
-              
-              <SettingsButton
-                label="Settings"
-                action={() => {
-                  console.log("Settings button Pressed");
-                }}
-                content={<Settings />}
-              />
-            </View>
+              </View>
+              <View>
+              </View>
+            
 {/**
             
                         <View style={styles.signOut}>
@@ -108,8 +108,8 @@ const Profile = () => {
           <Text style={styles.errorText}>Unable to load user data</Text>
         )}
         </View>
-        
         <HeatMapDisplay />
+        
         <View style={styles.divider} />
       </View>
     </SafeAreaView>
@@ -128,21 +128,16 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 8, // Equivalent to pl-2 and pr-2
+    // Equivalent to pl-2 and pr-2
   },
   content: {
     backgroundColor: '#edf5fe', // Replace with your bg-background class color if different
     flex: 1,
+    padding:15
   },
   profileInfo: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
     marginBottom:20,
-    borderLeftWidth:1,
-    borderBottomWidth:1,
-    borderBottomLeftRadius:5
+    
   },
   label: {
     fontSize: 18,
