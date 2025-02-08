@@ -79,6 +79,30 @@ const Profile = () => {
                 content={<Settings />}
               />
             </View>
+{/**
+            
+                        <View style={styles.signOut}>
+                            <CustomButton
+                                title="Sign Out"
+                                handlePress={logout}
+                                containerStyles="mt-8 px-2 bg-secondary"
+                                otherMethods={() => { }}
+                            />
+                        </View>
+
+
+                        <View style={styles.dangerZone}>
+                            <Text style={styles.dangerTitle}>Danger Zone</Text>
+                            <CustomButton
+                                title={isDeletingAccount ? "Deleting Account..." : "Delete Account & All User Data"}
+                                handlePress={handleDeleteAccount}
+                                containerStyles="px-2 bg-delete"
+                                isLoading={isDeletingAccount}
+                                otherMethods={() => { }}
+                            />
+                        </View>
+                        */}
+
           </>
         ) : (
           <Text style={styles.errorText}>Unable to load user data</Text>
