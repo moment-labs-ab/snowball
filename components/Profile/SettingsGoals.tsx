@@ -137,8 +137,8 @@ const SettingsGoals = () => {
             
           </View>
         ))}
-        {accomplishedGoals.length === 0 && (
-          <Text style={styles.emptyMessage}>No accomplished goals</Text>
+        {goals.length === 0 && (
+          <Text style={styles.emptyMessage}>No active goals</Text>
         )}
       </View>
       <View style={styles.section}>

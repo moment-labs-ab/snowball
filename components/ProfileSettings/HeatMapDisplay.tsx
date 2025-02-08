@@ -18,7 +18,11 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";
-import { habitEmitter } from "@/events/eventEmitters";
+import {
+  newHabitEmitter,
+  deleteHabitEmitter,
+  habitEmitter,
+} from "@/events/eventEmitters";
 import HabitHeatMap from "./HabitHeatMap";
 import CalendarButton from "../CalendarButton";
 import HabitYearView from "../HabitYearView";
@@ -54,8 +58,7 @@ const HeatMapDisplay = () => {
     return lastMonthDate;
   }
 
-  // Automatically uses user's local time zone
-  //console.log(today.toString());
+  
 
   useEffect(() => {
     //console.log(today)
@@ -65,18 +68,26 @@ const HeatMapDisplay = () => {
     //console.log(today)
 
     const fetchHabits = async () => {
-      const habitsData = await getUserHabits(user.userId);
-      setHabits(habitsData);
-      setLoading(false);
-    };
+    const habitsData = await getUserHabits(user.userId);
+    setHabits(habitsData);
+    setLoading(false);
+  };
+
+    
 
     fetchHabits();
 
-    const listener = habitEmitter.addListener("dataChanged", () => {
+    const listener = newHabitEmitter.addListener("newHabit", () => {
       // Perform refresh logic
       //console.log("Event Emitter")
       fetchHabits();
     });
+    const deleteHabitListener = deleteHabitEmitter.addListener(
+      "deleteHabit",
+      () => {
+        fetchHabits();
+      }
+    );
 
     const unsubscribe = listenToHabitsTable((payload) => {
       //console.log("Change received!", payload);
@@ -84,7 +95,7 @@ const HeatMapDisplay = () => {
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            //console.log("Tracking Display Habit INSERT");
+            console.log("Tracking Display Habit INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
