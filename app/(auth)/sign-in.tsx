@@ -78,7 +78,6 @@ const SignIn = () => {
         />
 
         <Text className="text-2xl text-black text-semibold mt-6 font-psemibold pl-3">
-          {" "}
           Login to Snowball
         </Text>
 

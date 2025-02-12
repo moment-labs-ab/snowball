@@ -53,7 +53,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
-    emoji: "❄️"
+    emoji: ""
   });
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
@@ -115,24 +115,14 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         frequency: 0,
         frequency_rate: "Daily",
         reminder: false,
-        emoji: '❄️'
+        emoji: ''
       });
       newHabitEmitter.emit("newHabit");
       if (closeModal) {
         closeModal();
+        
       }
     }
-  };
-
-  const closeHabits = () => {
-    onClose();
-    setHabit({
-      name: "Habit",
-      frequency: 0,
-      frequency_rate: "Daily",
-      reminder: false,
-      emoji: '❄️'
-    });
   };
 
 
@@ -242,6 +232,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             paddingLeft: 4,
           }}
         >
+          {/** 
           <Text className="text-base text-black-100 font-pmedium">
             Add a Reminder{" "}
           </Text>
@@ -251,6 +242,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             trackColor={{ false: "gray", true:  color}}
             className="pl-2"
           />
+          */}
         </View>
 {/**
         <View style={{marginTop:30}}>

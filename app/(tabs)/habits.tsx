@@ -10,14 +10,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useContext, useEffect, useState } from "react";
 import { useGlobalContext } from "@/context/Context";
-import images from "../../constants/images";
 import LoadingScreen from "@/components/LoadingScreen";
 import DatePicker from "@/components/DatePicker";
 import CustomButton from "@/components/CustomButtom";
 import NewHabit from "@/modals/NewHabit";
 import DailyHabitDisplay from "@/components/DailyHabitDisplay";
-import Toast from "react-native-toast-message";
-import useShakeDetection from "@/events/useShakeDetection";
+import images from "../../constants/images";
 import NewHabitButton from "@/modals/NewHabitButton";
 import NewHabitModal from "@/modals/NewHabitModal";
 
@@ -63,8 +61,8 @@ const Habits = () => {
   };
 
   return (
-    <SafeAreaView className="bg-background h-full">
-      <View className="flex-row justify-between items-center mt-6 mb-6">
+    <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
+      <View className="flex-row justify-between align-center mt-6 mb-6">
         <View>
           <Text className="text-xl font-bold text-secondary pl-3">
             Good {time_of_day},
@@ -73,6 +71,7 @@ const Habits = () => {
             {user.username}
           </Text>
         </View>
+        
         <NewHabitButton
           label={"Create a New Habit"}
           content={

@@ -5,6 +5,10 @@ import SettingsButton from "@/components/SettingsButton";
 import Settings from "@/components/Profile/SettingsHome";
 import MiniHabitContainer from "./MiniHabitContainer";
 import MiniGoalsContainer from "./MiniGoalsContainer";
+import images from "../../constants/images";
+import PremiumButton from "../NonPremiumComponents/PremiumButton";
+import PremiumModal from "../NonPremiumComponents/PremiumModal";
+
 
 interface ProfileCardProps {
   profileImage: string; // URL for the profile picture
@@ -28,7 +32,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     </TouchableOpacity>
     
     <View style={[styles.settingsContainer, { marginRight: -25, marginTop: -35 }]}>
-      <SettingsButton
+<PremiumButton label={"Snowball Premium"} content={<PremiumModal/>}/>    
+    <SettingsButton
         label="Settings"
         action={() => {
           console.log("Settings button Pressed");
@@ -68,6 +73,9 @@ const styles = StyleSheet.create({
   },
   settingsContainer: {
     justifyContent: 'center',
+    flexDirection:'row',
+    alignItems:'center',
+    alignContent:'center'
   },
   profileImage: {
     backgroundColor: "lightblue",
