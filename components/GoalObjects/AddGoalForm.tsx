@@ -12,7 +12,7 @@ import {
   Alert,
 } from "react-native";
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
-import { insertNewGoal } from "@/lib/supabase_goals";
+import { insertNewGoal, getGoalCount } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { Habit } from "@/types/types";
@@ -20,13 +20,13 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { goalEmitter } from "@/events/eventEmitters";
-import ColorPicker from 'react-native-wheel-color-picker';
-import FeedbackFormComponent from "../ProfileSettings/Feedback";
 import NewHabitButton from "@/modals/NewHabitButton";
 import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
 import GoalSelector from "./GoalSelector";
+import Toast from "react-native-toast-message";
+
 
 export interface Goal {
   name: string;
@@ -73,14 +73,28 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [color, setColor] = useState('#8BBDFA');
   const [showColorPicker, setShowColorPicker] = useState(false);
 
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
+  const [goalCount, seGoalCount] = useState<number>(0)
   
 
   const fetchHabits = async () => {
     const data = await getUserHabits(user.userId);
     setHabits(data);
   };
+
+  const fetchGoalCount = async ()=>{
+    const count = await getGoalCount(user.userId);
+    if(count){
+      seGoalCount(count)
+    }
+    else{
+      seGoalCount(0)
+    }
+    
+  }
   useEffect(() => {
     fetchHabits();
+    fetchGoalCount();
 
     const unsubscribe = listenToHabitsTable((payload) => {
       console.log('Change received!', payload);
@@ -177,6 +191,14 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       );
       return;
     }
+
+    if (!user.premiumUser && goalCount >= 6){
+      if(closeModal){
+        closeModal()
+      }
+      showToast()
+      return;
+    }
   
     // If all validations pass, proceed with goal creation
     insertNewGoal(
@@ -202,6 +224,22 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       closeModal();
     }
     goalEmitter.emit("newGoal");
+  };
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock More Goals with Premium!",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
   
 

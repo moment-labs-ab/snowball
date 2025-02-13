@@ -185,6 +185,23 @@ export const getUsername = async (userId: string) =>{
     }
   }
 
+  export const getPremiumStatus = async (userId: string) =>{
+    try {
+      const { data, error } = await supabase
+      .from('profiles')
+      .select(`premium_user`)
+      .eq('id', userId)
+      if(data){
+        return(data[0].premium_user)
+      }
+      
+    } catch (error) {
+      console.log("There was an error trying to query users' premium user status")
+      return(undefined)
+      
+    }
+  }
+
 //**
  /* Gets the current user on the app.
  * @returns current_user data 
@@ -198,17 +215,20 @@ export const getUsername = async (userId: string) =>{
                 userId: "",
                 username: "",
                 email: "",
+                premiumUser: false
             } as User;
             
             return defaultUser;
         } else {
             const userId = data.user?.id || "";
             const username = await getUsername(userId);
+            const premiumUser = await getPremiumStatus(userId);
 
             let currentUser = {
                 userId: userId,
                 username: username,
                 email: data.user?.email || "",
+                premiumUser: premiumUser
             } as User;
 
             return currentUser;
@@ -219,6 +239,7 @@ export const getUsername = async (userId: string) =>{
             userId: "",
             username: "",
             email: "",
+            premiumUser: false
         } as User;
         
         return defaultUser;

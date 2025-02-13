@@ -4,8 +4,20 @@ import React, {useEffect} from "react";
 import { useFonts } from 'expo-font';
 import GlobalProvider from "@/context/Context";
 import { GestureDetector } from "react-native-gesture-handler";
+import Toast, { BaseToast, ErrorToast, ToastConfig } from "react-native-toast-message";
 
 export default function RootLayout() {
+  const toastConfig: ToastConfig = {
+    error: (props) => (
+      <ErrorToast
+        {...props}
+        style={{ borderLeftColor: "#FAC88B",}} // Change colors here
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        text1Style={{ fontSize: 16, fontWeight: "bold", color: "black" }} // Text color
+        text2Style={{ fontSize: 14, color: "gray" }} // Subtitle color
+      />
+    ),
+  };
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -31,6 +43,7 @@ export default function RootLayout() {
       <Stack.Screen name='(auth)' options={{headerShown: false}}/>
       <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
     </Stack>
+    <Toast config={toastConfig} topOffset={50} />
     </GlobalProvider>
 
   );

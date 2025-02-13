@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import moment from "moment";
 import { AntDesign } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useGlobalContext } from "@/context/Context";
+import Toast from "react-native-toast-message";
 
 interface DatePickerProps {
   initialDate?: Date;
@@ -14,8 +15,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
   initialDate,
   onDateChange,
 }) => {
+  const { user } = useGlobalContext();
   const [isCalendarVisible, setCalendarVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState(initialDate || new Date());
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
 
   const showCalendar = () => {
     setCalendarVisibility(true);
@@ -26,22 +29,68 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleDayPress = (day: any) => {
-    const date = moment(day.dateString).toDate();
+    const date = moment(day.dateString)
+    .startOf("day")
+    .toDate();
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    if (date < yesterday && !user.premiumUser) {
+      showToast();
+    }else{
     setSelectedDate(date);
     hideCalendar();
     if (onDateChange) {
       onDateChange(date);
     }
+  }
   };
   const changeDate = (direction: number) => {
-    const newDate = moment(selectedDate).add(direction, "days").toDate();
-    setSelectedDate(newDate);
-    if (onDateChange) {
-      onDateChange(newDate);
+    const newDate = moment(selectedDate)
+      .add(direction, "days")
+      .startOf("day")
+      .toDate();
+
+    const today = new Date();
+    today.setDate(today.getDate() - 1);
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    if (newDate < yesterday && !user.premiumUser) {
+      showToast();
+    } else {
+      setSelectedDate(newDate);
+      if (onDateChange) {
+        onDateChange(newDate);
+      }
     }
   };
 
   const today = new Date();
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock past Date selection with Premium!",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
+  useEffect(() => {
+    setIsPremium(user.premiumUser);
+  }, [user.premiumUser]);
 
   return (
     <View style={styles.container}>
@@ -67,7 +116,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
           <TouchableOpacity onPress={() => changeDate(1)}>
             <AntDesign name="right" size={20} color="#3e4e88" />
           </TouchableOpacity>
-        ): (<AntDesign name="right" size={20} color="#edf5fe" />)}
+        ) : (
+          <AntDesign name="right" size={20} color="#edf5fe" />
+        )}
       </View>
 
       <Modal
@@ -93,6 +144,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 todayDotColor: "#3e4e88",
                 todayTextColor: "green",
               }}
+              maxDate={today.toDateString()}
+              
             />
             <TouchableOpacity onPress={hideCalendar} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>

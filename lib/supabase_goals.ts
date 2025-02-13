@@ -90,6 +90,24 @@ export const insertNewGoal = async (
   return { success: true, message: "Goal inserted successfully", data: { goalId } };
 };
 
+export const getGoalCount = async (userId: string): Promise<number | null> => {
+  try {
+    const { data, error, count } = await supabase
+      .from('goal_objects')
+      .select('id', { count: 'exact', head: true }) // Only fetch count without data
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error fetching Goals Count:', error);
+      return null;
+    }
+    return count ?? 0; // Return count or 0 if count is null
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return null;
+  }
+}
+
 
 export const updateGoal = async (
   id: string,
