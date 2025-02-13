@@ -13,17 +13,14 @@ import {
   Modal
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
-import FormField from "@/components/FormField";
 import NumberInput from "@/components/NumberInput";
 import TimeIntervalPicker from "@/components/TimeIntervalPicker";
-import { insertHabit } from "@/lib/supabase_habits";
+import { insertHabit, getHabitCount } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { newHabitEmitter } from "@/events/eventEmitters";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import GoalColorPicker from "@/components/GoalObjects/GoalColorPicker";
 import HabitSelector from "./HabitSelector";
 import EmojiSelector from "react-native-emoji-selector";
-
+import Toast from "react-native-toast-message";
 
 interface NewHabitProps {
   visible: boolean;
@@ -46,6 +43,9 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const [color, setColor] = useState("#3e4e88")
   const [emoji, setEmoji] = useState("❄️")
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
+  const [habitCount, setHabitCount] = useState<number>(0)
+
 
 
   const [habit, setHabit] = useState({
@@ -53,7 +53,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
-    emoji: "❄️"
+    emoji: ""
   });
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
@@ -87,6 +87,13 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       );
       return;
     }
+    if (!user.premiumUser && habitCount >= 6){
+      if(closeModal){
+        closeModal()
+      }
+      showToast()
+      return;
+    }
   
     // Existing submission logic
     setisSubmitting(true);
@@ -115,24 +122,14 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         frequency: 0,
         frequency_rate: "Daily",
         reminder: false,
-        emoji: '❄️'
+        emoji: ''
       });
       newHabitEmitter.emit("newHabit");
       if (closeModal) {
         closeModal();
+        
       }
     }
-  };
-
-  const closeHabits = () => {
-    onClose();
-    setHabit({
-      name: "Habit",
-      frequency: 0,
-      frequency_rate: "Daily",
-      reminder: false,
-      emoji: '❄️'
-    });
   };
 
 
@@ -141,6 +138,38 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     setHabit({ ...habit, emoji: selectedEmoji })
     setIsEmojiSelectorVisible(false);
   };
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock More Habits with Premium!",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
+  const fetchHabitCount = async ()=>{
+    const count = await getHabitCount(user.userId);
+    if(count){
+      setHabitCount(count)
+    }
+    else{
+      setHabitCount(0)
+    }
+    
+  }
+
+  useEffect(() => {
+    setIsPremium(user.premiumUser);
+    fetchHabitCount()
+  }, [user.premiumUser]);
 
   return (
     <SafeAreaView
@@ -242,6 +271,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             paddingLeft: 4,
           }}
         >
+          {/** 
           <Text className="text-base text-black-100 font-pmedium">
             Add a Reminder{" "}
           </Text>
@@ -251,6 +281,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             trackColor={{ false: "gray", true:  color}}
             className="pl-2"
           />
+          */}
         </View>
 {/**
         <View style={{marginTop:30}}>

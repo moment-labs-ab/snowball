@@ -27,7 +27,7 @@ export default function App() {
   }
   else{
    return (
-    <SafeAreaView className='bg-background h-full'>
+    <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
     <ScrollView contentContainerStyle = {{height: "100%"}}>
       <View className='w-full justify-center items-center min-h-[85vh] px-2'>
       <Image 

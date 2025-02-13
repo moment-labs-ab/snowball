@@ -79,7 +79,9 @@ const GoalSelector: React.FC<GoalSelectorProps> = ({
             style={[
               styles.goalContainer,
               selectedGoal === goal && { 
-                backgroundColor: selectedColor 
+                backgroundColor: selectedColor,
+                borderWidth: 2,
+                borderColor: 'black'
               },
               selectedGoal !== goal && styles.unselectedGoal
             ]}
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
     color:'black'
   },
   goalContainer: {
-    backgroundColor: '#E6F0FF',
+    backgroundColor: '#b8d4ff',
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 10,

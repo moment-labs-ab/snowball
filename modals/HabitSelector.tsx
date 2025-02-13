@@ -66,21 +66,24 @@ const HabitSelector: React.FC<HabitSelectorProps> = ({ setHabit }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingVertical: 10,
   },
   scrollContainer: {
     gap: 3,
-    color:'black'
+    color:'black',
   },
   habitContainer: {
-    backgroundColor: '#E6F0FF',
+    backgroundColor: '#b8d4ff',
     borderRadius: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
     marginRight: 10,
-    padding:10
+    padding:10,
+    flex:1
   },
   selectedHabit: {
     backgroundColor: '#8BBDFA',
+    borderWidth:2,
+    borderColor:'black'
   },
   habitText: {
     color: 'black',

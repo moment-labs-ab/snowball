@@ -1,65 +1,55 @@
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
   SafeAreaView,
+  TouchableOpacity,
   Modal,
+  StyleSheet,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import Feather from "@expo/vector-icons/Feather";
+import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Toast from "react-native-toast-message";
-import { useGlobalContext } from "@/context/Context";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-interface CalendarButtonProps {
+interface PremiumButtonProps {
   label: string;
   action?: () => void;
   content?: React.ReactNode;
-  // Optional prop to determine if content should be shown in a modal
+  onClose?: () => void; // Optional callback to handle closing
 }
-
-const CalendarButton: React.FC<CalendarButtonProps> = ({
+const PremiumButton: React.FC<PremiumButtonProps> = ({
   label,
   action,
   content,
+  onClose,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const { user } = useGlobalContext();
-
-
-  const showToast = () => {
-    Toast.show({
-      type: "error",
-      text1: "Premium Feature",
-      text2: "Unlock Full Year Tracking with Premium!",
-      visibilityTime: 3200,
-      position: "top",
-      autoHide: true,
-      props: {
-        onPress: () => {
-          console.log("Premium Requested!");
-        }, // Navigate to your premium page
-      },
-    });
-  };
-
   const toggleContent = () => {
-    if(!user.premiumUser){
-        showToast()
-    }else{
-        setIsVisible(!isVisible);
-    }
+    setIsVisible(!isVisible);
   };
 
-  useEffect(()=>{
-
-  }, [user.premiumUser])
+  // Custom close handler that can be passed to child content
+  const handleClose = () => {
+    setIsVisible(false);
+    onClose && onClose();
+  };
+  // Clone the content to inject a close method
+  const enhancedContent = React.Children.map(content, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        // @ts-ignore
+        closeModal: handleClose,
+      } as Partial<unknown>);
+    }
+    return child;
+  });
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <TouchableOpacity onPress={toggleContent}>
-          <Feather name="calendar" size={24} color="black" />
+        <TouchableOpacity onPress={toggleContent} style={styles.iconButton}>
+          <View style={styles.premiumButton}>
+            <Text style={styles.premiumText}>Premium</Text>
+            <MaterialCommunityIcons name="crown" size={30} color="#8BBDFA" />
+          </View>
         </TouchableOpacity>
 
         <Modal
@@ -74,9 +64,8 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
                 style={styles.backButton}
                 onPress={toggleContent}
               >
-                <AntDesign name="close" size={24} color="black" />
+                <AntDesign name="close" size={24} color="white" />
               </TouchableOpacity>
-              <Text style={styles.headerText}>{label}</Text>
             </View>
             <View style={styles.contentContainer}>{content}</View>
           </SafeAreaView>
@@ -87,6 +76,22 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
+  premiumButton: {
+    width: 135,
+    height: 40,
+    borderWidth: 3,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignContent: "space-between",
+    alignItems: "center",
+    marginTop: 14,
+    flexDirection: "row",
+    borderColor: "#FAC88B",
+  },
+  premiumText: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
   container: {
     padding: 2,
     borderTopColor: "black",
@@ -109,13 +114,12 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#edf5fe",
+    backgroundColor: "#45424A",
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#edf5fe",
     height: 60,
     marginBottom: 10,
   },
@@ -134,14 +138,18 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
     textAlign: "center",
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 30,
+    fontWeight: "500",
     color: "#3e4e88",
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: "#edf5fe",
+  },
+  iconButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
   },
 });
 
-export default CalendarButton;
+export default PremiumButton;

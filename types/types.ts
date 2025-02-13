@@ -4,6 +4,7 @@ export type User = {
     username?: string;
     email: string;
     userId: string;
+    premiumUser: boolean;
 };
 
 export interface Habit {

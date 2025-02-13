@@ -128,7 +128,6 @@ const SettingsGoals = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Active Goals</Text>
           <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
-            {" "}
           </View>
           {goals.map((goal) => (
             <View
@@ -173,7 +172,6 @@ const SettingsGoals = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Archived Goals</Text>
           <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
-            {" "}
           </View>
           {archivedGoals.map((goal) => (
             <View

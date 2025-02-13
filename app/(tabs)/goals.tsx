@@ -35,6 +35,8 @@ const goals = () => {
     });
   }
 
+  //console.log(user.email, user.userId, user.username, user.premiumUser)
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
