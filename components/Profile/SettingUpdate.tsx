@@ -39,7 +39,7 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({ settingId, settingName, s
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView className="bg-background h-full">
+            <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
                 <View style={styles.section}>
                     <Text style={styles.header}>
                         Update your {settingId}

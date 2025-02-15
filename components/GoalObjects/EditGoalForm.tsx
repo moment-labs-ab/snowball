@@ -26,6 +26,7 @@ import NewHabitModal from "@/modals/NewHabitModal";
 import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
 import Octicons from '@expo/vector-icons/Octicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import Toast from "react-native-toast-message";
 
 
 
@@ -90,11 +91,8 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const [habits, setHabits] = useState<Habit[]>([]);
   const [description, setDescription] = useState(originalDescription);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<
-    number | null
-  >(null);
   const [color, setColor] = useState(originalColor);
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
 
   const fetchHabits = async () => {
     const data = await getUserHabits(user.userId);
@@ -303,6 +301,23 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
   //Archiving
   const handleArchive = async (goal_id: string, user_id:string)=>{
+    if (!user.premiumUser){
+      Alert.alert(
+        "Premium Feature",
+        "Unlock Archiving with Premium!",
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+        {
+          cancelable: false,
+        }
+      );
+      showToast()
+      return;
+    }
     Alert.alert(
       'Archive Goal',
       'Are you sure you want to Archive? You will not be able to re-activate this goal.',
@@ -332,6 +347,22 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
   }
 
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock Archiving with Premium",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
   if (!habits) {
     return <View></View>;
   } else {
@@ -349,7 +380,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginBottom: 10,
+              marginBottom: 15,
             }}
           >
             <TouchableOpacity
