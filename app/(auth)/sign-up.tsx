@@ -32,7 +32,8 @@ const SignUp = () => {
       setUser({
         email: result?.email || '',
         username: form.username,
-        userId: result?.id || ''
+        userId: result?.id || '',
+        premiumUser: false
       })
       setIsLoggedIn(true);
       if(result){
@@ -47,7 +48,7 @@ const SignUp = () => {
   }
 
   return (
-    <SafeAreaView className="bg-background h-full">
+    <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
       <ScrollView>
         <View className = "w-full justify-center min-h-[75vh] px-4 my-6">
         <Image 

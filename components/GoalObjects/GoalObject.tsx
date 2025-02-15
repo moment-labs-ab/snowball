@@ -137,6 +137,7 @@ const GoalObject = ({
             archived_at={archived_at}
             contentToggled={isVisible}
             refreshGoals={refreshGoals}
+            closeModal={toggleContent}
           />
         </SafeAreaView>
       </Modal>

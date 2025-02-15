@@ -225,6 +225,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             onChangeText={(e) => setHabit({ ...habit, name: e })}
             placeholder="Read, Meditate, Journal ..."
             placeholderTextColor={"#898989"}
+            
             textAlignVertical="center"
           />
           </View>

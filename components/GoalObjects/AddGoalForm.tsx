@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#CDCDE0",
   },
   label: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "bold",
     marginTop: 5,
     marginBottom: 5,
@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   miniLabel: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '200',
     marginBottom: 5,
     paddingLeft:2

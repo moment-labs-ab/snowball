@@ -84,6 +84,7 @@ const SettingsHome = () => {
                                     email: "",
                                     username: "",
                                     userId: "",
+                                    premiumUser: false
                                 });
                                 router.replace("/sign-in");
                             } else {
@@ -127,6 +128,7 @@ const SettingsHome = () => {
                                         email: "",
                                         username: "",
                                         userId: "",
+                                        premiumUser:false
                                     });
     
                                     // Show success message and redirect
@@ -193,7 +195,7 @@ const SettingsHome = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView>
-                {user ? (<SafeAreaView className="bg-background h-full">
+                {user ? (<SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
                     {SECTION.map(({ header, items }) => (
                         <View style={styles.section} key={header}>
                             <View style={styles.sectionHeader}>

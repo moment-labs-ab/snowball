@@ -20,6 +20,7 @@ import {
 } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Toast from "react-native-toast-message";
 
 interface SelectedHabits {
   id: string;
@@ -42,6 +43,7 @@ type InnerGoalViewProps = {
   archived_at: Date;
   contentToggled: boolean;
   refreshGoals: () => Promise<void>;
+  closeModal: ()=> void;
 };
 
 const InnerGoalView = ({
@@ -59,11 +61,12 @@ const InnerGoalView = ({
   archived,
   accomplished_at,
   archived_at,
-
   contentToggled,
   refreshGoals,
+  closeModal
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -110,9 +113,20 @@ const InnerGoalView = ({
     }
   };
 
+  const toggleContent = ()=>{
+    closeModal()
+  }
+
   //Accomplishing
   //Archiving
   const handleAccomplish = async (goal_id: string, user_id: string) => {
+    if (!user.premiumUser){
+      if(closeModal){
+        closeModal()
+      }
+      showToast()
+      return;
+    }
     Alert.alert(
       "Accomplish Goal",
       "Are you sure? You will not be able to re-activate this goal.",
@@ -140,6 +154,22 @@ const InnerGoalView = ({
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+  };
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock Accomplishing with Premium",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
 
   useEffect(() => {
@@ -182,6 +212,7 @@ const InnerGoalView = ({
                 original_expected_end_date={goalData.expected_end_date}
                 original_habit_ids={goalData.habit_ids}
                 refreshGoals={refreshGoals}
+                closeModal={toggleContent}
               />
             }
           />

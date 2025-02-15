@@ -12,7 +12,6 @@ import {
   StyleSheet,
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
-import FormField from "@/components/FormField";
 import NumberInput from "@/components/NumberInput";
 import TimeIntervalPicker from "@/components/TimeIntervalPicker";
 import {
@@ -28,6 +27,8 @@ import NumberBox from "@/components/NumberBox";
 import { deleteHabitEmitter, habitEmitter } from "@/events/eventEmitters";
 import Octicons from "@expo/vector-icons/Octicons";
 import EmojiSelector from "react-native-emoji-selector";
+import Toast from "react-native-toast-message";
+
 
 interface EditHabitProps {
   visible: boolean;
@@ -72,6 +73,8 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   const { user } = useGlobalContext();
   const [tracking, setTrackingCount] = useState<number>(trackingCount);
+  const [isPremium, setIsPremium] = useState(user.premiumUser);
+
 
   useEffect(() => {
     if (visible) {
@@ -201,6 +204,13 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   //Archiving
   const handleArchive = async (habit_id: string, user_id: string) => {
+    if (!user.premiumUser){
+      if(closeModal){
+        closeModal()
+      }
+      showToast()
+      return;
+    }
     Alert.alert(
       "Archive Habit",
       "Are you sure you want to Archive? You will not be able to re-activate this habit.",
@@ -226,6 +236,22 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+  };
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock Archiving with Premium",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
 
   return (

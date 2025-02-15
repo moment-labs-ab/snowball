@@ -69,7 +69,7 @@ const SignIn = () => {
     */
   };
   return (
-    <ScrollView className="bg-background h-full">
+    <ScrollView style={{backgroundColor:'#edf5fe', height:'100%'}}>
       <View className="w-full justify-center min-h-[75vh] px-4 my-6 mb-65">
         <Image
           source={images.snowballlogo}

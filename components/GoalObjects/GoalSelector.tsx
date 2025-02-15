@@ -99,6 +99,7 @@ const GoalSelector: React.FC<GoalSelectorProps> = ({
 const styles = StyleSheet.create({
   container: {
     padding: 5,
+    marginBottom:10
   },
   scrollContainer: {
     gap: 3,

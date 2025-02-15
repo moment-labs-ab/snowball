@@ -119,7 +119,8 @@ const Settings = () => {
               setUser({
                 email: '',
                 username: '',
-                userId: ''
+                userId: '',
+                premiumUser:false
               });
               router.replace('/sign-in');
             } else {
@@ -161,7 +162,7 @@ const Settings = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="bg-background h-full">
+      <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
         <View className='flex-1 align-center pl-2 pr-2'>
           <View className="flex-row justify-between items-center mt-6">
             <Text className="text-xl font-bold text-secondary pl-2">
