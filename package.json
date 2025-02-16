@@ -31,7 +31,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "EventEmitter": "^1.0.0",
     "expo": "^52.0.5",
-    "expo-constants": "~17.0.2",
+    "expo-constants": "~17.0.6",
     "expo-font": "~13.0.1",
     "expo-linking": "~7.0.2",
     "expo-router": "~4.0.5",
@@ -78,7 +78,9 @@
     "react-native-web": "~0.19.13",
     "react-native-wheel-color-picker": "^1.3.1",
     "tailwind-rn": "^4.2.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "expo-notifications": "~0.29.13",
+    "expo-device": "~7.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -12,6 +12,7 @@ import SettingsHabits from './SettingsHabits';
 import icons from '@/constants/icons';
 import Feedback from './SettingsFeedback';
 import ProfileStats from '../ProfileSettings/ProfileStats';
+import Notifications from '../ProfileSettings/Notifications';
 
 const SECTION = [
     {
@@ -35,6 +36,7 @@ const SECTION = [
     {
         header: 'Other',
         items: [
+            { id: 'notifications', iconType: 'feather', icon: 'bell', label: 'Notifications', type: 'page', content:<Notifications/>},
             { id: 'terms', iconType: 'feather', icon: 'feather', label: 'Terms & Conditions', type: 'page', content:<View/> },
             { id: 'privacy-policy', iconType: 'feather', icon: 'shield', label: 'Privacy Policy', type: 'page', content:<View/>  },
             { id: 'feedback', iconType: 'feather', icon: 'inbox', label: 'Feedback', type: 'page', content:<Feedback/> },
