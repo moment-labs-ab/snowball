@@ -12,6 +12,8 @@ import SettingsHabits from './SettingsHabits';
 import icons from '@/constants/icons';
 import Feedback from './SettingsFeedback';
 import ProfileStats from '../ProfileSettings/ProfileStats';
+import TermsAndConditions from '../ProfileSettings/TermsAndConditions';
+import PrivacyPolicy from '../ProfileSettings/PrivacyPolicy';
 
 const SECTION = [
     {
@@ -35,8 +37,8 @@ const SECTION = [
     {
         header: 'Other',
         items: [
-            { id: 'terms', iconType: 'feather', icon: 'feather', label: 'Terms & Conditions', type: 'page', content:<View/> },
-            { id: 'privacy-policy', iconType: 'feather', icon: 'shield', label: 'Privacy Policy', type: 'page', content:<View/>  },
+            { id: 'terms', iconType: 'feather', icon: 'feather', label: 'Terms & Conditions', type: 'page', content:<TermsAndConditions/>},
+            { id: 'privacy-policy', iconType: 'feather', icon: 'shield', label: 'Privacy Policy', type: 'page', content:<PrivacyPolicy/>  },
             { id: 'feedback', iconType: 'feather', icon: 'inbox', label: 'Feedback', type: 'page', content:<Feedback/> },
             { id: 'bug', iconType: 'feather', icon: 'alert-circle', label: 'Report Bug', type: 'page', content:<View/>  },
             { id: 'donate', iconType: 'feather', icon: 'dollar-sign', label: 'Donate', type: 'page', content:<View/>  },
