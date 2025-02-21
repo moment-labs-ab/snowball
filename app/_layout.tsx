@@ -17,6 +17,15 @@ export default function RootLayout() {
         text2Style={{ fontSize: 14, color: "gray" }} // Subtitle color
       />
     ),
+    success: (props) => (
+      <BaseToast
+        {...props}
+        style={{ borderLeftColor: "green",}} // Change colors here
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        text1Style={{ fontSize: 16, fontWeight: "bold", color: "black" }} // Text color
+        text2Style={{ fontSize: 14, color: "gray" }} // Subtitle color
+      />
+    )
   };
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),

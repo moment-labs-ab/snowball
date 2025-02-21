@@ -3,6 +3,7 @@ import React, {useState} from 'react'
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Toast from "react-native-toast-message";
 
 
 interface GoalButtonProps {
@@ -64,6 +65,7 @@ const AddGoalButton: React.FC<GoalButtonProps> = ({ label, action, content, onCl
                           {enhancedContent}
                       </View>
                   </SafeAreaView>
+                  <Toast/>
               </Modal>
           </View>
       </SafeAreaView>
