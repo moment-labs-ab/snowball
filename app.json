@@ -1,25 +1,38 @@
 {
   "expo": {
     "name": "Snowball",
-    "slug": "Snowball",
+    "slug": "snowball",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/app_icons/splash-icon-light.png",
+      "imageWidth": 200,
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.momentlabs.snowball",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon":{
+        "dark":"./assets/app_icons/ios-dark.png",
+        "light":"./assets/app_icons/ios-light.png",
+        "tinted":"./assets/app_icons/ios-tinted.png"
+
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/app_icons/android-icon.png",
+        "monochromeImage": "./assets/app_icons/android-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.momentlabs.snowball"
     },
     "web": {
       "bundler": "metro",
@@ -34,6 +47,15 @@
       "typedRoutes": true,
       "tsconfigPaths": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "eb86886a-eab6-4bf6-ae7b-361c433b9cd8"
+      }
+    },
+    "owner": "momentlabs"
   }
 }
