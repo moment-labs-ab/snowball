@@ -82,8 +82,8 @@ const SettingsHabits = () => {
             
           </View>
         ))}
-        {habits.length === 0 && (
-          <Text style={styles.emptyMessage}>No active goals</Text>
+        {archivedHabits.length === 0 && (
+          <Text style={styles.emptyMessage}>No archived goals</Text>
         )}
     </View>
 

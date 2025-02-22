@@ -87,3 +87,9 @@ export interface Milestones {
   date?: Date;
   
 }
+
+export interface NotificationItem {
+  id: number;
+  label: string;
+  time: string;
+}
