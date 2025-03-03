@@ -17,13 +17,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.momentlabs.snowball",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationUsageDescription": "Enable notifications to remind you about your habits!"
       },
-      "icon":{
-        "dark":"./assets/app_icons/ios-dark.png",
-        "light":"./assets/app_icons/ios-light.png",
-        "tinted":"./assets/app_icons/ios-tinted.png"
-
+      "icon": {
+        "dark": "./assets/app_icons/ios-dark.png",
+        "light": "./assets/app_icons/ios-light.png",
+        "tinted": "./assets/app_icons/ios-tinted.png"
       }
     },
     "android": {
@@ -56,6 +56,12 @@
         "projectId": "eb86886a-eab6-4bf6-ae7b-361c433b9cd8"
       }
     },
-    "owner": "momentlabs"
+    "owner": "momentlabs",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/eb86886a-eab6-4bf6-ae7b-361c433b9cd8"
+    }
   }
 }

@@ -92,4 +92,5 @@ export interface NotificationItem {
   id: number;
   label: string;
   time: string;
+  expo_push_token: string;
 }

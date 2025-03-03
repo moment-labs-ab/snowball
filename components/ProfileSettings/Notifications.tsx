@@ -11,36 +11,29 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
-import { Platform } from "react-native";
 import { useGlobalContext } from "@/context/Context";
 import {
+  getExpoPushToken,
   getNotifications,
   saveNotifications,
+  updateUserExpoPushToken,
 } from "@/lib/supbase_notifications";
 import Toast from "react-native-toast-message";
+import { registerForPushNotificationsAsync, sendPushNotification } from "@/lib/supbase_notifications";
+
 
 interface NotificationItem {
   id: number;
   label: string;
   time: string;
+  expo_push_token:string
 }
 
 const NotificationSettings = () => {
   const { user } = useGlobalContext();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [timePicker, setTimePicker] = useState(new Date());
-
-  const registerForPushNotifications = async () => {
-    if (Platform.OS === "ios") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== "granted") {
-        alert("You need to allow notifications for reminders to work!");
-        return;
-      }
-    }
-  };
+  const [expoPushToken, setExpoPushToken] = useState("");
 
   const addNotification = () => {
     const maxNotifications = user.premiumUser ? 6 : 3;
@@ -48,7 +41,7 @@ const NotificationSettings = () => {
     if (notifications.length < maxNotifications) {
       setNotifications([
         ...notifications,
-        { id: Date.now(), label: "", time: extractTime(new Date()) },
+        { id: Date.now(), label: "", time: extractTime(new Date()), expo_push_token:expoPushToken },
       ]);
     }
   };
@@ -83,7 +76,7 @@ const NotificationSettings = () => {
     }
     handleSave(user.userId, notifications);
     showToast();
-    //registerForPushNotifications()
+
     //console.log(notifications[0].time);
   };
 
@@ -117,8 +110,19 @@ const NotificationSettings = () => {
       },
     });
   };
+  const handleTokenRegistration = async()=>{
+    registerForPushNotificationsAsync().then(async (token) => {
+      setExpoPushToken(token);
+
+      //updateUserExpoPushToken(user.userId, token)
+    });
+
+  }
 
   useEffect(() => {
+    handleTokenRegistration()
+    
+
     getNotifications(user.userId).then(setNotifications);
   }, [user]);
 
@@ -202,6 +206,14 @@ const NotificationSettings = () => {
       <TouchableOpacity style={[styles.submitButton]} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Save</Text>
       </TouchableOpacity>
+      <Button
+        title="Press to Send Notification"
+        onPress={async () => {
+          await getExpoPushToken(user.userId).then((token)=>{
+            console.log(token)
+          });
+        }}
+      />
       <Toast />
     </View>
   );
