@@ -13,7 +13,7 @@ interface Notification {
 }
 
 interface WebhookPayload {
-  type: 'INSERT' | 'UPDATE' | 'DELETE'
+  type: 'UPDATE'
   table: string
   record: Notification
   schema: 'public'
