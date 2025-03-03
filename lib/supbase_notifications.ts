@@ -138,7 +138,7 @@ export async function sendPushNotification(expoPushToken: string) {
     to: expoPushToken,
     sound: 'default',
     title: 'Snowball',
-    body: 'Track your Habits!  ❄️',
+    body: 'This is a test!  ❄️',
     data: { someData: 'goes here' },
   };
 

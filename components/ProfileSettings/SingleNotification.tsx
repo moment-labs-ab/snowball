@@ -7,7 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -19,14 +19,16 @@ import {
   updateUserExpoPushToken,
 } from "@/lib/supbase_notifications";
 import Toast from "react-native-toast-message";
-import { registerForPushNotificationsAsync, sendPushNotification } from "@/lib/supbase_notifications";
-
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+} from "@/lib/supbase_notifications";
 
 interface NotificationItem {
   id: number;
   label: string;
   time: string;
-  expo_push_token:string
+  expo_push_token: string;
 }
 
 const SingleNotificationPage = () => {
@@ -43,7 +45,7 @@ const SingleNotificationPage = () => {
     await saveNotifications(user.userId, expoPushToken);
   };
 
-  const handleSubmit = () => {     
+  const handleSubmit = () => {
     handleSave(user.userId, notifications);
     showToast();
 
@@ -65,24 +67,22 @@ const SingleNotificationPage = () => {
       },
     });
   };
-  const handleTokenRegistration = async()=>{
+  const handleTokenRegistration = async () => {
     registerForPushNotificationsAsync().then(async (token) => {
       setExpoPushToken(token);
 
       //updateUserExpoPushToken(user.userId, token)
     });
-
-  }
+  };
 
   useEffect(() => {
-    handleTokenRegistration()
-    
+    handleTokenRegistration();
 
     //getNotifications(user.userId).then(setNotifications);
   }, [user]);
 
   return (
-    <View style={{ padding: 20, paddingVertical:40 }}>
+    <View style={{ padding: 20, paddingVertical: 40 }}>
       <Text
         style={{
           fontSize: 20,
@@ -91,19 +91,21 @@ const SingleNotificationPage = () => {
           textAlign: "center",
         }}
       >
-        Notifications are a great way to stay on track. We'll send you one once in the evenings to remind you.
+        Notifications are a great way to stay on track. We'll send you one once
+        in the evenings to remind you.
       </Text>
-      
+
       <TouchableOpacity style={[styles.submitButton]} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Enable Notifications</Text>
       </TouchableOpacity>
-      <Button
-        title="Press for Sample Notification"
-        onPress={async () => {
-            sendPushNotification(expoPushToken)
-        }
-    }
-      />
+      {expoPushToken !== "" && (
+        <Button
+          title="Press for Sample Notification"
+          onPress={async () => {
+            sendPushNotification(expoPushToken);
+          }}
+        />
+      )}
       <Toast />
     </View>
   );
