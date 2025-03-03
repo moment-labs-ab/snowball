@@ -126,8 +126,6 @@ const NotificationSettings = () => {
     getNotifications(user.userId).then(setNotifications);
   }, [user]);
 
-  console.log(expoPushToken)
-
   return (
     <View style={{ padding: 20 }}>
       <Text
@@ -211,7 +209,9 @@ const NotificationSettings = () => {
       <Button
         title="Press to Send Notification"
         onPress={async () => {
-          await sendPushNotification(expoPushToken, "test", new Date());
+          await getExpoPushToken(user.userId).then((token)=>{
+            console.log(token)
+          });
         }}
       />
       <Toast />

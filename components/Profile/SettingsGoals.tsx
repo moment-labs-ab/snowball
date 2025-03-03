@@ -149,7 +149,9 @@ const SettingsGoals = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Accomplished Goals</Text>
           <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
+            <Text>
             {" "}
+            </Text>
           </View>
           {accomplishedGoals.map((goal) => (
             <View

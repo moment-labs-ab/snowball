@@ -54,22 +54,40 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
     }
 }
 
-export const saveNotifications = async (userId: string, notifications: NotificationItem[]) => {
+export const saveNotifications = async (userId: string, pushToken: string) => {
   try {
-    await supabase.from("user_notifications").delete().eq("user_id", userId);
-    
-    if (notifications.length > 0) {
-      const { error } = await supabase.from("user_notifications").insert(
-        notifications.map(({ label, time, expo_push_token}) => ({ user_id: userId, label, time, expo_push_token }))
-      );
-      if (error) {
-        console.error("Error saving notifications:", error);
-      }
+    // Check if the user already exists in the table
+    const { data, error: fetchError } = await supabase
+      .from("user_notifications")
+      .select("user_id")
+      .eq("user_id", userId)
+      .single(); // Expecting only one record
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      // Ignore "PGRST116" (no rows found), but handle other errors
+      console.error("Error checking existing notifications:", fetchError);
+      return;
+    }
+
+    if (data) {
+      // User already exists, no need to insert
+      return;
+    }
+
+    // Insert new record
+    const { error: insertError } = await supabase.from("user_notifications").insert({
+      user_id: userId,
+      expo_push_token: pushToken,
+    });
+
+    if (insertError) {
+      console.error("Error saving notifications:", insertError);
     }
   } catch (error) {
     console.error("Unexpected error saving notifications:", error);
   }
 };
+
 
 export const updateUserExpoPushToken = async (userId: string, pushToken:string)=>{
   try{
@@ -91,14 +109,13 @@ export const getExpoPushToken = async (userId: string) => {
       .from("user_notifications")
       .select("expo_push_token")
       .eq("user_id", userId)
-      .single();
 
     if (error) {
       console.error("Error fetching Expo Push Token:", error.message);
       return null;
     }
 
-    return data?.expo_push_token ?? null; // Return just the token, not the whole object
+    return data[0].expo_push_token; // Return just the token, not the whole object
   } catch (err) {
     console.error("Unexpected error fetching Expo Push Token:", err);
     return null;
@@ -116,12 +133,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function sendPushNotification(expoPushToken: string, label:string, time: Date) {
+export async function sendPushNotification(expoPushToken: string) {
   const message = {
     to: expoPushToken,
     sound: 'default',
     title: 'Snowball',
-    body: 'Drink Water!',
+    body: 'Track your Habits!  ❄️',
     data: { someData: 'goes here' },
   };
 
