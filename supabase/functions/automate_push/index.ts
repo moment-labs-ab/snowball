@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
       .neq("expo_push_token", null); // Ensure token exists
 
     if (error) {
+      console.log(`Database query failed: ${error.message}`)
       throw new Error(`Database query failed: ${error.message}`);
     }
 
@@ -45,15 +46,18 @@ Deno.serve(async (req) => {
         .in("user_id", userIds); // Batch update
 
       if (updateError) {
+        console.log(`Failed to update last_updated: ${updateError.message}`)
         throw new Error(`Failed to update last_updated: ${updateError.message}`);
       }
     }
+    console.log(`Updated ${usersToNotify.length} users`)
 
     return new Response(
       JSON.stringify({ message: `Updated ${usersToNotify.length} users` }),
       { status: 200 }
     );
   } catch (error) {
+    console.log(error)
     return new Response(JSON.stringify({ error: error }), { status: 500 });
   }
 });

@@ -153,6 +153,15 @@ export async function sendPushNotification(expoPushToken: string) {
   });
 }
 
+export async function checkUpdate(updatedDate: string){
+  const userIds = ['7a6e684a-f2f3-4a1e-b10b-0b3701ace42c']
+  const { error: updateError } = await supabase
+  .from("user_notifications")
+  .update({ last_updated: updatedDate })
+  .in("user_id", userIds); // Batch update
+
+}
+
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
   throw new Error(errorMessage);
