@@ -77,6 +77,7 @@ export const insertNewGoal = async (
           goal_id: goalId,
           habit_id: habit.id,
           habit_name: habit.name,
+          user_id: user_id
         }))
       );
 
@@ -164,6 +165,7 @@ export const updateGoal = async (
             goal_id: id,
             habit_id: habit.id,
             habit_name: habit.name,
+            user_id: user_id
           }))
         );
 
