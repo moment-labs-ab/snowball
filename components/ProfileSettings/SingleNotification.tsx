@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import {
   registerForPushNotificationsAsync,
   sendPushNotification,
+  checkUpdate
 } from "@/lib/supbase_notifications";
 
 interface NotificationItem {
@@ -106,6 +107,13 @@ const SingleNotificationPage = () => {
           }}
         />
       )}
+      <Button
+          title="Press for Sample Update"
+          onPress={async () => {
+            const nowUtc = new Date().toISOString();
+            checkUpdate(nowUtc);
+          }}
+        />
       <Toast />
     </View>
   );
