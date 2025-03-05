@@ -55,7 +55,7 @@ const SettingsHabits = () => {
     <View style={styles.container}>
     <View style={styles.section}>
     <Text style={styles.sectionTitle}>Active Habits</Text>
-        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
+        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}/>
         {habits.map(habit => (
           <View key={habit.id} style={styles.habitItem}>
             <Text style={styles.habitName}>{habit.emoji} {habit.name}</Text>
@@ -72,7 +72,7 @@ const SettingsHabits = () => {
 
     <View style={styles.section}>
     <Text style={styles.sectionTitle}>Archived Habits</Text>
-        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}> </View>
+        <View style={{borderBottomWidth:1, borderBottomColor:'black'}}/>
         {archivedHabits.map(habit => (
           <View key={habit.id} style={styles.habitItem}>
             <Text style={styles.habitName}>{habit.emoji} {habit.name}</Text>

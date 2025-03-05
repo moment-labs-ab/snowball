@@ -62,12 +62,6 @@ const HeatMapStats = ({ data }: HeatMapStatsProps) => {
             <Text style={styles.metric}>❄️{metrics.totalTracked}</Text>
             <Text style={styles.metricText}> Days Tracked</Text>
           </View>
-          {/** 
-      <View style={styles.metricContainer}>
-        <Text style={styles.metric}> 🏔{metrics.consistencyPercentage}% </Text>
-        <Text style={styles.metricText}> Consistency</Text>
-      </View>
-      */}
           <View style={styles.metricContainer}>
             <Text style={styles.metric}>🔥{metrics.longestStreak} Days</Text>
             <Text style={styles.metricText}> Longest Streak</Text>

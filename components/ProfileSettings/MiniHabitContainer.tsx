@@ -149,7 +149,6 @@ const MiniHabitContainer = () => {
                 Habits
               </Text>
             </View>
-            {/* Add an empty View for balanced spacing */}
             <View style={styles.spacer} />
           </View>
           <View>

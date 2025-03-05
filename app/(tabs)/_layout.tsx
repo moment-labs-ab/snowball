@@ -13,7 +13,7 @@ type TabIconProps = {
 /** Styles the Icons */
 const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
     return (
-        <View className="items-center justify-center gap-2 mb-1" style={{ minWidth: 60 }}> {/* Adjust width as needed */}
+        <View className="items-center justify-center gap-2 mb-1" style={{ minWidth: 60 }}>
             <Image
                 source={icon}
                 resizeMode='contain'

@@ -31,7 +31,6 @@ const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ..
           {...props}
         />
 
-        {/** Code to implement showing or hiding password  */}
         {title === 'Password' && (
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                 <Image source ={!showPassword ? icons.eye : icons.eyehide}
