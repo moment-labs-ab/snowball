@@ -64,18 +64,7 @@ const ProfileHabits = () => {
       <View style={styles.container}>
         
         <DraggableList habits={habits}/>
-        {/**
-        <FlashList
-          data={habits}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <View>
-            <MovableHabit id={item.id} order={item.order} name={item.name}/>
-            </View>
-          )}
-          estimatedItemSize={80}
-        />
-         */}
+
         
       </View>
     );

@@ -207,10 +207,10 @@ const HabitCard = ({
       />
       <View
         style={{
-          flexDirection: "row", // Row layout for text and button
-          alignItems: "center", // Center items vertically within row
-          justifyContent: "space-between", // Space out text and button
-          paddingHorizontal: 5, // Padding for left and right
+          flexDirection: "row", 
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 5,
           flex: 1,
         }}
       >

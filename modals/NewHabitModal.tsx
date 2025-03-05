@@ -53,14 +53,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     frequency: 0,
     frequency_rate: "Daily",
     reminder: false,
-    emoji: ""
+    emoji: "❄️"
   });
-
-  const onTimeChange = (event: any, selectedTime?: Date) => {
-    const currentTime = selectedTime || time;
-    setShowTimePicker(Platform.OS === "ios");
-    setTime(currentTime);
-  };
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const submit = async () => {
@@ -76,6 +70,9 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     }
     if (!habit.frequency_rate) {
       missingFields.push("Frequency Rate");
+    }
+    if(habit.emoji === ""){
+      missingFields.push("Emoji")
     }
   
     // If any mandatory fields are missing, show an alert
@@ -122,7 +119,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         frequency: 0,
         frequency_rate: "Daily",
         reminder: false,
-        emoji: ''
+        emoji: '❄️'
       });
       newHabitEmitter.emit("newHabit");
       if (closeModal) {
@@ -211,7 +208,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
               }}
               onPress={() => setIsEmojiSelectorVisible(true)}
             >
-              <Text style={{ color: "white" }}>{emoji}</Text>
+              <Text style={{ color: "white" }}>{habit.emoji}</Text>
             </TouchableOpacity>
            <View style={{flex:1}}>
           <TextInput
@@ -272,24 +269,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             paddingLeft: 4,
           }}
         >
-          {/** 
-          <Text className="text-base text-black-100 font-pmedium">
-            Add a Reminder{" "}
-          </Text>
-          <Switch
-            value={habit.reminder}
-            onValueChange={(value) => setHabit({ ...habit, reminder: value })}
-            trackColor={{ false: "gray", true:  color}}
-            className="pl-2"
-          />
-          */}
         </View>
-{/**
-        <View style={{marginTop:30}}>
-        <Text style={styles.label}>Goal Color</Text>
-            <GoalColorPicker selectedColor={color} onColorChange={handleColorChange} />
-            </View>
- */}
         <View
           style={{
             marginTop: 40,

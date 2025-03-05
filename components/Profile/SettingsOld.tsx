@@ -168,11 +168,6 @@ const Settings = () => {
             <Text className="text-xl font-bold text-secondary pl-2">
               Settings
             </Text>
-            {/** SETTINGS BUTTON
-            <TouchableOpacity onPress={handleOpenModal} className='pr-1'>
-              <MaterialIcons name="settings" size={24} color="black" />
-            </TouchableOpacity>
-            */}
           </View>
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-l font-bold text-primary pl-2">& More</Text>
@@ -211,12 +206,7 @@ const Settings = () => {
               action={() => { console.log("Feedback Pressed") }} 
               content={<Feedback/>}
             />
-            {/**
-            <ProfileButton 
-              label='Donate' 
-              action={() => { console.log("Donate Pressed") }} 
-            />
-            */}
+
             <ProfileButton 
               label='Profile Stats' 
               action={() => { console.log("Donate Pressed") }}

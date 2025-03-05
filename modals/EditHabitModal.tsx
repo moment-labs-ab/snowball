@@ -401,17 +401,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             paddingLeft: 4,
           }}
         >
-          {/**
-          <Text className="text-base text-black-100 font-pmedium">
-            Add a Reminder{" "}
-          </Text>
-          <Switch
-            value={habit.reminder}
-            onValueChange={(value) => setHabit({ ...habit, reminder: value })}
-            trackColor={{ false: "gray", true: "#8BBDFA" }}
-            className="pl-2"
-          />
-           */}
         </View>
 
         <View
