@@ -27,6 +27,7 @@ import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
 import Octicons from '@expo/vector-icons/Octicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Toast from "react-native-toast-message";
+import moment from "moment";
 
 
 
@@ -93,6 +94,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [color, setColor] = useState(originalColor);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
+  const [formattedDate, setFormattedDate] = useState(original_expected_end_date)
 
   const fetchHabits = async () => {
     const data = await getUserHabits(user.userId);
@@ -100,6 +102,9 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   };
   useEffect(() => {
     fetchHabits();
+
+    const format_date = moment(original_expected_end_date).format()
+    setFormattedDate(new Date(format_date))
 
     const unsubscribe = listenToHabitsTable((payload) => {
       //console.log("Change received!", payload);
@@ -214,6 +219,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     
     goalEmitter.emit("updatedGoal");
     refreshGoals();
+    showUpdateToast()
   };
   
 
@@ -315,7 +321,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
           cancelable: false,
         }
       );
-      showToast()
+      showArchiveToast()
       return;
     }
     Alert.alert(
@@ -347,7 +353,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
   }
 
-  const showToast = () => {
+  const showArchiveToast = () => {
     Toast.show({
       type: "error",
       text1: "Premium Feature",
@@ -362,6 +368,23 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       },
     });
   };
+
+const showUpdateToast = () => {
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: "Habit Updated",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
 
   if (!habits) {
     return <View></View>;
@@ -505,8 +528,8 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
               <View style={styles.pickerContainer}>
                 <DateTimePicker
                   value={
-                    expectedEndDate instanceof Date
-                      ? expectedEndDate
+                    formattedDate instanceof Date
+                      ? formattedDate
                       : new Date()
                   } // Ensure the value is a Date object
                   mode="date"

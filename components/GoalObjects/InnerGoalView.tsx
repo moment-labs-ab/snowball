@@ -21,6 +21,7 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Toast from "react-native-toast-message";
+import moment from "moment";
 
 interface SelectedHabits {
   id: string;
@@ -67,6 +68,7 @@ const InnerGoalView = ({
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
+  const [formattedDate, setFormattedDate] = useState("")
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -96,13 +98,9 @@ const InnerGoalView = ({
     updatedMilestones[index].checked = !updatedMilestones[index].checked;
 
     updateMilestones(updatedMilestones);
-    try {
-      updateUserMilestones(user.userId, id, updatedMilestones);
-      //console.log("Milestones update complete.");
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    
   };
+
 
   const fetchSingleGoal = async () => {
     const goalData = await getUserSingleGoal(user.userId, id);
@@ -114,7 +112,6 @@ const InnerGoalView = ({
   };
 
   const toggleContent = ()=>{
-    closeModal()
   }
 
   //Accomplishing
@@ -172,9 +169,12 @@ const InnerGoalView = ({
     });
   };
 
+  
+
   useEffect(() => {
+
     fetchSingleGoal();
-  }, [contentToggled, habit_ids.length, milestones.length, color, name]);
+  }, [contentToggled, habit_ids.length, milestones.length, color, name, expected_end_date]);
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
@@ -219,6 +219,9 @@ const InnerGoalView = ({
         </View>
         <View style={styles.descriptionContainer}>
           <Text style={styles.description}>"{description}"</Text>
+        </View >
+        <View style={styles.dateContainer}>
+        <Text style={styles.description}>by {moment(expected_end_date).format("MMMM D, YYYY")}</Text>
         </View>
         <View
           style={{
@@ -319,6 +322,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   descriptionContainer: {
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  dateContainer: {
     marginTop: 5,
     marginBottom: 20,
   },
