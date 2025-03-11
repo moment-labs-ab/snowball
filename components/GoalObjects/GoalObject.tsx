@@ -15,6 +15,9 @@ import { Goal } from "@/types/types";
 import Entypo from "@expo/vector-icons/Entypo";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
+import {
+  updateUserMilestones,
+} from "@/lib/supabase_goals";
 
 interface SelectedHabits {
   id: string;
@@ -92,10 +95,31 @@ const GoalObject = ({
     //setDisplayDate(prettyDate)
   }, [habit_ids, name, color, emoji]);
 
+  const handleMilestoneSave = async (milestones_updated:boolean,user_id:string, id:string, milestones: Milestones[]) => {
+    if(milestones_updated){
+      try {
+        await updateUserMilestones(user.userId, id, milestones);
+        // Optional: Additional success handling
+      } catch (error) {
+        console.error("Failed to update milestones:", error);
+        // Optional: Handle error or revert changes
+      }
+
+    }
+    
+  }
+
   
 
-  const toggleContent = () => {
-    setIsVisible(!isVisible);
+  const toggleContent = async () => {
+    if (isVisible) {
+      // If we're closing the modal, wait for any pending operations
+      // The closeModal prop passed to InnerGoalView will handle the saving
+      setIsVisible(false);
+    } else {
+      // Just open the modal
+      setIsVisible(true);
+    }
   };
 
   return (
@@ -112,14 +136,10 @@ const GoalObject = ({
         visible={isVisible}
         animationType="slide"
         onRequestClose={toggleContent}
-        presentationStyle="pageSheet"
+        presentationStyle="fullScreen"
       >
         <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.headerContainer}>
-            <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
-              <Entypo name="chevron-down" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
+          
           <InnerGoalView
             id={id}
             created_at={created_at}
