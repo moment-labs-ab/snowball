@@ -45,6 +45,7 @@ type InnerGoalViewProps = {
   contentToggled: boolean;
   refreshGoals: () => Promise<void>;
   closeModal: ()=> void;
+  onBeforeClose?: () => Promise<void>;
 };
 
 const InnerGoalView = ({
@@ -64,11 +65,14 @@ const InnerGoalView = ({
   archived_at,
   contentToggled,
   refreshGoals,
-  closeModal
+  closeModal,
+  onBeforeClose
+  
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [formattedDate, setFormattedDate] = useState("")
+
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -93,13 +97,15 @@ const InnerGoalView = ({
       milestones: updatedMilestones, // Update the milestones
     }));
   };
-  const handleCheckMilestone = (index: number) => {
+  const handleCheckMilestone = async (index: number) => {
     const updatedMilestones = [...goalData.milestones];
     updatedMilestones[index].checked = !updatedMilestones[index].checked;
 
     updateMilestones(updatedMilestones);
-    
+
   };
+
+
 
 
   const fetchSingleGoal = async () => {
@@ -112,6 +118,14 @@ const InnerGoalView = ({
   };
 
   const toggleContent = ()=>{
+    try {
+      updateUserMilestones(user.userId, id, goalData.milestones);
+      // Optional: Additional success handling
+    } catch (error) {
+      console.error("Failed to update milestones:", error);
+      // Optional: Handle error or revert changes
+    }
+    closeModal()
   }
 
   //Accomplishing
@@ -172,13 +186,19 @@ const InnerGoalView = ({
   
 
   useEffect(() => {
-
     fetchSingleGoal();
   }, [contentToggled, habit_ids.length, milestones.length, color, name, expected_end_date]);
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
+      
       <View style={{ flex: 1 }}>
+      <View style={styles.headerContainer}>
+            <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
+            <AntDesign name="close" size={24} color="black" />
+
+            </TouchableOpacity>
+          </View>
         <View
           style={{
             flexDirection: "row",
@@ -363,5 +383,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "500",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingRight: 15,
+    marginLeft:15,
+    backgroundColor: "#edf5fe",
+    height: 10,
+  },
+  backButton: {
+    flexDirection: "row",
+    position: "absolute",
+    zIndex: 1,
   },
 });
