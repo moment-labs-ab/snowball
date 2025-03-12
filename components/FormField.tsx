@@ -1,50 +1,57 @@
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native'
-import React, { useState }  from 'react'
+import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
 
-import icons from "../constants/icons";
+import Feather from "@expo/vector-icons/Feather";
 
 type FormFieldProps = {
-  title: string,
-  value?: string,
-  placeholder?: string,
-  handleChangeText: (e: string) => void,
-  otherStyles: string
-  keyboardType?: string,
-  otherProps?: Object
+  title: string;
+  value?: string;
+  placeholder?: string;
+  handleChangeText: (e: string) => void;
+  otherStyles: string;
+  keyboardType?: string;
+};
 
-}
-
-const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ...props}: FormFieldProps) => {
-    const [showPassword, setShowPassword] = useState(false)
+const FormField = ({
+  title,
+  value,
+  placeholder,
+  handleChangeText,
+  otherStyles,
+}: FormFieldProps) => {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-black-100 font-pmedium">{title}</Text>
-
       <View className="w-full h-16 px-4 bg-gray-100 rounded-2xl border-2 border-black-200 focus:border-secondary flex flex-row items-center">
-      <TextInput
-          className="flex-1 text-black font-psemibold text-base"
+        <TextInput
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 5,
+            borderRadius: 5,
+            flex:1,
+            fontSize:18
+          }}
           value={value}
           placeholder={placeholder}
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
+          textAlignVertical="center"
           secureTextEntry={title === "Password" && !showPassword}
-          {...props}
         />
+        {title === "Password" && (
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            {!showPassword ? (
+              <Feather name="eye-off" size={24} color="black" />
+            ) : (
+              <Feather name="eye" size={24} color="black" />
 
-        {title === 'Password' && (
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Image source ={!showPassword ? icons.eye : icons.eyehide}
-                className = "w-6 h-6"
-                resizeMode='contain'/>
-                
-            </TouchableOpacity>
+            )}
+          </TouchableOpacity>
         )}
-
-
-
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default FormField
+export default FormField;

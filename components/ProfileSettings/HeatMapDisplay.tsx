@@ -27,6 +27,7 @@ import HabitHeatMap from "./HabitHeatMap";
 import CalendarButton from "../CalendarButton";
 import HabitYearView from "../HabitYearView";
 import dayjs from "dayjs";
+import TrackingWelcome from "./TrackingWelcome";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
@@ -66,6 +67,7 @@ const HeatMapDisplay = () => {
     //console.log(today)
 
     const fetchHabits = async () => {
+      setLoading(true)
       const habitsData = await getUserHabits(user.userId);
       setHabits(habitsData);
       setLoading(false);
@@ -214,6 +216,13 @@ const HeatMapDisplay = () => {
     });
 
     return metrics;
+  }
+
+  
+  if (!loading && habits.length === 0) {
+    return (<View style={{marginTop:50}}>
+    <TrackingWelcome />
+    </View>);
   }
 
   return (

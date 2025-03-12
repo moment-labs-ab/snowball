@@ -117,7 +117,8 @@ const ProfileStats = () => {
               setUser({
                 email: '',
                 username: '',
-                userId: ''
+                userId: '',
+                premiumUser: false
               });
               router.replace('/sign-in');
             } else {
