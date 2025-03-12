@@ -10,7 +10,8 @@ import {
   Platform,
   Switch,
   SafeAreaView,
-  Modal
+  Modal,
+  KeyboardAvoidingView
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
 import NumberInput from "@/components/NumberInput";
@@ -169,6 +170,10 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   }, [user.premiumUser]);
 
   return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
     <SafeAreaView
       style={{
         flex: 1,
@@ -253,8 +258,9 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         
         <NumberInput
           title="Frequency"
-          placeholder="1"
+          placeholder=" "
           handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
+          initialValue={0}
         />
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
@@ -272,7 +278,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         </View>
         <View
           style={{
-            marginTop: 40,
+            marginTop: 20,
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
@@ -320,6 +326,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         />
       </View>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

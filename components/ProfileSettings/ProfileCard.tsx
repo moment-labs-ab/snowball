@@ -45,7 +45,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
   <View style={styles.textContainer}>
     <Text style={styles.name}>{name}</Text>
-    <Text style={styles.description}>{description}</Text>
   </View>
   <View style={{flexDirection:'row', justifyContent:'center', alignContent:'space-between', gap:20, marginTop:20}}>
 
