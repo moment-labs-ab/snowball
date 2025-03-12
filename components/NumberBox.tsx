@@ -25,13 +25,12 @@ const NumberBox: React.FC<NumberBoxProps> = ({ title, placeholder, handleChangeN
 
   return (
     <View style={[styles.container, otherStyles]}>
-      <Text style={styles.title}>{title}</Text>
       <View style={styles.numberBox}>
-        <TouchableOpacity onPress={handleDecrease} style={styles.button}>
+        <TouchableOpacity onPress={handleDecrease} style={styles.buttonBorder}>
           <Text style={styles.buttonText}>-</Text>
         </TouchableOpacity>
         <Text style={styles.number}>{number}</Text>
-        <TouchableOpacity onPress={handleIncrease} style={styles.button}>
+        <TouchableOpacity onPress={handleIncrease} style={styles.buttonBorder}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
@@ -43,6 +42,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    alignContent:'center'
   },
   title: {
     fontSize: 18,
@@ -51,20 +51,27 @@ const styles = StyleSheet.create({
   numberBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 8,
   },
-  button: {
-    padding: 10,
+  buttonBorder:{
+    width:30,
+    height:30,
+    borderRadius:100,
+    borderWidth:1,
+    justifyContent:'center',
+    alignContent:'center',
+    alignItems:'center'
+
   },
+  
   buttonText: {
-    fontSize: 20,
+    fontSize: 24,
   },
   number: {
     marginHorizontal: 20,
-    fontSize: 18,
+    fontSize: 24,
   },
 });
 

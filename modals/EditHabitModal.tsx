@@ -10,6 +10,7 @@ import {
   TextInput,
   Modal,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import CustomButton from "@/components/CustomButtom";
 import NumberInput from "@/components/NumberInput";
@@ -254,6 +255,14 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     });
   };
 
+  if(loading){
+    return (
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+    <ActivityIndicator size="large" color="#3e4e88" />
+    </View>
+    )
+  }
+
   return (
     <SafeAreaView
       style={{
@@ -386,6 +395,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           placeholder={String(habit.frequency)}
           handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
           otherStyles="px-2 mt-3"
+          initialValue={habit.frequency}
         />
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}

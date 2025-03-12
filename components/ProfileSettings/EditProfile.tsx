@@ -58,7 +58,8 @@ const EditProfile = () => {
                 setUser({
                   email: '',
                   username: '',
-                  userId: ''
+                  userId: '',
+                  premiumUser:false
                 })
                 
                 // Show success message and redirect
