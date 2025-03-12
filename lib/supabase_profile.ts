@@ -19,7 +19,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey,{
   },
 })
 
-export async function getUserLoginCount(user_id: string): Promise<number | null> {
+export async function getUserLoginCount(user_id: string): Promise<number> {
     try {
       const { data, error, count } = await supabase
         .from('user_logins')
@@ -28,13 +28,13 @@ export async function getUserLoginCount(user_id: string): Promise<number | null>
   
       if (error) {
         console.error('Error fetching unique login count:', error);
-        return null;
+        return 0;
       }
   
       return count ?? 0; // Return count or 0 if count is null
     } catch (error) {
       console.error('Unexpected error:', error);
-      return null;
+      return 0;
     }
   }
 

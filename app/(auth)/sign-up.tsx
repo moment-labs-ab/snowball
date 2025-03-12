@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Image, Alert } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Image, Alert,StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import images from '../../constants/images';
 import { Link, router } from 'expo-router'
@@ -48,21 +48,20 @@ const SignUp = () => {
   }
 
   return (
-    <SafeAreaView style={{backgroundColor:'#edf5fe', height:'100%'}}>
+    <SafeAreaView style={{backgroundColor:'#edf5fe'}}>
       <ScrollView>
-        <View className = "w-full justify-center min-h-[75vh] px-4 my-6">
-        <Image 
-          source = {images.snowballlogo}
-          resizeMode='contain'
-          className="w-[115px] h-[115px]"
-        />
-
-        <Text className="text-2xl text-black text-semibold mt-10 font-psemibold pl-3"> Sign Up to Snowball</Text>
+        <View className = "w-full justify-center min-h-[75vh] px-4">
+          <View style={styles.headerContainer}>
+            <Image source={images.snowballlogo} resizeMode="contain" style={styles.logo} />
+            <Text className="text-2xl text-black text-semibold font-psemibold">Welcome to Snowball</Text>
+          </View>
+        
         <FormField 
           title = "Name"
           value = {form.username}
           handleChangeText ={(e) => setForm({ ...form, username:e})}
           otherStyles="mt-10 px-3"
+          placeholder="What's your name?"
         />
 
         <FormField 
@@ -71,12 +70,14 @@ const SignUp = () => {
           handleChangeText ={(e) => setForm({ ...form, email:e})}
           otherStyles="mt-7 px-3"
           keyboardType="email-address"
+          placeholder='Email Address'
         />
         <FormField 
           title = "Password"
           value = {form.password}
           handleChangeText ={(e) => setForm({ ...form, password:e})}
           otherStyles="mt-7 px-3"
+          placeholder='Password'
         />
 
         <CustomButton 
@@ -99,4 +100,21 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default SignUp;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#edf5fe',
+    height: '100%',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 20,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+  },
+});

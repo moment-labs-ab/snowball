@@ -32,7 +32,7 @@ const SignIn = () => {
   // TODO: The following needs to be refactored and account for sign in failing.
   const submit = async () => {
     if (form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all the fields");
+      //Alert.alert("Error", "Please fill in all the fields");
     }
     setisSubmitting(true);
     try {
@@ -71,15 +71,10 @@ const SignIn = () => {
   return (
     <ScrollView style={{backgroundColor:'#edf5fe', height:'100%'}}>
       <View className="w-full justify-center min-h-[75vh] px-4 my-6 mb-65">
-        <Image
-          source={images.snowballlogo}
-          resizeMode="contain"
-          className="w-[115px] h-[115px]"
-        />
-
-        <Text className="text-2xl text-black text-semibold mt-6 font-psemibold pl-3">
-          Login to Snowball
-        </Text>
+      <View style={styles.headerContainer}>
+            <Image source={images.snowballlogo} resizeMode="contain" style={styles.logo} />
+            <Text style={styles.headerTitle}>Sign In to Snowball</Text>
+          </View>
 
         <FormField
           title="Email"
@@ -87,12 +82,14 @@ const SignIn = () => {
           handleChangeText={(e: string) => setForm({ ...form, email: e })}
           otherStyles="mt-7 px-2"
           keyboardType="email-address"
+          placeholder="Email"
         />
         <FormField
           title="Password"
           value={form.password}
           handleChangeText={(e: string) => setForm({ ...form, password: e })}
           otherStyles="mt-7 px-2"
+          placeholder="Password"
         />
 
         <CustomButton
@@ -156,4 +153,18 @@ const styles = StyleSheet.create({
     color: "#3e4e88", // Assuming your primary color
     marginLeft: 5,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 20,
+  },
+  logo: {
+    width: 70,
+    height: 70,
+  },
+  headerTitle:{
+    fontSize:24,
+    fontWeight:'500'
+  }
 });
