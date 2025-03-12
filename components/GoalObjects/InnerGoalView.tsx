@@ -44,7 +44,7 @@ type InnerGoalViewProps = {
   archived_at: Date;
   contentToggled: boolean;
   refreshGoals: () => Promise<void>;
-  closeModal: ()=> void;
+  closeModal: () => void;
   onBeforeClose?: () => Promise<void>;
 };
 
@@ -66,13 +66,11 @@ const InnerGoalView = ({
   contentToggled,
   refreshGoals,
   closeModal,
-  onBeforeClose
-  
+  onBeforeClose,
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [formattedDate, setFormattedDate] = useState("")
-
+  const [formattedDate, setFormattedDate] = useState("");
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -102,22 +100,18 @@ const InnerGoalView = ({
     updatedMilestones[index].checked = !updatedMilestones[index].checked;
 
     updateMilestones(updatedMilestones);
-
   };
-
-
-
 
   const fetchSingleGoal = async () => {
     const goalData = await getUserSingleGoal(user.userId, id);
     if (goalData) {
       setGoalData(goalData);
-    }else{
-      refreshGoals()
+    } else {
+      refreshGoals();
     }
   };
 
-  const toggleContent = ()=>{
+  const toggleContent = () => {
     try {
       updateUserMilestones(user.userId, id, goalData.milestones);
       // Optional: Additional success handling
@@ -125,17 +119,17 @@ const InnerGoalView = ({
       console.error("Failed to update milestones:", error);
       // Optional: Handle error or revert changes
     }
-    closeModal()
-  }
+    closeModal();
+  };
 
   //Accomplishing
   //Archiving
   const handleAccomplish = async (goal_id: string, user_id: string) => {
-    if (!user.premiumUser){
-      if(closeModal){
-        closeModal()
+    if (!user.premiumUser) {
+      if (closeModal) {
+        closeModal();
       }
-      showToast()
+      showToast();
       return;
     }
     Alert.alert(
@@ -183,38 +177,24 @@ const InnerGoalView = ({
     });
   };
 
-  
-
   useEffect(() => {
     fetchSingleGoal();
-  }, [contentToggled, habit_ids.length, milestones.length, color, name, expected_end_date]);
+  }, [
+    contentToggled,
+    habit_ids.length,
+    milestones.length,
+    color,
+    name,
+    expected_end_date,
+  ]);
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
-      
       <View style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
-            <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={toggleContent}>
             <AntDesign name="close" size={24} color="black" />
-
-            </TouchableOpacity>
-          </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            padding: 10,
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={[
-              styles.title,
-              { color: color, flex: 1, textAlign: "center" },
-            ]}
-          >
-            {emoji} {name}
-          </Text>
+          </TouchableOpacity>
           <EditGoalButton
             label="Edit Goal"
             goalName={name}
@@ -237,11 +217,30 @@ const InnerGoalView = ({
             }
           />
         </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            padding: 10,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={[
+              styles.title,
+              { color: color, flex: 1, textAlign: "center" },
+            ]}
+          >
+            {emoji} {name}
+          </Text>
+        </View>
         <View style={styles.descriptionContainer}>
           <Text style={styles.description}>"{description}"</Text>
-        </View >
+        </View>
         <View style={styles.dateContainer}>
-        <Text style={styles.description}>by {moment(expected_end_date).format("MMMM D, YYYY")}</Text>
+          <Text style={styles.description}>
+            by {moment(expected_end_date).format("MMMM D, YYYY")}
+          </Text>
         </View>
         <View
           style={{
@@ -342,8 +341,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   descriptionContainer: {
-    marginTop: 5,
-    marginBottom: 5,
+    marginTop: 2,
+    marginBottom: 2,
   },
   dateContainer: {
     marginTop: 5,
@@ -386,16 +385,12 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingRight: 15,
-    marginLeft:15,
+    marginLeft: 15,
     backgroundColor: "#edf5fe",
-    height: 10,
-  },
-  backButton: {
-    flexDirection: "row",
-    position: "absolute",
-    zIndex: 1,
+    height: 24,
+    marginTop: 6,
   },
 });

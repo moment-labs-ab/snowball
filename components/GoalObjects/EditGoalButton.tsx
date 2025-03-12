@@ -96,7 +96,7 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
     <SafeAreaView>
       <View style={styles.container}>
         <TouchableOpacity onPress={toggleContent}>
-          <Feather name="edit" size={24} color="black" />
+          <Feather name="edit" size={20} color="black" />
         </TouchableOpacity>
 
         <Modal

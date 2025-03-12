@@ -15,7 +15,7 @@ interface GoalColorPickerProps {
 const colors = [
   "#3e4e88",
   "#8BBDFA",
-  "#ccd8ea",
+  "#afb5bf",
   "#FF6B6B", // Coral red
   "#4ECB71", // Green
   "#e0cd02", // Yellow
