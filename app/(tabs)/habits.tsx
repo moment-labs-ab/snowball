@@ -78,7 +78,7 @@ const Habits = () => {
 
   useEffect(() => {
     fetchUserLogins();
-  }, []); // Only fetch once when the component mounts
+  }, [user.username]); // Only fetch once when the component mounts
 
   if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

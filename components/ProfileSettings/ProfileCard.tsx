@@ -1,5 +1,5 @@
 import icons from "@/constants/icons";
-import React from "react";
+import React, {useEffect} from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import SettingsButton from "@/components/SettingsButton";
 import Settings from "@/components/Profile/SettingsHome";
@@ -24,15 +24,21 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onProfilePicturePress,
 }) => {
   console.log("icons:", icons.settings);
+  useEffect(()=>{
+
+  }, [name])
   return (
 <View style={styles.container}>
   <View style={styles.headerRow}>
     <TouchableOpacity onPress={onProfilePicturePress}>
-      <Image source={{ uri: profileImage }} style={styles.profileImage} />
-    </TouchableOpacity>
+    <Image source={images.snowballlogo} style={styles.logo} />
+
+      </TouchableOpacity>
     
-    <View style={[styles.settingsContainer, { marginRight: -25, marginTop: -35 }]}>
-<PremiumButton label={"Snowball Premium"} content={<PremiumModal/>}/>    
+    <View style={[styles.settingsContainer, { marginRight: -25}]}>
+      {/** 
+<PremiumButton label={"Snowball Premium"} content={<PremiumModal/>}/>  
+*/}  
     <SettingsButton
         label="Settings"
         action={() => {
@@ -106,7 +112,11 @@ const styles = StyleSheet.create({
     width:100,
     height:60,
     borderRadius:5
-  }
+  },
+  logo: {
+    width: 70,
+    height: 70,
+  },
 });
 
 export default ProfileCard;
