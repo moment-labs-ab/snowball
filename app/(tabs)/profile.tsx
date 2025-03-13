@@ -46,7 +46,7 @@ const Profile = () => {
     useEffect(() => {
         setIsLoading(true);
         getUserData().finally(() => setIsLoading(false));
-    }, []);
+    }, [user.username]);
 
     if (isLoading) {
         return (
