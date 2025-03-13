@@ -36,9 +36,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </TouchableOpacity>
     
     <View style={[styles.settingsContainer, { marginRight: -25}]}>
-      {/** 
+      
 <PremiumButton label={"Snowball Premium"} content={<PremiumModal/>}/>  
-*/}  
+  
     <SettingsButton
         label="Settings"
         action={() => {

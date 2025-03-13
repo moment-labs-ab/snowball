@@ -214,6 +214,7 @@ const HabitCard = ({
           flex: 1,
         }}
       >
+        <View style={{flexDirection:'row', alignItems:'center'}}><Text style={{ fontSize: 24 }}>{emoji}</Text>
         <View style={{ flex: 1, paddingLeft: 5 }}>
           <Text
             style={{
@@ -223,19 +224,9 @@ const HabitCard = ({
               zIndex: 1,
             }}
           >
-            {name} <Text style={{ fontSize: 15 }}>{emoji}</Text>
+            {name} 
           </Text>
 
-          <Text
-            style={{
-              color: "grey",
-              fontWeight: "300",
-              fontSize: 14,
-              zIndex: 1,
-            }}
-          >
-            {frequency_rate}
-          </Text>
           <Text
             style={{
               color: "#525756",
@@ -246,6 +237,7 @@ const HabitCard = ({
             {trackingCount}/{frequency}
           </Text>
         </View>
+        
 
         <EditHabitButton
           content={
@@ -260,6 +252,7 @@ const HabitCard = ({
             />
           }
         />
+      </View>
       </View>
     </TouchableOpacity>
   );

@@ -1,27 +1,13 @@
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
-import {
-  getUserHabits,
-  listenToHabitsTable,
-  updateHabitOrder,
-} from "@/lib/supabase_habits";
+import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import HabitCard from "./HabitCard";
 import { FlashList } from "@shopify/flash-list";
-import {
-  newHabitEmitter,
-  deleteHabitEmitter,
-  habitEmitter,
-} from "@/events/eventEmitters";
+import { newHabitEmitter, deleteHabitEmitter } from "@/events/eventEmitters";
 import HabitsWelcome from "./HabitsWelcome";
+import Entypo from "@expo/vector-icons/Entypo";
 
 type dailyHabitDisplayProps = {
   selectedDate: Date;
@@ -34,9 +20,21 @@ const DailyHabitDisplay = ({
 }: dailyHabitDisplayProps) => {
   const { user } = useGlobalContext();
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [lastHabit, setLastHabit] = useState("");
-  const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [expandedGroups, setExpandedGroups] = useState<{
+    [key: string]: boolean;
+  }>({
+    Daily: true,
+    Weekly: true,
+    "Bi-weekly": true,
+  });
+
+  const toggleGroup = (groupKey: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  };
 
   const fetchHabits = async () => {
     setLoading(true);
@@ -44,12 +42,11 @@ const DailyHabitDisplay = ({
     setHabits(habitsData);
     setLoading(false);
   };
+
   useEffect(() => {
     fetchHabits();
 
     const listener = newHabitEmitter.addListener("newHabit", () => {
-      // Perform refresh logic
-      //console.log("Event Emitter")
       fetchHabits();
     });
     const deleteHabitListener = deleteHabitEmitter.addListener(
@@ -59,21 +56,16 @@ const DailyHabitDisplay = ({
       }
     );
     const unsubscribe = listenToHabitsTable((payload) => {
-      //console.log("Change received!", payload);
-      //habitEmitter.emit("dataChanged");
-
       fetchHabits();
 
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
-            console.log("IN INSERT");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
         case "UPDATE":
           if (payload.new) {
-            console.log("IN UPDATE");
             setHabits((prevHabits) =>
               prevHabits.map((habit) =>
                 habit.id === payload.new.id ? payload.new : habit
@@ -83,7 +75,6 @@ const DailyHabitDisplay = ({
           break;
         case "DELETE":
           if (payload.old) {
-            console.log("IN DELETE");
             setHabits((prevHabits) =>
               prevHabits.filter((habit) => habit.id !== payload.old.id)
             );
@@ -91,11 +82,10 @@ const DailyHabitDisplay = ({
           break;
       }
     });
-    // Cleanup subscription on unmount
     return () => {
       unsubscribe();
     };
-  }, [user.userId, selectedDate, habits.length]);
+  }, [user.userId, selectedDate]);
 
   if (!loading && habits.length === 0) {
     return <HabitsWelcome />;
@@ -107,27 +97,83 @@ const DailyHabitDisplay = ({
       </View>
     );
   }
+
+  // Group the habits by frequency_rate
+  const groupedHabits = habits.reduce((acc, habit) => {
+    const frequency = habit.frequency_rate;
+    if (!acc[frequency]) {
+      acc[frequency] = [];
+    }
+    acc[frequency].push(habit);
+    return acc;
+  }, {} as { [key: string]: Habit[] });
+
+  // Order the groups by frequency_rate
+  const orderedGroups = [
+    { label: "Daily", key: "Daily" },
+    { label: "Weekly", key: "Weekly" },
+    { label: "Bi-weekly", key: "Bi-weekly" },
+  ];
+
   return (
     <FlashList
-      data={habits}
-      keyExtractor={(item) => item.id}
-      indicatorStyle="black"
-      renderItem={({ item }) => (
-        <View className="flex-row mb-30">
-          <HabitCard
-            id={item.id}
-            name={item.name}
-            frequency={item.frequency}
-            frequency_rate={item.frequency_rate}
-            created_at={item.created_at}
-            reminder={item.reminder}
-            frequency_rate_int={item.frequency_rate_int}
-            date={selectedDate}
-            emoji={item.emoji}
-            fetchHabits={fetchHabits}
-          />
-        </View>
-      )}
+      data={orderedGroups}
+      keyExtractor={(item) => item.key}
+      renderItem={({ item }) => {
+        const groupHabits = groupedHabits[item.key];
+        if (!groupHabits || groupHabits.length === 0) return null;
+
+        return (
+          <View>
+            <TouchableOpacity
+              onPress={() => toggleGroup(item.key)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: 'flex-start',
+                paddingHorizontal:15,
+                marginBottom:8
+              }}
+            >
+              {expandedGroups[item.key] ? (
+                <Entypo name="chevron-down" size={24} color="black" />
+              ) : (
+                <Entypo name="chevron-right" size={24} color="black" />
+              )}
+              <Text
+                style={{
+                  fontWeight: "600",
+                  fontSize: 20,
+                  color: "#3e4e88",
+                }}
+              >
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+
+            {expandedGroups[item.key] && (
+              <View>
+                {groupHabits.map((habit) => (
+                  <View key={habit.id} style={{ flexDirection: "row" }}>
+                    <HabitCard
+                      id={habit.id}
+                      name={habit.name}
+                      frequency={habit.frequency}
+                      frequency_rate={habit.frequency_rate}
+                      created_at={habit.created_at}
+                      reminder={habit.reminder}
+                      frequency_rate_int={habit.frequency_rate_int}
+                      date={selectedDate}
+                      emoji={habit.emoji}
+                      fetchHabits={fetchHabits}
+                    />
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      }}
       estimatedItemSize={80}
     />
   );

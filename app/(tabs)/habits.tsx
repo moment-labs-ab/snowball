@@ -112,7 +112,7 @@ const Habits = () => {
       <View
         style={{
           marginTop: 4,
-          marginBottom: 30,
+          marginBottom: 14,
           paddingHorizontal: 3,
           alignItems: "center",
         }}
