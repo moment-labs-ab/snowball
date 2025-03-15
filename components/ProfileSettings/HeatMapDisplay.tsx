@@ -256,16 +256,14 @@ const HeatMapDisplay = () => {
           if (!groupHabits || groupHabits.length === 0) return null;
 
           return (
-            <View style={{ marginBottom: 20 }}>
+            <View style={{ marginBottom: 10 }}>
               <TouchableOpacity
                 onPress={() => toggleGroup(item.key)}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: 'flex-start',
-                  paddingHorizontal: 15,
-                  marginBottom: 8,
-                  marginTop: 12
+                  paddingHorizontal: 12,
                 }}
               >
                 {expandedGroups[item.key] ? (
