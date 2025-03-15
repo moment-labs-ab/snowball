@@ -30,6 +30,7 @@ import TermsAndConditions from "../ProfileSettings/TermsAndConditions";
 import PrivacyPolicy from "../ProfileSettings/PrivacyPolicy";
 import { registerForPushNotificationsAsync } from "@/lib/supbase_notifications";
 import PremiumModal from "../NonPremiumComponents/PremiumModal";
+import { deleteUser } from "@/lib/functions/auth_functions";
 
 const SECTION = [
   {
@@ -236,9 +237,9 @@ const SettingsHome = () => {
 
             try {
               setIsDeletingAccount(true);
-              const result = await handleUserDeletion(user.userId);
+              const result = await deleteUser(user.userId);
 
-              if (result.success) {
+              if (result) {
                 // Reset global state
                 setIsLoggedIn(false);
                 setUser({
@@ -255,12 +256,17 @@ const SettingsHome = () => {
                   [
                     {
                       text: "OK",
-                      onPress: () => router.replace("/sign-in"),
+                      onPress: () => {},
                     },
                   ]
                 );
+
+                router.replace("/");
               } else {
-                throw new Error(result.message);
+                Alert.alert(
+                    "Error",
+                    "Failed to delete account. Please try again later."
+                  );
               }
             } catch (error) {
               Alert.alert(
