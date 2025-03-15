@@ -113,8 +113,6 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     alignSelf: 'flex-start',
-    marginRight: 25,
-    marginTop: 15
 }
 });
 

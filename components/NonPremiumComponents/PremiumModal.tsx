@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
   },
   headerTopicText: {
     fontSize: 30,
-    fontWeight: "400",
-    color: "white",
+    fontWeight: "600",
+    color: "black",
     fontFamily: "Merriweather",
     textAlign: "center",
   },
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 42,
-    fontWeight: "500",
+    fontWeight: "700",
   },
   premiumText: {
     fontSize: 42,
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
   },
   topicText: {
     fontSize: 28,
-    fontWeight: "300",
-    color: "white",
+    fontWeight: "500",
+    color: "black",
     fontFamily: "Merriweather",
     textAlign: "center",
   },
@@ -148,11 +148,11 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: "white",
+    color: "black",
   },
   optionPrice: {
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: "600",
     color: "#FAC88B",
   },
   checkCircle: {

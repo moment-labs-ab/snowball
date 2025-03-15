@@ -4,6 +4,8 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { ProfileToggleState } from './Types';
 import SettingUpdate from './SettingUpdate';
 import SettingPage from './SettingPage';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
 
 interface SettingProps{
     label: string
@@ -37,6 +39,9 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
     else if (id === "profile-stats") {
         iconColor = "#8BBDFA";
     }
+    else if (id == "premium"){
+        iconColor = "#FAC88B";
+    }
     else {
         iconColor = "#616161";
     }
@@ -59,6 +64,7 @@ const Setting: React.FC<SettingProps> = ({label, accountSetting, index, iconType
                     <View style={styles.row}>
                         {iconType === "feather" && <FeatherIcon name={icon as string} color={iconColor} size={22} style={{ marginRight: 12 }} />}
                         {iconType === "local" && <Image source={icon} resizeMode='contain' tintColor="#8BBDFA" className='w-5 h-5' style={{ marginRight: 12 }}/>}
+                        {iconType === "material" && icon == 'crown' && (<MaterialCommunityIcons name='crown' color={iconColor} size={22} style={{ marginRight: 12 }} />)}
 
                         <Text style={id === "delete-account" ? styles.rowLabelDelete : styles.rowLabel}>{label}</Text>
                         <View style={styles.rowSpacer} />

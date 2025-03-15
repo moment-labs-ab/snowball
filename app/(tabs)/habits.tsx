@@ -69,7 +69,7 @@ const Habits = () => {
     const logins = await getUserLoginCount(user.userId);
     if (logins) {
       setUserLogins(logins);
-      if (logins === 1) {
+      if (logins === 1 || logins === 0) {
         setOpenWelcome(true);
       }
     }

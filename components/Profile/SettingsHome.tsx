@@ -29,6 +29,7 @@ import SingleNotificationPage from "../ProfileSettings/SingleNotification";
 import TermsAndConditions from "../ProfileSettings/TermsAndConditions";
 import PrivacyPolicy from "../ProfileSettings/PrivacyPolicy";
 import { registerForPushNotificationsAsync } from "@/lib/supbase_notifications";
+import PremiumModal from "../NonPremiumComponents/PremiumModal";
 
 const SECTION = [
   {
@@ -75,6 +76,19 @@ const SECTION = [
         content: <View />,
       },
     ],
+  },
+  {
+    header:'Premium',
+    items:[
+      {
+        id:"premium",
+        iconType:'material',
+        icon:'crown',
+        label:'Premium',
+        type:'page',
+        content: <PremiumModal />
+      }
+    ]
   },
   {
     header: "Snowball",
@@ -168,16 +182,16 @@ const SettingsHome = () => {
 
   const logoutClicked = async () => {
     Alert.alert(
-      "Sign Out",
-      "Are you sure you want to sign out?",
+      "Log Out",
+      "Are you sure you want to log out?",
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Sign Out canceled"),
+          onPress: () => console.log("log Out canceled"),
           style: "cancel",
         },
         {
-          text: "Sign Out",
+          text: "Log Out",
           onPress: async () => {
             const result = await signOut();
             if (result.success) {
