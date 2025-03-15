@@ -29,29 +29,28 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   }, [name])
   return (
 <View style={styles.container}>
+
   <View style={styles.headerRow}>
-    <TouchableOpacity onPress={onProfilePicturePress}>
     <Image source={images.snowballlogo} style={styles.logo} />
 
-      </TouchableOpacity>
-    
-    <View style={[styles.settingsContainer, { marginRight: -25}]}>
-      
-<PremiumButton label={"Snowball Premium"} content={<PremiumModal/>}/>  
-  
-    <SettingsButton
-        label="Settings"
-        action={() => {
-          console.log("Settings button Pressed");
-        }}
-        content={<Settings />}
-      />
-    </View>
-  </View>
 
-  <View style={styles.textContainer}>
+
+      <View style={styles.textContainer}>
     <Text style={styles.name}>{name}</Text>
   </View>
+  <View style={styles.settingsContainer}>
+  
+  <SettingsButton
+      label="Settings"
+      action={() => {
+        console.log("Settings button Pressed");
+      }}
+      content={<Settings />}
+    />
+  </View>
+  
+  </View>
+
   <View style={{flexDirection:'row', justifyContent:'center', alignContent:'space-between', gap:20, marginTop:20}}>
 
       <MiniHabitContainer />
@@ -63,39 +62,34 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    padding: 10,
     borderBottomWidth: 1,
-    borderRightWidth:1,
-    borderLeftWidth:1,
-    borderBottomRightRadius:30,
-    borderBottomLeftRadius:30,
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 30,
   },
   headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'space-between', // Ensures left and right spacing
   },
   settingsContainer: {
-    justifyContent: 'center',
-    flexDirection:'row',
-    alignItems:'center',
-    alignContent:'center'
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   profileImage: {
     backgroundColor: "lightblue",
     width: 60,
     height: 60,
     borderRadius: 40,
-    marginRight: 10,
   },
   textContainer: {
-    marginTop: 5,
+    flex: 1, // Takes remaining space between logo and settings
   },
   name: {
     fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 4,
   },
   description: {
     fontSize: 16,
@@ -114,8 +108,9 @@ const styles = StyleSheet.create({
     borderRadius:5
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 50,
+    height: 50,
+    marginRight: 10, // Adds spacing to the right of the image
   },
 });
 

@@ -9,7 +9,7 @@ const TrackingWelcome = () => {
       <View style={styles.container}>
         <Text style={styles.title}>
           No Habit Data{" "}
-          <SimpleLineIcons name="graph" size={40} color="#8BBDFA" />
+          <SimpleLineIcons name="graph" size={40} color="#3e4e88" />
         </Text>
         <View style={styles.subtitleContainer}>
           <Text style={styles.subtitleText}>Your habit tracking data will show up here</Text>

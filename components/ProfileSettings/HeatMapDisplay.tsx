@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit, HabitTrackingEntry } from "@/types/types";
@@ -28,6 +29,7 @@ import CalendarButton from "../CalendarButton";
 import HabitYearView from "../HabitYearView";
 import dayjs from "dayjs";
 import TrackingWelcome from "./TrackingWelcome";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
@@ -40,12 +42,28 @@ const HeatMapDisplay = () => {
   const [gridData, setGridData] = useState<{
     [key: string]: HabitTrackingEntry[];
   }>({});
+  // Add state for expanded/collapsed groups
+  const [expandedGroups, setExpandedGroups] = useState<{
+    [key: string]: boolean;
+  }>({
+    Daily: true,
+    Weekly: true,
+    "Bi-weekly": true,
+  });
 
   const [metrics, setMetrics] = useState({
     totalTracked: 0,
     consistencyPercentage: "0",
     longestStreak: 0,
   });
+
+  // Toggle group expansion function
+  const toggleGroup = (groupKey: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  };
 
   const luxonDate = DateTime; // Automatically uses user's local time zone
 
@@ -60,11 +78,8 @@ const HeatMapDisplay = () => {
   }
 
   useEffect(() => {
-    //console.log(today)
     setEndDate(today);
     setStartDate(oneMonthAgo);
-    //console.log(oneMonthAgo)
-    //console.log(today)
 
     const fetchHabits = async () => {
       setLoading(true)
@@ -76,8 +91,6 @@ const HeatMapDisplay = () => {
     fetchHabits();
 
     const listener = newHabitEmitter.addListener("newHabit", () => {
-      // Perform refresh logic
-      //console.log("Event Emitter")
       fetchHabits();
     });
     const deleteHabitListener = deleteHabitEmitter.addListener(
@@ -94,8 +107,6 @@ const HeatMapDisplay = () => {
     );
 
     const unsubscribe = listenToHabitsTable((payload) => {
-      //console.log("Change received!", payload);
-
       switch (payload.eventType) {
         case "INSERT":
           if (payload.new) {
@@ -105,7 +116,6 @@ const HeatMapDisplay = () => {
           break;
         case "UPDATE":
           if (payload.new) {
-            //console.log("Tracking Display Habit UPDATE");
             setHabits((prevHabits) => [...prevHabits, payload.new]);
           }
           break;
@@ -134,7 +144,6 @@ const HeatMapDisplay = () => {
       if (habits.length > 0) {
         for (const habit of habits) {
           try {
-            //console.log("Calling getGridTrackingHistory", endDate);
             const habitData = await getGridTrackingHistory(
               user.userId,
               habit.id,
@@ -149,8 +158,7 @@ const HeatMapDisplay = () => {
           }
         }
 
-        // Temporarily comment out setGridData and test with an empty object
-        setGridData(data); // Or try: setGridData({});
+        setGridData(data);
       }
     };
 
@@ -161,18 +169,11 @@ const HeatMapDisplay = () => {
     }
 
     const unsubscribe = listenToTrackingHistory((payload) => {
-      //console.log("Change received in Progress!", payload);
       fetchGridData();
       switch (payload.eventType) {
         case "INSERT":
-        //console.log("New Tracking Picked Up! INSERT");
-        //handleRefresh(payload.habitId, payload.new);
         case "UPDATE":
-        //console.log("New Tracking Picked Up! UPDATE");
-        //handleRefresh(payload.habitId, payload.new);
         case "DELETE":
-          //console.log("New Tracking Picked Up! DELETE");
-          //handleRefresh(payload.habitId, payload.new);
           break;
       }
     });
@@ -218,59 +219,116 @@ const HeatMapDisplay = () => {
     return metrics;
   }
 
+  // Group the habits by frequency_rate
+  const groupedHabits = habits.reduce((acc, habit) => {
+    const frequency = habit.frequency_rate;
+    if (!acc[frequency]) {
+      acc[frequency] = [];
+    }
+    acc[frequency].push(habit);
+    return acc;
+  }, {} as { [key: string]: Habit[] });
+
+  // Order the groups by frequency_rate
+  const orderedGroups = [
+    { label: "Daily", key: "Daily" },
+    { label: "Weekly", key: "Weekly" },
+    { label: "Bi-weekly", key: "Bi-weekly" },
+  ];
+
   
   if (!loading && habits.length === 0) {
-    return (<View style={{marginTop:50}}>
-    <TrackingWelcome />
-    </View>);
+    return (
+      <View style={{marginTop:50}}>
+        <TrackingWelcome />
+      </View>
+    );
   }
 
   return (
     <ScrollView>
       <FlashList
-        data={habits}
-        keyExtractor={(item) => item.id}
-        extraData={gridData}
+        data={orderedGroups}
+        keyExtractor={(item) => item.key}
+        extraData={[gridData, expandedGroups]}
         renderItem={({ item }) => {
-          const habitData = gridData[item.id];
+          const groupHabits = groupedHabits[item.key];
+          if (!groupHabits || groupHabits.length === 0) return null;
+
           return (
-            <View style={{ marginBottom: 40, padding: 8 }}>
-              <View>
-                {habitData ? (
-                  <View style={styles.habitContainer}>
-                    <View
-                      style={{
-                        width: "100%",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        padding: 8,
-                      }}
-                    >
-                      <View style={{ flex: 1, flexDirection: "column" }}>
-                        <Text style={styles.habitName}>
-                          {item.name} {item.emoji}
-                        </Text>
-                        <Text>
-                          {item.frequency}x {item.frequency_rate}
-                        </Text>
-                      </View>
-                      <CalendarButton
-                        label={item.name + " Year In Review"}
-                        content={<HabitYearView id={item.id} />}
-                      />
-                    </View>
-                    <HabitHeatMap data={habitData} />
-                  </View>
+            <View style={{ marginBottom: 20 }}>
+              <TouchableOpacity
+                onPress={() => toggleGroup(item.key)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: 'flex-start',
+                  paddingHorizontal: 15,
+                  marginBottom: 8,
+                  marginTop: 12
+                }}
+              >
+                {expandedGroups[item.key] ? (
+                  <Entypo name="chevron-down" size={24} color="black" />
                 ) : (
-                  <View style={styles.container}>
-                    <ActivityIndicator size="large" color="#3e4e88" />
-                  </View>
+                  <Entypo name="chevron-right" size={24} color="black" />
                 )}
-              </View>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 20,
+                    color: "#3e4e88",
+                  }}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+
+              {expandedGroups[item.key] && (
+                <View>
+                  {groupHabits.map((habit) => {
+                    const habitData = gridData[habit.id];
+                    return (
+                      <View key={habit.id} style={{ marginBottom: 20, padding: 8 }}>
+                        {habitData ? (
+                          <View style={styles.habitContainer}>
+                            <View
+                              style={{
+                                width: "100%",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                padding: 8,
+                              }}
+                            >
+                              <View style={{ flex: 1, flexDirection: "column" }}>
+                                <Text style={styles.habitName}>
+                                  {habit.name} {habit.emoji}
+                                </Text>
+                                <Text>
+                                  {habit.frequency}x {habit.frequency_rate}
+                                </Text>
+                              </View>
+                              <CalendarButton
+                                label={habit.name + " Year In Review"}
+                                content={<HabitYearView id={habit.id} />}
+                              />
+                            </View>
+                            <HabitHeatMap data={habitData} />
+                          </View>
+                        ) : (
+                          <View style={styles.container}>
+                            <ActivityIndicator size="large" color="#3e4e88" />
+                          </View>
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
             </View>
           );
         }}
-        estimatedItemSize={100}
+        estimatedItemSize={300}
         nestedScrollEnabled={true}
       />
     </ScrollView>
