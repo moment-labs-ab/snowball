@@ -18,9 +18,8 @@ import { Habit } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { goalEmitter } from "@/events/eventEmitters";
 import NewHabitButton from "@/modals/NewHabitButton";
-import { habitEmitter } from "@/events/eventEmitters";
+import { goalEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
 import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
@@ -143,7 +142,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
     return () => {
       unsubscribe();
-      habitEmitter.emit("newHabitInGoals");
+      goalEmitter.emit("newGoal");
     };
   }, []);
 

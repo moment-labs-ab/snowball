@@ -5,15 +5,17 @@ import {
   Text,
   ActivityIndicator,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
-import CustomButton from "../CustomButtom";
+import { useGlobalContext } from "@/context/Context";
 import {
   GestureHandlerRootView,
   TextInput,
 } from "react-native-gesture-handler";
 import { updateUserSetting } from "@/lib/supabase_profile";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Toast from "react-native-toast-message";
 
 interface SettingUpdateProps {
   settingId: string;
@@ -28,6 +30,7 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
   settingValue,
   isVisible,
 }) => {
+  const { isLoggedIn, setUser } = useGlobalContext();
   const [value, setValue] = useState<string>(settingValue);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,13 +39,53 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
     const result = await updateUserSetting(settingId, value);
     setIsSubmitting(false);
 
-    if (result) {
-      console.log("Setting updated successfully");
-    } else {
-      console.log("Failed to update setting");
+    if(result === true){
+      if (settingId == 'name'){
+        setUser((prevUser)=> ({
+          ...prevUser,
+          username: value
+        }))
+      }
+      showUpdateToast();
+    }else{
+      Alert.alert(`Update Failed. Please try another ${settingId}`);
+
+
     }
 
     isVisible(false);
+  };
+
+  const showFailToast = (settingId:string, error:string) => {
+    Toast.show({
+      type: "error",
+      text1: `Failed to Update ${settingId}`,
+      text2: error,
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
+  const showUpdateToast = () => {
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: "User Info Updated",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
 
   return (
@@ -71,10 +114,12 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
             autoCapitalize="none"
           />
 
-<TouchableOpacity style={styles.submitButton} onPress={handleUpdateSetting}>
-          <Text style={styles.submitButtonText}>Update {settingName}</Text>
-        </TouchableOpacity>
-          
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleUpdateSetting}
+          >
+            <Text style={styles.submitButtonText}>Update {settingName}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Loading Indicator */}
@@ -103,12 +148,12 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Centers the text
     position: "relative", // Allows absolute positioning for the close button
     marginBottom: 20,
-    padding:20
+    padding: 20,
   },
   closeButton: {
     position: "absolute",
     left: 0, // Keeps it aligned to the left
-    marginLeft:10
+    marginLeft: 10,
   },
   title: {
     fontSize: 20,
