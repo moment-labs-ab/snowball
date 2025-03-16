@@ -85,14 +85,6 @@ const GoalObject = ({
       value,
     }));
     setHabitIdsList(habitIdsArray);
-
-
-    //const prettyDate = expected_end_date.toLocaleDateString('en-US', {
-    //year: 'numeric',
-    // month: 'long',
-    // day: 'numeric',
-    //});
-    //setDisplayDate(prettyDate)
   }, [habit_ids, name, color, emoji]);
 
   const handleMilestoneSave = async (milestones_updated:boolean,user_id:string, id:string, milestones: Milestones[]) => {

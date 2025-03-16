@@ -69,7 +69,7 @@ const Profile = () => {
             <View style={styles.profileInfo}>
               <ProfileCard
                 profileImage={icons.profileImage}
-                name={userData.username}
+                name={user.username}
                 description={"Some description placeholder"}
                 onProfilePicturePress={() =>
                   console.log("Profile Picture Pressed")

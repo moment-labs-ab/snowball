@@ -201,48 +201,52 @@ export const sendFeedback = async(
 
 }
 
-export const updateUserSetting = async (settingName: string, settingValue: string): Promise<boolean> => {
-    // Should add validation for email
-    const {data, error} = await supabase.auth.getUser()
+export const updateUserSetting = async (
+  settingName: string,
+  settingValue: string
+): Promise<boolean | string> => {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) {
+    console.error("Error fetching user when updating user:", error);
+    return error.message;
+  }
+
+  if (!data) return "User not found";
+
+  if (settingName === "email") {
+    const result = await supabase.auth.updateUser({ email: settingValue });
+    if (result.error) {
+      console.error("Error updating email:", result.error);
+      return result.error.message;
+    }
+    return true;
+  }
+
+  if (settingName === "name") {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ username: settingValue })
+      .eq("id", data.user.id);
 
     if (error) {
-        console.error('Error fetching user when updating user:', error);
-        return false;
-    } 
-    
-    if (data && settingName === 'email') {
-        const result = await supabase.auth.updateUser({ email: settingValue });
-        if (result.error) {
-            console.error('Error updating email:', result.error);
-            return false;
-        }
-        return true;
+      //console.error("Error updating username:", error.message);
+      return error.message;
     }
+    return true;
+  }
 
-    if (data && settingName === 'name') {
-        const result = await supabase
-            .from('profiles')
-            .update({ username: settingValue })
-            .eq('id', data.user.id);
-        
-        if (result.error) {
-            console.error('Error updating username:', result.error.message);
-            return false;
-        }
-        return true;
-    }
+  if (settingName === "password") {
+    const { error } = await supabase.auth.updateUser({
+      password: settingValue,
+    });
 
-    if (data && settingName === 'password') {
-        const { error } = await supabase.auth.updateUser({
-            password: settingValue,
-          });
-        
-          if (error) {
-            Alert.alert("Error updating password");
-            console.log("Error updating password:", error.message);
-          } else {
-            Alert.alert("Password updated successfully!");
-          }
+    if (error) {
+      //console.log("Error updating password:", error.message);
+      return error.message;
     }
-    return false
-}
+    return true;
+  }
+
+  return "Invalid setting name";
+};
