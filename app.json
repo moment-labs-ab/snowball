@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "com.snowball",
+    "platforms": ["ios", "android"],
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/app_icons/splash-icon-light.png",

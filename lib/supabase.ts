@@ -66,6 +66,32 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
   }
 
 /**
+ * Allows users to reset password with email
+ * @param email The users email
+ */
+export const sendResetPasswordEmail = async (email: string) =>{
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'com.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
+    });
+
+    if (error) Alert.alert(error.message);
+}
+
+/**
+ * Allows users to reset password with email
+ * @param email The users email
+ * @param accessToken The token recived from the email
+ */
+export const resetPassword = async (accessToken: any, newPassword: string) =>{
+    const { error } = await supabase.auth.setSession({access_token: accessToken, refresh_token:""});
+
+    if (error) Alert.alert(error.message);
+
+    const { data, error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (updateError) Alert.alert(updateError.message);
+}
+/**
  * Allows a user to sign in with an email and password
  * @param email Users email
  * @param password Users password
