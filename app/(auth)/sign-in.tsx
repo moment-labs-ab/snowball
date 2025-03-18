@@ -5,7 +5,7 @@ import {
   ScrollView,
   Image,
   Alert,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import images from "../../constants/images";
@@ -69,12 +69,16 @@ const SignIn = () => {
     */
   };
   return (
-    <ScrollView style={{backgroundColor:'#edf5fe', height:'100%'}}>
+    <ScrollView style={{ backgroundColor: "#edf5fe", height: "100%" }}>
       <View className="w-full justify-center min-h-[75vh] px-4 my-6 mb-65">
-      <View style={styles.headerContainer}>
-            <Image source={images.snowballlogo} resizeMode="contain" style={styles.logo} />
-            <Text style={styles.headerTitle}>Sign In to Snowball</Text>
-          </View>
+        <View style={styles.headerContainer}>
+          <Image
+            source={images.snowballlogo}
+            resizeMode="contain"
+            style={styles.logo}
+          />
+          <Text style={styles.headerTitle}>Sign In to Snowball</Text>
+        </View>
 
         <FormField
           title="Email"
@@ -100,6 +104,15 @@ const SignIn = () => {
           otherMethods={() => {}}
         />
 
+        <View className="justify-center pt-5 flex-row gap-2 mb-100">
+          <Link
+            href="/forgot-password"
+            className="text-lg font-psemibold text-secondary"
+          >
+            Forgot Passord?
+          </Link>
+        </View>
+        
         <View className="justify-center pt-5 flex-row gap-2 mb-100">
           <Text className="text-lg text-black-100 font-pregular">
             Don't have an account?
@@ -154,8 +167,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginTop: 20,
   },
@@ -163,8 +176,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  headerTitle:{
-    fontSize:24,
-    fontWeight:'500'
-  }
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "500",
+  },
 });
