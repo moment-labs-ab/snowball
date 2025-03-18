@@ -104,16 +104,8 @@ const SignIn = () => {
           otherMethods={() => {}}
         />
 
-        <View className="justify-center pt-5 flex-row gap-2 mb-100">
-          <Link
-            href="/forgot-password"
-            className="text-lg font-psemibold text-secondary"
-          >
-            Forgot Passord?
-          </Link>
-        </View>
         
-        <View className="justify-center pt-5 flex-row gap-2 mb-100">
+        <View className="justify-center pt-8 flex-row gap-2">
           <Text className="text-lg text-black-100 font-pregular">
             Don't have an account?
           </Text>
@@ -122,6 +114,14 @@ const SignIn = () => {
             className="text-lg font-psemibold text-secondary"
           >
             Sign Up
+          </Link>
+        </View>
+        <View className="justify-center pt-2 flex-row gap-2 mb-100">
+          <Link
+            href="/forgot-password"
+            className="text-lg font-psemibold text-secondary"
+          >
+            Forgot Passord?
           </Link>
         </View>
       </View>

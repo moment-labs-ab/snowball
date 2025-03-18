@@ -78,7 +78,7 @@ const SECTION = [
       },
     ],
   },
-  {
+  /** {
     header:'Premium',
     items:[
       {
@@ -90,7 +90,7 @@ const SECTION = [
         content: <PremiumModal />
       }
     ]
-  },
+  },*/
   {
     header: "Snowball",
     items: [
@@ -123,14 +123,14 @@ const SECTION = [
   {
     header: "Other",
     items: [
-      {
+      /**{
         id: "notifications",
         iconType: "feather",
         icon: "bell",
         label: "Notifications",
         type: "page",
         content: <SingleNotificationPage />,
-      },
+      },**/
       {
         id: "terms",
         iconType: "feather",
@@ -264,9 +264,9 @@ const SettingsHome = () => {
                 router.replace("/");
               } else {
                 Alert.alert(
-                    "Error",
-                    "Failed to delete account. Please try again later."
-                  );
+                  "Error",
+                  "Failed to delete account. Please try again later."
+                );
               }
             } catch (error) {
               Alert.alert(
@@ -295,7 +295,7 @@ const SettingsHome = () => {
       email: user.email || "",
       password: "",
     });
-  }, [user]);
+  }, [user.username, user.email]);
 
   const [toggle, setToggle] = useState<ProfileToggleState>({
     logout: false,
@@ -310,7 +310,7 @@ const SettingsHome = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const handleNotificationToggle = () => {
     registerForPushNotificationsAsync().then(async (token) => {
-        setExpoPushToken(token);
+      setExpoPushToken(token);
 
       //updateUserExpoPushToken(user.userId, token)
     });
@@ -339,6 +339,7 @@ const SettingsHome = () => {
                   {items.map(
                     ({ label, id, type, iconType, icon, content }, index) => (
                       <Setting
+                        key={id || `${header}-${index}`} // Ensure uniqueness
                         label={label}
                         accountSetting={type}
                         index={index}
