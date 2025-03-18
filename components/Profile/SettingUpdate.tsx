@@ -46,6 +46,12 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
           username: value
         }))
       }
+      else if(settingId == 'email'){
+        setUser((prevUser)=> ({
+          ...prevUser,
+          email: value
+        }))
+      }
       showUpdateToast();
     }else{
       Alert.alert(`Update Failed. Please try another ${settingId}`);
