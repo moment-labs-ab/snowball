@@ -29,7 +29,8 @@ import { deleteHabitEmitter, habitEmitter } from "@/events/eventEmitters";
 import Octicons from "@expo/vector-icons/Octicons";
 import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
-
+import { useHabitContext } from "@/context/HabitContext";
+import { Habit } from "@/types/types";
 
 interface EditHabitProps {
   visible: boolean;
@@ -64,18 +65,12 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const [emoji, setEmoji] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
 
-  const [habit, setHabit] = useState({
-    name: name,
-    frequency: frequency,
-    frequency_rate: frequencyRate,
-    reminder: false,
-    emoji: emoji,
-  });
+  const [habit, setHabit] = useState<Habit>({} as Habit);
 
   const { user } = useGlobalContext();
+  const { habits, isLoading, setHabits } = useHabitContext();
   const [tracking, setTrackingCount] = useState<number>(trackingCount);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-
 
   useEffect(() => {
     if (visible) {
@@ -83,8 +78,19 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     }
   }, [visible, trackingCount]);
 
+  const getHabitById = (habitId: string) => {
+    setLoading(true);
+    const habit = habits.find((habit) => habit.id === habitId);
+    return habit;
+  };
+
   useEffect(() => {
-    //console.log("USEEFFECT: EditHabit")
+    const habit_data = getHabitById(habit_id);
+    if (habit_data) {
+      setHabit(habit_data);
+      setLoading(false);
+    }
+    /**
     const fetchHabit = async () => {
       try {
         setLoading(true);
@@ -101,7 +107,9 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       }
     };
 
+
     fetchHabit();
+    */
   }, [user.userId, habit_id]);
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
@@ -111,6 +119,13 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   };
 
   const [isSubmitting, setisSubmitting] = useState(false);
+  const updateHabit = (updatedHabit: Habit) => {
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit.id === updatedHabit.id ? { ...habit, ...updatedHabit } : habit
+      )
+    );
+  };
   const submit = async () => {
     //console.log(tracking); // Ensure this logs the correct, updated number
 
@@ -135,8 +150,9 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
       if (result.success === false) {
         //console.log(result.message);
-      } else if (result) {
-        habitEmitter.emit("updatedHabit");
+      } else if (result.data) {
+        const habit = result.data as Habit;
+        updateHabit(habit);
       }
 
       // Update tracking count if changed
@@ -184,7 +200,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
               //console.log('Habit deleted successfully');
               closeHabits();
               // Handle successful deletion, e.g., refresh the habit list
-              deleteHabitEmitter.emit("deleteHabit");
+              //deleteHabitEmitter.emit("deleteHabit");
             } else {
               console.error("Error deleting habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -205,11 +221,11 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   //Archiving
   const handleArchive = async (habit_id: string, user_id: string) => {
-    if (!user.premiumUser){
-      if(closeModal){
-        closeModal()
+    if (!user.premiumUser) {
+      if (closeModal) {
+        closeModal();
       }
-      showToast()
+      showToast();
       return;
     }
     Alert.alert(
@@ -225,7 +241,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           onPress: async () => {
             const result = await archiveHabit(habit_id, user_id);
             if (result.success) {
-              habitEmitter.emit("updatedHabit");
+              //habitEmitter.emit("updatedHabit");
               closeHabits();
             } else {
               console.error("Error Archiving habit:", result.message);
@@ -255,12 +271,12 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     });
   };
 
-  if(loading){
+  if (loading) {
     return (
-      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-    <ActivityIndicator size="large" color="#3e4e88" />
-    </View>
-    )
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#3e4e88" />
+      </View>
+    );
   }
 
   return (
@@ -410,8 +426,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             alignItems: "center",
             paddingLeft: 4,
           }}
-        >
-        </View>
+        ></View>
 
         <View
           style={{
@@ -453,13 +468,34 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           </Text>
         </View>
 
-        <CustomButton
-          title="Update"
-          handlePress={submit}
-          containerStyles="mt-7 px-2 bg-secondary"
-          isLoading={isSubmitting}
-          otherMethods={onClose}
-        />
+        <TouchableOpacity
+          onPress={() => {
+            submit();
+          }}
+          style={[styles.submitButton, { backgroundColor: "#3e4e88" }]}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={[
+                styles.submitButtonText,
+                {
+                  color: "white",
+                  marginRight: 5,
+                  flex: 1,
+                  textAlign: "center",
+                },
+              ]}
+            >
+              Update Habit
+            </Text>
+          </View>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             handleArchive(habit_id, user.userId);
@@ -519,10 +555,18 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
-    marginBottom: 150,
+    marginTop: 15,
     width: "100%",
     borderWidth: 4,
+  },
+  submitButton: {
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 30,
+    width: "100%",
+    borderWidth: 4,
+    borderColor: "#3e4e88",
   },
   submitButtonText: {
     color: "white",

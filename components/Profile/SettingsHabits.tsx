@@ -1,24 +1,18 @@
-import { View, Text, TextInput, FlatList, ScrollView, StyleSheet} from 'react-native'
+import { View, Text, ScrollView, StyleSheet} from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Habit } from '@/types/types'
-import { getUserArchivedHabits, getUserHabits, listenToHabitsTable, updateHabitOrder } from '@/lib/supabase_habits'
+import { getUserArchivedHabits} from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
-import HabitCard from './HabitCard'
-import { FlashList } from "@shopify/flash-list";
-import { newHabitEmitter, deleteHabitEmitter, habitEmitter } from '@/events/eventEmitters'
+import { useHabitContext } from '@/context/HabitContext'
 
 const SettingsHabits = () => {
   const { user, isLoading } = useGlobalContext();
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const {habits} = useHabitContext();
+  const [settingHabits, setSettingHabits] = useState<Habit[]>([]);
   const [archivedHabits, setArchivedHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
 
-  const fetchHabits = async () => {
-    const habitsData = await getUserHabits(user.userId);
-    setHabits(habitsData);
-    setLoading(false);
-    };
   
     const fetchArchivedHabits = async () => {
       const habitsData = await getUserArchivedHabits(user.userId);
@@ -28,7 +22,10 @@ const SettingsHabits = () => {
 
   useEffect(()=>{
 
-    fetchHabits();
+    if(habits){
+      setSettingHabits(habits)
+    }
+
     fetchArchivedHabits();
 
   }, [])

@@ -1,7 +1,7 @@
 import { AppState, Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
+import { createClient, PostgrestError, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
 import { Habit, HabitTracking } from '@/types/types'
@@ -75,7 +75,7 @@ AppState.addEventListener('change', (state) => {
     frequency: number,
     frequency_rate: string,
     emoji: string
-  ): Promise<{ success: boolean; message: string; data?: any }> => {
+  ): Promise<{ success: boolean; message: string; data?: Habit | PostgrestError }> => {
     if(name === 'Habit' || frequency === 0){
       return { success: false, message: 'Please fill both name and frequency fields', data: undefined }; 
   }
@@ -99,14 +99,14 @@ AppState.addEventListener('change', (state) => {
           'order':currentHabitCount,
           emoji
         },
-      ]);
+      ]).select().single();
   
     if (error) {
       console.error('Error inserting habit:', error);
       return { success: false, message: 'Error inserting habit', data: error };
     } else {
       //console.log('Habit inserted successfully:', data, error);
-      return { success: true, message: 'Habit inserted successfully', data };
+      return { success: true, message: 'Habit inserted successfully', data: data as Habit};
     }
   }
 }
@@ -161,7 +161,7 @@ export const updateHabitIfChanged = async (
   frequency: number,
   frequency_rate: string,
   emoji: string
-): Promise<{ success: boolean; message: string; data?: any }> => {
+): Promise<{ success: boolean; message: string; data?: Habit | PostgrestError }> => {
   if (name === 'Habit' || frequency === 0) {
     return { success: false, message: 'Please fill both name and frequency fields', data: undefined };
   }
@@ -197,7 +197,7 @@ export const updateHabitIfChanged = async (
     existingHabit.emoji !== emoji;
 
   if (!hasChanged) {
-    return { success: true, message: 'No changes detected', data: existingHabit };
+    return { success: true, message: 'No changes detected', data: existingHabit as Habit};
   }
 
   // Update the habit if any field has changed
@@ -211,14 +211,15 @@ export const updateHabitIfChanged = async (
       frequency_rate_int,
       "emoji":emoji
     })
-    .eq('id', habit_id);
+    .eq('id', habit_id)
+    .select().single();
 
   if (error) {
     console.error('Error updating habit:', error);
     return { success: false, message: 'Error updating habit', data: error };
   } else {
     //console.log('Habit updated successfully:', data);
-    return { success: true, message: 'Habit updated successfully', data };
+    return { success: true, message: 'Habit updated successfully', data: data as Habit };
   }
 };
 

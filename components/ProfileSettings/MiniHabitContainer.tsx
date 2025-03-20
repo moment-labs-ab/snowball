@@ -23,10 +23,11 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SettingsGoals from "../Profile/SettingsGoals";
 import SettingsHabits from "../Profile/SettingsHabits";
+import { useHabitContext } from "@/context/HabitContext";
 
 const MiniHabitContainer = () => {
   const { user } = useGlobalContext();
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const {habits, setHabits, isLoading} = useHabitContext();
   const [habitInitials, setHabitInitials] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -40,6 +41,7 @@ const MiniHabitContainer = () => {
   }
 
   useEffect(() => {
+    /**
     const fetchHabits = async () => {
       setLoading(true);
       const habitsData = await getUserHabits(user.userId);
@@ -48,11 +50,12 @@ const MiniHabitContainer = () => {
     };
 
     fetchHabits();
+    */
     if (habits) {
       const initials = getFirstThreeHabitInitials(habits);
       setHabitInitials(initials);
     }
-
+    /**
     const listener = newHabitEmitter.addListener("newHabit", () => {
       // Perform refresh logic
       //console.log("Event Emitter")
@@ -104,8 +107,9 @@ const MiniHabitContainer = () => {
     return () => {
       unsubscribe();
     };
+    */
   }, [user.userId, habits.length]);
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.container}>
         <View style={styles.content}>

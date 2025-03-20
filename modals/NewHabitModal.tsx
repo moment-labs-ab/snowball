@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -22,6 +21,8 @@ import { newHabitEmitter } from "@/events/eventEmitters";
 import HabitSelector from "./HabitSelector";
 import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
+import { useHabitContext } from "@/context/HabitContext";
+import { Habit } from "@/types/types";
 
 interface NewHabitProps {
   visible: boolean;
@@ -37,6 +38,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   title,
   closeModal,
 }) => {
+  const {setHabits} = useHabitContext();
+
   const [frequency, setFrequency] = useState<number>(1);
   const [time, setTime] = useState<Date>(new Date());
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
@@ -109,11 +112,13 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         console.log(result.message);
         Alert.alert("Error", result.message);
       } else if (result.data) {
-        //console.log(result);
+        const habit = result.data as Habit;
+        setHabits((prevHabits) => [...prevHabits, habit])
       }
     } catch (error) {
       Alert.alert("Submission Error", String(error));
     } finally {
+      
       setisSubmitting(false);
       setHabit({
         name: "Habit",
@@ -122,7 +127,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         reminder: false,
         emoji: '❄️'
       });
-      newHabitEmitter.emit("newHabit");
+      //newHabitEmitter.emit("newHabit");
       if (closeModal) {
         closeModal();
         

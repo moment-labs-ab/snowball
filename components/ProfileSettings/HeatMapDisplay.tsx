@@ -2,8 +2,6 @@ import {
   ActivityIndicator,
   View,
   Text,
-  TextInput,
-  FlatList,
   ScrollView,
   StyleSheet,
   Dimensions,
@@ -11,7 +9,6 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit, HabitTrackingEntry } from "@/types/types";
-import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import {
   getGridTrackingHistory,
   listenToTrackingHistory,
@@ -19,21 +16,18 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";
-import {
-  newHabitEmitter,
-  deleteHabitEmitter,
-  habitEmitter,
-} from "@/events/eventEmitters";
 import HabitHeatMap from "./HabitHeatMap";
 import CalendarButton from "../CalendarButton";
 import HabitYearView from "../HabitYearView";
 import dayjs from "dayjs";
 import TrackingWelcome from "./TrackingWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useHabitContext } from "@/context/HabitContext";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const { habits } = useHabitContext();
+  const [heatMapHabits, setHeatMapHabits] = useState<Habit[]>([]);
   const [lastHabit, setLastHabit] = useState("");
   const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -80,69 +74,15 @@ const HeatMapDisplay = () => {
   useEffect(() => {
     setEndDate(today);
     setStartDate(oneMonthAgo);
-
-    const fetchHabits = async () => {
-      setLoading(true)
-      const habitsData = await getUserHabits(user.userId);
-      setHabits(habitsData);
-      setLoading(false);
-    };
-
-    fetchHabits();
-
-    const listener = newHabitEmitter.addListener("newHabit", () => {
-      fetchHabits();
-    });
-    const deleteHabitListener = deleteHabitEmitter.addListener(
-      "deleteHabit",
-      () => {
-        fetchHabits();
-      }
-    );
-    const updateHabitListener = deleteHabitEmitter.addListener(
-      "updateHabit",
-      () => {
-        fetchHabits();
-      }
-    );
-
-    const unsubscribe = listenToHabitsTable((payload) => {
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            console.log("Tracking Display Habit INSERT");
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            console.log("Tracking Display Habit DELETE");
-            setHabits((prevHabits) =>
-              prevHabits.filter((habit) => habit.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
-
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-      listener.off;
-    };
-  }, [user.userId, habits.length]);
+    setHeatMapHabits(habits);
+  }, [user.userId, heatMapHabits.length, habits]);
 
   useEffect(() => {
     const fetchGridData = async () => {
       const data: { [key: string]: HabitTrackingEntry[] } = {};
 
-      if (habits.length > 0) {
-        for (const habit of habits) {
+      if (heatMapHabits.length > 0) {
+        for (const habit of heatMapHabits) {
           try {
             const habitData = await getGridTrackingHistory(
               user.userId,
@@ -162,7 +102,7 @@ const HeatMapDisplay = () => {
       }
     };
 
-    if (habits.length > 0) {
+    if (heatMapHabits.length > 0) {
       fetchGridData();
     } else {
       fetchGridData();
@@ -181,7 +121,7 @@ const HeatMapDisplay = () => {
     return () => {
       unsubscribe();
     };
-  }, [habits.length]);
+  }, [heatMapHabits.length, habits]);
 
   function calculateMetrics(data: HabitTrackingEntry[]) {
     let totalTracked = 0;
@@ -220,7 +160,7 @@ const HeatMapDisplay = () => {
   }
 
   // Group the habits by frequency_rate
-  const groupedHabits = habits.reduce((acc, habit) => {
+  const groupedHabits = heatMapHabits.reduce((acc, habit) => {
     const frequency = habit.frequency_rate;
     if (!acc[frequency]) {
       acc[frequency] = [];
@@ -236,10 +176,9 @@ const HeatMapDisplay = () => {
     { label: "Bi-weekly", key: "Bi-weekly" },
   ];
 
-  
   if (!loading && habits.length === 0) {
     return (
-      <View style={{marginTop:50}}>
+      <View style={{ marginTop: 50 }}>
         <TrackingWelcome />
       </View>
     );
@@ -262,7 +201,7 @@ const HeatMapDisplay = () => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: 'flex-start',
+                  justifyContent: "flex-start",
                   paddingHorizontal: 12,
                 }}
               >
@@ -287,7 +226,10 @@ const HeatMapDisplay = () => {
                   {groupHabits.map((habit) => {
                     const habitData = gridData[habit.id];
                     return (
-                      <View key={habit.id} style={{ marginBottom: 20, padding: 8 }}>
+                      <View
+                        key={habit.id}
+                        style={{ marginBottom: 20, padding: 8 }}
+                      >
                         {habitData ? (
                           <View style={styles.habitContainer}>
                             <View
@@ -298,7 +240,9 @@ const HeatMapDisplay = () => {
                                 padding: 8,
                               }}
                             >
-                              <View style={{ flex: 1, flexDirection: "column" }}>
+                              <View
+                                style={{ flex: 1, flexDirection: "column" }}
+                              >
                                 <Text style={styles.habitName}>
                                   {habit.name} {habit.emoji}
                                 </Text>
