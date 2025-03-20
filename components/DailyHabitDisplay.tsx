@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
 import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
+import { useHabitContext } from "@/context/HabitContext";
 import HabitCard from "./HabitCard";
 import { FlashList } from "@shopify/flash-list";
 import { newHabitEmitter, deleteHabitEmitter } from "@/events/eventEmitters";
@@ -18,9 +19,10 @@ const DailyHabitDisplay = ({
   selectedDate,
   editHabitOrder,
 }: dailyHabitDisplayProps) => {
+  const {habits, setHabits, isLoading, setLoading} = useHabitContext()
   const { user } = useGlobalContext();
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  //const [habits, setHabits] = useState<Habit[]>([]);
+  //const [loading, setLoading] = useState<boolean>(true);
   const [expandedGroups, setExpandedGroups] = useState<{
     [key: string]: boolean;
   }>({
@@ -44,7 +46,8 @@ const DailyHabitDisplay = ({
   };
 
   useEffect(() => {
-    fetchHabits();
+    //fetchHabits();
+    /** 
 
     const listener = newHabitEmitter.addListener("newHabit", () => {
       fetchHabits();
@@ -82,15 +85,17 @@ const DailyHabitDisplay = ({
           break;
       }
     });
+    
     return () => {
       unsubscribe();
     };
-  }, [user.userId, selectedDate]);
+    */
+  }, [user.userId, selectedDate, habits.length]);
 
-  if (!loading && habits.length === 0) {
+  if (!isLoading && habits.length === 0) {
     return <HabitsWelcome />;
   }
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#3e4e88" />

@@ -1,17 +1,22 @@
-import { SplashScreen,Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, {useEffect} from "react";
-import { useFonts } from 'expo-font';
+import React, { useEffect } from "react";
+import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/Context";
+import HabitProvider from "@/context/HabitContext";
 import { GestureDetector } from "react-native-gesture-handler";
-import Toast, { BaseToast, ErrorToast, ToastConfig } from "react-native-toast-message";
+import Toast, {
+  BaseToast,
+  ErrorToast,
+  ToastConfig,
+} from "react-native-toast-message";
 
 export default function RootLayout() {
   const toastConfig: ToastConfig = {
     error: (props) => (
       <ErrorToast
         {...props}
-        style={{ borderLeftColor: "#FAC88B",}} // Change colors here
+        style={{ borderLeftColor: "#FAC88B" }} // Change colors here
         contentContainerStyle={{ paddingHorizontal: 15 }}
         text1Style={{ fontSize: 16, fontWeight: "bold", color: "black" }} // Text color
         text2Style={{ fontSize: 14, color: "gray" }} // Subtitle color
@@ -20,12 +25,12 @@ export default function RootLayout() {
     success: (props) => (
       <BaseToast
         {...props}
-        style={{ borderLeftColor: "green",}} // Change colors here
+        style={{ borderLeftColor: "green" }} // Change colors here
         contentContainerStyle={{ paddingHorizontal: 15 }}
         text1Style={{ fontSize: 16, fontWeight: "bold", color: "black" }} // Text color
         text2Style={{ fontSize: 14, color: "gray" }} // Subtitle color
       />
-    )
+    ),
   };
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
@@ -39,21 +44,21 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
   useEffect(() => {
-    if(error) throw error;
+    if (error) throw error;
     if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded, error])
+  }, [fontsLoaded, error]);
 
-  if(!fontsLoaded && !error) return null
+  if (!fontsLoaded && !error) return null;
   return (
     <GlobalProvider>
-
-    <Stack>
-      <Stack.Screen name='index' options={{headerShown: false}}/>
-      <Stack.Screen name='(auth)' options={{headerShown: false}}/>
-      <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
-    </Stack>
-    <Toast config={toastConfig} topOffset={50} />
+      <HabitProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+        <Toast config={toastConfig} topOffset={50} />
+      </HabitProvider>
     </GlobalProvider>
-
   );
 }

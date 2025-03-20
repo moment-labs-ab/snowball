@@ -363,7 +363,11 @@ const SettingsHome = () => {
         ) : (
           <Text style={styles.errorText}>Unable to load user data</Text>
         )}
+        
+        <Text style={{textAlign:'center'}}>v1.0.0</Text>
+        <Text style={{textAlign:'center'}}>Moment Labs LLC © {new Date().getFullYear()}</Text>
       </ScrollView>
+      
     </GestureHandlerRootView>
   );
 };
