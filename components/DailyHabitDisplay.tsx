@@ -46,50 +46,7 @@ const DailyHabitDisplay = ({
   };
 
   useEffect(() => {
-    //fetchHabits();
-    /** 
-
-    const listener = newHabitEmitter.addListener("newHabit", () => {
-      fetchHabits();
-    });
-    const deleteHabitListener = deleteHabitEmitter.addListener(
-      "deleteHabit",
-      () => {
-        fetchHabits();
-      }
-    );
-    const unsubscribe = listenToHabitsTable((payload) => {
-      fetchHabits();
-
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            setHabits((prevHabits) =>
-              prevHabits.map((habit) =>
-                habit.id === payload.new.id ? payload.new : habit
-              )
-            );
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            setHabits((prevHabits) =>
-              prevHabits.filter((habit) => habit.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
     
-    return () => {
-      unsubscribe();
-    };
-    */
   }, [user.userId, selectedDate, habits.length]);
 
   if (!isLoading && habits.length === 0) {

@@ -4,6 +4,8 @@ import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/Context";
 import HabitProvider from "@/context/HabitContext";
+import GoalProvider from "@/context/GoalContext";
+
 import { GestureDetector } from "react-native-gesture-handler";
 import Toast, {
   BaseToast,
@@ -51,6 +53,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !error) return null;
   return (
     <GlobalProvider>
+      <GoalProvider>
       <HabitProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -59,6 +62,7 @@ export default function RootLayout() {
         </Stack>
         <Toast config={toastConfig} topOffset={50} />
       </HabitProvider>
+      </GoalProvider>
     </GlobalProvider>
   );
 }
