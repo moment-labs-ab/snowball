@@ -71,7 +71,7 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
  */
 export const sendResetPasswordEmail = async (email: string) =>{
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'com.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
+        redirectTo: 'com.momentlabs.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
     });
 
     if (error) Alert.alert(error.message);
