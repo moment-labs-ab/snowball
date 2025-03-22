@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGlobalContext } from "@/context/Context";
 import DatePicker from "@/components/DatePicker";
 
@@ -20,9 +20,11 @@ import NewHabitModal from "@/modals/NewHabitModal";
 import WelcomeModal from "@/components/HabitObjects/WelcomeModal";
 
 import { getUserLoginCount } from "@/lib/supabase_profile";
+import { useHabitContext } from "@/context/HabitContext";
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
+  const { habits } = useHabitContext();
   const [deviceShaken, setDeviceShaken] = useState(false);
   //const { isShaken } = useShakeDetection();
   const [editRequested, setEditRequested] = useState(false);
@@ -98,16 +100,19 @@ const Habits = () => {
           </Text>
         </View>
 
-        <NewHabitButton
-          label={"Create a New Habit"}
-          content={
-            <NewHabitModal
-              visible={modalVisible}
-              onClose={handleCloseModal}
-              title={"Create a New Habit"}
-            />
-          }
-        />
+        {habits.length !== 0 && (
+          <NewHabitButton
+            label="Create a New Habit"
+            content={
+              <NewHabitModal
+                visible={modalVisible}
+                onClose={handleCloseModal}
+                title="Create a New Habit"
+              />
+            }
+            style={{ width: 48, height: 48 }}
+          />
+        )}
       </View>
       <View
         style={{
@@ -129,13 +134,7 @@ const Habits = () => {
           }}
         />
 
-        <View>
-          {userLogins === 1 && (
-            <WelcomeModal
-              isOpen={openWelcome}
-            />
-          )}
-        </View>
+        <View>{userLogins === 1 && <WelcomeModal isOpen={openWelcome} />}</View>
       </View>
 
       <DailyHabitDisplay

@@ -11,9 +11,10 @@ interface GoalButtonProps {
     action?: () => void
     content?: React.ReactNode;
     onClose?: () => void; // Optional callback to handle closing
+    style?: object
 }
 
-const AddGoalButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose}) => {
+const AddGoalButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose, style}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -39,7 +40,7 @@ const AddGoalButton: React.FC<GoalButtonProps> = ({ label, action, content, onCl
     return (
       <SafeAreaView>
           <View style={styles.container}>
-          <TouchableOpacity onPress={toggleContent} style={styles.iconButton}>
+          <TouchableOpacity onPress={toggleContent} style={[styles.iconButton, style]}>
               <FontAwesome6 name="wand-magic-sparkles" size={20} color="white" />
             </TouchableOpacity>
 

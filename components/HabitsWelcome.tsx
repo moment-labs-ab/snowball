@@ -1,23 +1,42 @@
 import { View, Text, StyleSheet } from "react-native";
-import React from "react";
-import Entypo from "@expo/vector-icons/Entypo";
+import React, {useState} from "react";
+import NewHabitButton from "@/modals/NewHabitButton";
+import NewHabitModal from "@/modals/NewHabitModal";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import CurvedArrow from "@/VisualComponents/CurvedArrow";
 
 
 const HabitsWelcome = () => {
+  //MODAL LOGIC
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
     return (
       <View style={styles.container}>
         <Text style={styles.title}>
           No Habits
         </Text>
         <View style={styles.subtitleContainer}>
-          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Snowball</Text> with the </Text> 
-          <View style={styles.iconButton}>
-            <Entypo name="plus" size={17} color="white" />
-          </View>
+          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Snowball</Text> here </Text> 
           
         </View>
+        <NewHabitButton
+          label={"Create a New Habit"}
+          content={
+            <NewHabitModal
+              visible={modalVisible}
+              onClose={handleCloseModal}
+              title={"Create a New Habit"}
+            />
+          }
+          style={{width:60, height:60}}
+        />
       </View>
     );
   };
