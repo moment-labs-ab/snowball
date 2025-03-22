@@ -12,7 +12,6 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import CustomButton from "@/components/CustomButtom";
 import NumberInput from "@/components/NumberInput";
 import TimeIntervalPicker from "@/components/TimeIntervalPicker";
 import {
@@ -25,7 +24,6 @@ import {
 import { useGlobalContext } from "@/context/Context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NumberBox from "@/components/NumberBox";
-import { deleteHabitEmitter, habitEmitter } from "@/events/eventEmitters";
 import Octicons from "@expo/vector-icons/Octicons";
 import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
@@ -90,26 +88,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       setHabit(habit_data);
       setLoading(false);
     }
-    /**
-    const fetchHabit = async () => {
-      try {
-        setLoading(true);
-        const habitData = await getHabit(user.userId, habit_id);
-        if (habitData) {
-          setHabit(habitData);
-        } else {
-          setError("Habit not found");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching the habit");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
-    fetchHabit();
-    */
+    
   }, [user.userId, habit_id]);
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
