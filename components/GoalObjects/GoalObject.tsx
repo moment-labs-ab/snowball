@@ -8,11 +8,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getUserGoals } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
-import { FlashList } from "@shopify/flash-list";
 import { Goal } from "@/types/types";
-import Entypo from "@expo/vector-icons/Entypo";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
 import {

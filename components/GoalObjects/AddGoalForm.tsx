@@ -14,6 +14,7 @@ import {
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
 import { insertNewGoal, getGoalCount } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
+import { useHabitContext } from "@/context/HabitContext";
 import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { Habit } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -58,6 +59,7 @@ const dummyHabits = [
 
 const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const { user, isLoading } = useGlobalContext();
+  const {habits} = useHabitContext();
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("❄️");
   const [selectedHabits, setSelectedHabits] = useState<SelectedHabits[]>([]);
@@ -66,7 +68,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-  const [habits, setHabits] = useState<Habit[]>([]);
+  //const [habits, setHabits] = useState<Habit[]>([]);
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
@@ -76,11 +78,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [goalCount, seGoalCount] = useState<number>(0)
   
-
-  const fetchHabits = async () => {
-    const data = await getUserHabits(user.userId);
-    setHabits(data);
-  };
 
   const fetchGoalCount = async ()=>{
     const count = await getGoalCount(user.userId);
@@ -93,49 +90,12 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     
   }
   useEffect(() => {
-    fetchHabits();
     fetchGoalCount();
 
-    const unsubscribe = listenToHabitsTable((payload) => {
-      console.log('Change received!', payload);
-      fetchHabits(); 
-
-      switch (payload.eventType) {
-        case 'INSERT':
-          if (payload.new) {
-            console.log("IN INSERT")
-              setHabits(prevHabits => [...prevHabits, payload.new]);
-          }
-          break;
-        case 'UPDATE':
-          if (payload.new) {
-            console.log("IN UPDATE")
-              setHabits(prevHabits => 
-                  prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
-                );
-          }
-          break;
-        case 'DELETE':
-          if (payload.old) {
-            console.log("IN DELETE")
-              setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
-          }
-          break;
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-      habitEmitter.emit('newHabitInGoals');
-    };
+    
   }, []);
 
-  const handleAddTag = () => {
-    if (newTag.trim() !== "") {
-      setTags([...tags, newTag.trim()]);
-      setNewTag("");
-    }
-  };
+  
 
   const handleSubmit = () => {
     // Create an array to track missing fields

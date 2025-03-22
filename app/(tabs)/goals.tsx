@@ -9,6 +9,7 @@ import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
 import { useGlobalContext } from "@/context/Context";
 import { Goal } from "@/types/types";
 import { getUserGoals } from "@/lib/supabase_goals";
+import { useGoalContext } from "@/context/GoalContext";
 
 const goals = () => {
 
@@ -49,7 +50,9 @@ const goals = () => {
                 <Text style={styles.subHeaderText}>Who do you want to be?</Text>
               </View>
             </View>
+            {goals.length !== 0 && (
             <AddGoalButton label='Create a New Goal' content={<AddGoalForm closeModal={fetchUserGoals}/>}/>
+            )}
           </View>
           <View style={styles.divider} />
         
