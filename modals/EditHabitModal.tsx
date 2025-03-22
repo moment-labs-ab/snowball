@@ -138,6 +138,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       } else if (result.data) {
         const habit = result.data as Habit;
         updateHabit(habit);
+        showUpdateToast("updated")
       }
 
       // Update tracking count if changed
@@ -183,6 +184,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             const result = await deleteHabit(habit_id, user_id);
             if (result.success) {
               deleteHabitState(habit_id)
+              showUpdateToast("deleted")
             } else {
               console.error("Error deleting habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -225,6 +227,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             if (result.success) {
               //habitEmitter.emit("updatedHabit");
               closeHabits();
+              showUpdateToast("archived")
             } else {
               console.error("Error Archiving habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -242,6 +245,22 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       type: "error",
       text1: "Premium Feature",
       text2: "Unlock Archiving with Premium",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
+  };
+
+  const showUpdateToast = (action: string) => {
+    Toast.show({
+      type: "success",
+      text1: "Success!",
+      text2: `Habit ${action}.`,
       visibilityTime: 3200,
       position: "top",
       autoHide: true,

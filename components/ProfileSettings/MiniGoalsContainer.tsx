@@ -127,7 +127,7 @@ const MiniGoalsContainer = () => {
             <View style={styles.spacer} />
           </View>
           <View>
-            <SettingsGoals />
+            <SettingsGoals toggleContent={toggleContent}/>
           </View>
         </SafeAreaView>
       </Modal>
