@@ -130,8 +130,6 @@ const styles = StyleSheet.create({
   iconButton: {
     backgroundColor: "#3e4e88", // Replace with bg-secondary class color if different
     borderRadius: 999, // Makes it circular
-    width: 48, // Equivalent to w-12
-    height: 48, // Equivalent to h-12
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 8, 

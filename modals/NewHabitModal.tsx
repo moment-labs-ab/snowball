@@ -190,11 +190,12 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       <View
         style={{
           flex: 1,
-          padding: 20,
+          paddingHorizontal: 20,
           backgroundColor: "#E6F0FA",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          paddingVertical:30
+          paddingVertical:30,
+          gap:10
           
         }}
       >
@@ -260,21 +261,19 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         <HabitSelector setHabit={setHabit} />
 
 
-        
+        <TimeIntervalPicker
+          onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
+          initialValue="Daily"
+        />
         <NumberInput
           title="Frequency"
           placeholder=" "
           handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
           initialValue={0}
         />
-        <TimeIntervalPicker
-          onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-          initialValue="Daily"
-        />
 
         <View
           style={{
-            marginTop: 20,
             flexDirection: "row",
             alignItems: "center",
             paddingLeft: 4,
@@ -283,7 +282,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         </View>
         <View
           style={{
-            marginTop: 20,
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
