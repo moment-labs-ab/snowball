@@ -41,73 +41,11 @@ const MiniHabitContainer = () => {
   }
 
   useEffect(() => {
-    /**
-    const fetchHabits = async () => {
-      setLoading(true);
-      const habitsData = await getUserHabits(user.userId);
-      setHabits(habitsData);
-      setLoading(false);
-    };
-
-    fetchHabits();
-    */
+    
     if (habits) {
       const initials = getFirstThreeHabitInitials(habits);
       setHabitInitials(initials);
     }
-    /**
-    const listener = newHabitEmitter.addListener("newHabit", () => {
-      // Perform refresh logic
-      //console.log("Event Emitter")
-      fetchHabits();
-    });
-    const deleteHabitListener = deleteHabitEmitter.addListener(
-      "deleteHabit",
-      () => {
-        fetchHabits();
-      }
-    );
-    const updateHabitListener = deleteHabitEmitter.addListener(
-      "updateHabit",
-      () => {
-        fetchHabits();
-      }
-    );
-
-    const unsubscribe = listenToHabitsTable((payload) => {
-      //console.log("Change received!", payload);
-      habitEmitter.emit("dataChanged");
-
-      fetchHabits();
-
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            //console.log("IN INSERT");
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            //console.log("IN UPDATE");
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            //console.log("IN DELETE");
-            setHabits((prevHabits) =>
-              prevHabits.filter((habit) => habit.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-    };
-    */
   }, [user.userId, habits.length]);
   if (isLoading) {
     return (

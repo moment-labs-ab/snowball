@@ -7,33 +7,17 @@ import GoalObject from "@/components/GoalObjects/GoalObject";
 import AddGoalForm from "@/components/GoalObjects/AddGoalForm";
 import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
 import { useGlobalContext } from "@/context/Context";
+import { useGoalContext } from "@/context/GoalContext";
 import { Goal } from "@/types/types";
 import { getUserGoals } from "@/lib/supabase_goals";
 
 const goals = () => {
 
   const { user } = useGlobalContext();
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const { goals } = useGoalContext()
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchUserGoals = async () => {
-    setLoading(true)
-    const data = await getUserGoals(user.userId);
   
-    // Sort by expected_end_date first and then by name
-    const sortedData = data.sort((a, b) => {
-      const dateA = new Date(a.expected_end_date).getTime();
-      const dateB = new Date(b.expected_end_date).getTime();
-  
-      // Compare dates first
-      if (dateA !== dateB) {
-        return dateA - dateB;
-      }
-  
-      // If dates are the same, compare names
-      return a.name.localeCompare(b.name);
-    });
-  }
 
   //console.log(user.email, user.userId, user.username, user.premiumUser)
 
@@ -49,7 +33,9 @@ const goals = () => {
                 <Text style={styles.subHeaderText}>Who do you want to be?</Text>
               </View>
             </View>
-            <AddGoalButton label='Create a New Goal' content={<AddGoalForm closeModal={fetchUserGoals}/>}/>
+            {goals.length !== 0 && (
+            <AddGoalButton label='Create a New Goal' content={<AddGoalForm />}/>
+            )}
           </View>
           <View style={styles.divider} />
         

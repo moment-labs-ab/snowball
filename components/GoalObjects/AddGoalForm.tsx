@@ -14,26 +14,21 @@ import {
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
 import { insertNewGoal, getGoalCount } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
+import { useHabitContext } from "@/context/HabitContext";
 import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
-import { Habit } from "@/types/types";
+import { Goal } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { goalEmitter } from "@/events/eventEmitters";
 import NewHabitButton from "@/modals/NewHabitButton";
-import { habitEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
 import GoalSelector from "./GoalSelector";
 import Toast from "react-native-toast-message";
+import { useGoalContext } from "@/context/GoalContext";
 
 
-export interface Goal {
-  name: string;
-  emoji: string;
-  habit_names: string[];
-  tags: string[];
-}
 
 interface SelectedHabits {
   id: string;
@@ -42,9 +37,8 @@ interface SelectedHabits {
 
 interface Milestones {
   milestone: string;
-  checked: boolean
+  checked: boolean;
   date?: Date;
-  
 }
 
 const dummyHabits = [
@@ -58,6 +52,8 @@ const dummyHabits = [
 
 const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const { user, isLoading } = useGlobalContext();
+  const { habits } = useHabitContext();
+  const { goals, setGoals } = useGoalContext();
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("❄️");
   const [selectedHabits, setSelectedHabits] = useState<SelectedHabits[]>([]);
@@ -66,81 +62,34 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-  const [habits, setHabits] = useState<Habit[]>([]);
+  //const [habits, setHabits] = useState<Habit[]>([]);
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<number | null>(null);
-  const [color, setColor] = useState('#8BBDFA');
+  const [activeMilestoneIndex, setActiveMilestoneIndex] = useState<
+    number | null
+  >(null);
+  const [color, setColor] = useState("#8BBDFA");
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [goalCount, seGoalCount] = useState<number>(0)
-  
+  const [goalCount, seGoalCount] = useState<number>(0);
 
-  const fetchHabits = async () => {
-    const data = await getUserHabits(user.userId);
-    setHabits(data);
-  };
-
-  const fetchGoalCount = async ()=>{
+  const fetchGoalCount = async () => {
     const count = await getGoalCount(user.userId);
-    if(count){
-      seGoalCount(count)
+    if (count) {
+      seGoalCount(count);
+    } else {
+      seGoalCount(0);
     }
-    else{
-      seGoalCount(0)
-    }
-    
-  }
+  };
   useEffect(() => {
-    fetchHabits();
     fetchGoalCount();
-
-    const unsubscribe = listenToHabitsTable((payload) => {
-      console.log('Change received!', payload);
-      fetchHabits(); 
-
-      switch (payload.eventType) {
-        case 'INSERT':
-          if (payload.new) {
-            console.log("IN INSERT")
-              setHabits(prevHabits => [...prevHabits, payload.new]);
-          }
-          break;
-        case 'UPDATE':
-          if (payload.new) {
-            console.log("IN UPDATE")
-              setHabits(prevHabits => 
-                  prevHabits.map(habit => habit.id === payload.new.id ? payload.new : habit)
-                );
-          }
-          break;
-        case 'DELETE':
-          if (payload.old) {
-            console.log("IN DELETE")
-              setHabits(prevHabits => prevHabits.filter(habit => habit.id !== payload.old.id));
-          }
-          break;
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-      habitEmitter.emit('newHabitInGoals');
-    };
   }, []);
 
-  const handleAddTag = () => {
-    if (newTag.trim() !== "") {
-      setTags([...tags, newTag.trim()]);
-      setNewTag("");
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Create an array to track missing fields
     const missingFields: string[] = [];
-  
+
     // Validate mandatory fields
     if (name.trim() === "") {
       missingFields.push("Goal Name");
@@ -154,13 +103,16 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     if (!expectedEndDate) {
       missingFields.push("End Date");
     }
-  
+
     // Check for duplicate milestones
-    const milestoneNames = milestones.map((milestone) => milestone.milestone.trim().toLowerCase());
-    const duplicateMilestones = milestoneNames.filter(
-      (milestone, index) => milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    const milestoneNames = milestones.map((milestone) =>
+      milestone.milestone.trim().toLowerCase()
     );
-  
+    const duplicateMilestones = milestoneNames.filter(
+      (milestone, index) =>
+        milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    );
+
     if (duplicateMilestones.length > 0) {
       Alert.alert(
         "Duplicate Milestones",
@@ -171,7 +123,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       );
       return;
     }
-  
+
     // If any mandatory fields are missing, show an alert
     if (missingFields.length > 0) {
       Alert.alert(
@@ -182,48 +134,57 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       return;
     }
 
-    const today = new Date()
-    if (expectedEndDate < today){
-      Alert.alert(
-        "Invalid Date",
-        `Please select a valid end date.`,
-        [{ text: "OK" }]
-      );
+    const today = new Date();
+    if (expectedEndDate < today) {
+      Alert.alert("Invalid Date", `Please select a valid end date.`, [
+        { text: "OK" },
+      ]);
       return;
     }
 
-    if (!user.premiumUser && goalCount >= 6){
-      if(closeModal){
-        closeModal()
+    if (!user.premiumUser && goalCount >= 6) {
+      if (closeModal) {
+        closeModal();
       }
-      showToast()
+      showToast();
       return;
     }
-  
+
     // If all validations pass, proceed with goal creation
-    insertNewGoal(
-      name,
-      emoji,
-      selectedHabits,
-      user.userId,
-      description,
-      expectedEndDate,
-      milestones,
-      color,
-      tags
-    );
-  
-    // Reset form fields
-    setName("");
-    setEmoji("");
-    setSelectedHabits([]);
-    setTags([]);
-    setDescription("");
-  
-    if (closeModal) {
-      closeModal();
+    try {
+      const result = await insertNewGoal(
+        name,
+        emoji,
+        selectedHabits,
+        user.userId,
+        description,
+        expectedEndDate,
+        milestones,
+        color,
+        tags
+      );
+      if (result.success == false) {
+        console.log(result.message);
+        Alert.alert("Error", result.message);
+      } else if (result.data) {
+        const habit = result.data as Goal;
+        setGoals((prevGoals) => [...prevGoals, habit])
+      }
+    } catch(error) {
+      Alert.alert("Submission Error", String(error));
+    } finally {
+      // Reset form fields
+      setName("");
+      setEmoji("");
+      setSelectedHabits([]);
+      setTags([]);
+      setDescription("");
+
+      if (closeModal) {
+        closeModal();
+      }
+      goalEmitter.emit("newGoal");
     }
-    goalEmitter.emit("newGoal");
   };
 
   const showToast = () => {
@@ -241,7 +202,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       },
     });
   };
-  
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
@@ -258,7 +218,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   //MILESTONES
   const addMilestone = () => {
     if (milestones.length < 5) {
-      setMilestones([...milestones, { milestone: "", checked:false }]);
+      setMilestones([...milestones, { milestone: "", checked: false }]);
     }
   };
 
@@ -276,7 +236,9 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const renderMilestones = () => (
     <View style={styles.milestoneSection}>
       <Text style={styles.label}>Milestones</Text>
-      <Text style={styles.miniLabel}>Break your goal down into smaller steps.</Text>
+      <Text style={styles.miniLabel}>
+        Break your goal down into smaller steps.
+      </Text>
       {milestones.map((milestone, index) => (
         <View key={index} style={styles.milestoneRow}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -310,22 +272,21 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     </View>
   );
 
-
   const handleColorChange = (color: string) => {
     setColor(color);
     //console.log(color)
   };
 
-   //NEW HABIT MODAL LOGIC
-   const [modalVisible, setModalVisible] = useState(false);
+  //NEW HABIT MODAL LOGIC
+  const [modalVisible, setModalVisible] = useState(false);
 
-   const handleOpenModal = () => {
-     setModalVisible(true);
-   };
- 
-   const handleCloseModal = () => {
-     setModalVisible(false);
-   };
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   if (!habits) {
     return <View></View>;
@@ -339,7 +300,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
           <View style={{ marginBottom: 5 }}>
             <Text style={styles.label}>Goal Name</Text>
             <Text style={styles.miniLabel}>Keep it short & powerful.</Text>
-
           </View>
 
           <View
@@ -381,7 +341,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 textAlignVertical="center"
               />
             </View>
-            
 
             <Modal
               visible={isEmojiSelectorVisible}
@@ -403,13 +362,14 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 </View>
               </View>
             </Modal>
-            
           </View>
-          <GoalSelector setName={setName} selectedColor={color}/>
+          <GoalSelector setName={setName} selectedColor={color} />
 
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.label}>Associate Habits:</Text>
-            <Text style={styles.miniLabel}>What habits will help you accomplish this goal?</Text>
+            <Text style={styles.miniLabel}>
+              What habits will help you accomplish this goal?
+            </Text>
             {habits.map((habit) => (
               <TouchableOpacity
                 key={habit.id}
@@ -428,11 +388,19 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                 )}
               </TouchableOpacity>
             ))}
-            <View
-            style={{padding:10, flexDirection:'row'}}>
-              <View style={{flexDirection:'row', alignItems:'center'}}>
+            <View style={{ padding: 10, flexDirection: "row" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text>Create a New Habit</Text>
-              <NewHabitButton content={<NewHabitModal visible={modalVisible} onClose={handleCloseModal} title={"Create a New Habit"}/>} style={{height:30, width:30, backgroundColor:color}}/>
+                <NewHabitButton
+                  content={
+                    <NewHabitModal
+                      visible={modalVisible}
+                      onClose={handleCloseModal}
+                      title={"Create a New Habit"}
+                    />
+                  }
+                  style={{ height: 30, width: 30, backgroundColor: color }}
+                />
               </View>
             </View>
           </View>
@@ -464,7 +432,9 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View>
             <Text style={styles.label}>Expected End Date</Text>
-            <Text style={styles.miniLabel}>When do you want to accomplish this goal?</Text>
+            <Text style={styles.miniLabel}>
+              When do you want to accomplish this goal?
+            </Text>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.pickerContainer}>
                 <DateTimePicker
@@ -485,11 +455,16 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.label}>Goal Color</Text>
-            <GoalColorPicker selectedColor={color} onColorChange={handleColorChange} />
-            
+            <GoalColorPicker
+              selectedColor={color}
+              onColorChange={handleColorChange}
+            />
           </View>
 
-          <TouchableOpacity style={[styles.submitButton, {backgroundColor: color}]} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[styles.submitButton, { backgroundColor: color }]}
+            onPress={handleSubmit}
+          >
             <Text style={styles.submitButtonText}>Create Goal</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -500,8 +475,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal:20
-    },
+    paddingHorizontal: 20,
+  },
   goalTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -601,15 +576,15 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '80%',
+    height: "80%",
   },
   closeButton: {
     alignSelf: "center",
@@ -664,34 +639,33 @@ const styles = StyleSheet.create({
   colorButton: {
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 5,
   },
   colorButtonText: {
-    color: 'white',
-    fontWeight: '500',
+    color: "white",
+    fontWeight: "500",
   },
   colorPickerContainer: {
     height: 350,
     padding: 20,
   },
-  newHabitContainer:{
-    borderColor:'#3e4e88',
-    width:"50%",
-    backgroundColor:'#3e4e88',
-    height:35,
-    justifyContent:'center',
-    borderRadius:5,
-    textAlign:'center',
-    alignItems:'center'
+  newHabitContainer: {
+    borderColor: "#3e4e88",
+    width: "50%",
+    backgroundColor: "#3e4e88",
+    height: 35,
+    justifyContent: "center",
+    borderRadius: 5,
+    textAlign: "center",
+    alignItems: "center",
   },
   miniLabel: {
     fontSize: 13,
-    fontWeight: '200',
+    fontWeight: "200",
     marginBottom: 5,
-    paddingLeft:2
+    paddingLeft: 2,
   },
-  
 });
 
 export default AddGoalForm;

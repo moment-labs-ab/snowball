@@ -1,18 +1,27 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Goal } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
-import { getUserArchivedGoals, getUserGoals } from "@/lib/supabase_goals";
-import { goalEmitter } from "@/events/eventEmitters";
-import { listenToGoalsTable } from "@/lib/supabase_goals";
-import { FlashList } from "@shopify/flash-list";
-import { ActivityIndicator } from "react-native";
+import { useGoalContext } from "@/context/GoalContext";
+import {
+  getUserArchivedGoals,
+  getUserGoals,
+  deleteGoal,
+} from "@/lib/supabase_goals";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const SettingsGoals = () => {
-  const [goals, setGoals] = useState<Goal[]>([]);
   const [archivedGoals, setArchivedGoals] = useState<Goal[]>([]);
   const [accomplishedGoals, setAccomplishedGoals] = useState<Goal[]>([]);
   const { user } = useGlobalContext();
+  const { goals, setGoals } = useGoalContext();
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUserGoals = async () => {
@@ -61,50 +70,7 @@ const SettingsGoals = () => {
   useEffect(() => {
     fetchArchivedGoals();
     fetchUserGoals();
-
-    const listener = goalEmitter.addListener("newHabitInGoals", () => {
-      // Perform refresh logic
-      //console.log("Event Emitter")
-      fetchArchivedGoals();
-    });
-
-    const unsubscribe = listenToGoalsTable((payload) => {
-      //console.log("Change received!", payload);
-      fetchArchivedGoals();
-
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            //console.log("IN INSERT");
-            setGoals((prevGoals) => [...prevGoals, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            //console.log("IN UPDATE");
-            setGoals((prevGoals) =>
-              prevGoals.map((Goal) =>
-                Goal.id === payload.new.id ? payload.new : Goal
-              )
-            );
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            //console.log("IN DELETE");
-            setGoals((prevGoals) =>
-              prevGoals.filter((Goal) => Goal.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-      //habitEmitter.emit('dataChanged');
-    };
-  }, [goals.length]);
+  }, [goals]);
 
   const formatDate = (date: Date | null): string => {
     if (!date) return "";
@@ -122,13 +88,40 @@ const SettingsGoals = () => {
     });
   };
 
+  const handleDelete = async (goal_id: string, user_id: string) => {
+    Alert.alert(
+      "Delete Goal",
+      "Are you sure you want to delete this goal and its history? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Delete canceled"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            const result = await deleteGoal(goal_id, user_id);
+            if (result.success) {
+            } else {
+              console.error("Error deleting goal:", result.message);
+            }
+          },
+          style: "destructive", // Optional: gives a red color to the button on iOS
+        },
+      ],
+      { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+    );
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Active Goals</Text>
-          <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
-          </View>
+          <View
+            style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
+          ></View>
           {goals.map((goal) => (
             <View
               key={goal.id}
@@ -148,20 +141,44 @@ const SettingsGoals = () => {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Accomplished Goals</Text>
-          <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
-           
-          </View>
+          <View
+            style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
+          ></View>
           {accomplishedGoals.map((goal) => (
             <View
               key={goal.id}
               style={[styles.goalItem, { backgroundColor: goal.color }]}
             >
-              <Text style={styles.goalName}>
-                {goal.emoji} {goal.name}
-              </Text>
-              <Text style={styles.goalDate}>
-                Accomplished: {formatDate(goal.accomplished_at)}
-              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>
+                  <Text style={styles.goalName}>
+                    {goal.emoji} {goal.name}
+                  </Text>
+                  <Text style={styles.goalDate}>
+                    Accomplished: {formatDate(goal.accomplished_at)}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: "center" }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleDelete(goal.id, user.userId);
+                    }}
+                    style={styles.deleteButton}
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={20}
+                      color="black"
+                      style={{ marginLeft: 10 }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           ))}
           {accomplishedGoals.length === 0 && (
@@ -171,20 +188,45 @@ const SettingsGoals = () => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Archived Goals</Text>
-          <View style={{ borderBottomWidth: 1, borderBottomColor: "black" }}>
-          </View>
+          <View
+            style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
+          ></View>
           {archivedGoals.map((goal) => (
-            <View
-              key={goal.id}
-              style={[styles.goalItem, { backgroundColor: goal.color }]}
-            >
-              <Text style={styles.goalName}>
-                {goal.emoji} {goal.name}
-              </Text>
-              <Text style={styles.goalDate}>
-                Archived: {formatDate(goal.archived_at)}
-              </Text>
-            </View>
+           <View
+           key={goal.id}
+           style={[styles.goalItem, { backgroundColor: goal.color }]}
+         >
+           <View
+             style={{
+               flexDirection: "row",
+               justifyContent: "space-between",
+             }}
+           >
+             <View>
+               <Text style={styles.goalName}>
+                 {goal.emoji} {goal.name}
+               </Text>
+               <Text style={styles.goalDate}>
+                 Archived: {formatDate(goal.archived_at)}
+               </Text>
+             </View>
+             <View style={{ justifyContent: "center" }}>
+               <TouchableOpacity
+                 onPress={() => {
+                   handleDelete(goal.id, user.userId);
+                 }}
+                 style={styles.deleteButton}
+               >
+                 <Ionicons
+                   name="trash-outline"
+                   size={20}
+                   color="black"
+                   style={{ marginLeft: 10 }}
+                 />
+               </TouchableOpacity>
+             </View>
+           </View>
+         </View>
           ))}
           {archivedGoals.length === 0 && (
             <Text style={styles.emptyMessage}>No archived goals</Text>
@@ -227,5 +269,9 @@ const styles = StyleSheet.create({
   emptyMessage: {
     color: "#666",
     fontStyle: "italic",
+  },
+  deleteButton: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

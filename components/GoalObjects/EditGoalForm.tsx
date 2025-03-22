@@ -13,39 +13,26 @@ import {
 } from "react-native";
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
 import { useGlobalContext } from "@/context/Context";
-import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
-import { Habit } from "@/types/types";
+import { Milestones, Goal} from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import NewHabitButton from "@/modals/NewHabitButton";
-import { goalEmitter } from "@/events/eventEmitters";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
 import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
 import Octicons from '@expo/vector-icons/Octicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import Toast from "react-native-toast-message";
-import moment from "moment";
+import { useHabitContext } from "@/context/HabitContext";
+import { useGoalContext } from "@/context/GoalContext";
 
 
 
-export interface Goal {
-  name: string;
-  emoji: string;
-  habit_names: string[];
-  tags: string[];
-}
 
 interface SelectedHabits {
   id: string;
   name: string;
-}
-
-interface Milestones {
-  milestone: string;
-  checked: boolean;
-  date?: Date;
 }
 
 type EditGoalFormProps = {
@@ -76,6 +63,8 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   closeModal,
 }) => {
   const { user, isLoading } = useGlobalContext();
+  const { habits } = useHabitContext();
+  const { goals, setGoals } = useGoalContext();
   const [name, setName] = useState(originalName);
   const [emoji, setEmoji] = useState(originalEmoji);
   const [selectedHabits, setSelectedHabits] =
@@ -88,65 +77,31 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-  const [habits, setHabits] = useState<Habit[]>([]);
+  
   const [description, setDescription] = useState(originalDescription);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [color, setColor] = useState(originalColor);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [formattedDate, setFormattedDate] = useState(original_expected_end_date)
 
-  const fetchHabits = async () => {
-    const data = await getUserHabits(user.userId);
-    setHabits(data);
-  };
+  
   useEffect(() => {
-    fetchHabits();
-
-    const format_date = moment(original_expected_end_date).format()
-    setFormattedDate(new Date(format_date))
-
-    const unsubscribe = listenToHabitsTable((payload) => {
-      //console.log("Change received!", payload);
-      fetchHabits();
-
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            //console.log("IN INSERT");
-            setHabits((prevHabits) => [...prevHabits, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            //console.log("IN UPDATE");
-            setHabits((prevHabits) =>
-              prevHabits.map((habit) =>
-                habit.id === payload.new.id ? payload.new : habit
-              )
-            );
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            //console.log("IN DELETE");
-            setHabits((prevHabits) =>
-              prevHabits.filter((habit) => habit.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
 
     const startingDate = new Date(original_expected_end_date);
     setExpectedEndDate(startingDate);
 
-    return () => {
-      unsubscribe();
-      goalEmitter.emit("newGoal");
-    };
+    
   }, []);
 
-  const handleSubmit = () => {
+  const updateGoalState = (updatedGoal: Goal) => {
+    setGoals((prevGoals) =>
+    prevGoals.map((goal) =>
+    goal.id === updatedGoal.id ? { ...goal, ...updatedGoal } : goal
+      )
+    );
+  };
+
+  const handleSubmit = async () => {
     // Create an array to track missing fields
     const missingFields: string[] = [];
   
@@ -202,7 +157,8 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     }
   
     // If all validations pass, proceed with goal update
-    updateGoal(
+    try{
+    const result = await updateGoal(
       id,
       user.userId,
       name,
@@ -214,12 +170,25 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       color,
       tags
     );
+    if (result.success == false) {
+      console.log(result.message);
+      Alert.alert("Error", result.message);
+    } else if (result.data) {
+      const goal = result.data as Goal;
+      updateGoalState(goal)
+    }
+  } catch(error) {
+    Alert.alert("Submission Error", String(error));
+  } finally {
   
     
-    goalEmitter.emit("updatedGoal");
-    refreshGoals();
     showUpdateToast()
-  };
+    if(closeModal){
+      closeModal();
+
+    }
+  }
+}
   
 
   const handleEmojiSelect = (selectedEmoji: string) => {
@@ -304,6 +273,10 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     setModalVisible(false);
   };
 
+  const archiveGoalState = (goalId: string) => {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+  };
+
   //Archiving
   const handleArchive = async (goal_id: string, user_id:string)=>{
     if (!user.premiumUser){
@@ -336,9 +309,10 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
           onPress: async () => {
             const result = await archiveGoal(goal_id, user_id);
             if (result.success) {
-              //console.log('Goal archived successfully');
-              // Handle successful deletion, e.g., refresh the habit list
-              //deleteHabitEmitter.emit('deleteHabit')
+              archiveGoalState(goal_id)
+              if(closeModal){
+                closeModal()
+              }
             } else {
               console.error('Error Archiving goal:', result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -527,8 +501,8 @@ const showUpdateToast = () => {
               <View style={styles.pickerContainer}>
                 <DateTimePicker
                   value={
-                    formattedDate instanceof Date
-                      ? formattedDate
+                    expectedEndDate instanceof Date
+                      ? expectedEndDate
                       : new Date()
                   } // Ensure the value is a Date object
                   mode="date"

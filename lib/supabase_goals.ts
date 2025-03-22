@@ -1,7 +1,7 @@
 import { AppState, Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
+import { createClient, PostgrestError, Session } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid';
 import { Goal, Milestones} from '@/types/types'
@@ -42,7 +42,7 @@ export const insertNewGoal = async (
   milestones: object,
   color: string,
   tags?: object
-): Promise<{ success: boolean; message: string; data?: any }> => {
+): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
   // Insert the goal into goal_objects
   const { data, error } = await supabase
     .from("goal_objects")
@@ -87,8 +87,13 @@ export const insertNewGoal = async (
     }
   }
 
-  //console.log("Goal inserted successfully with habits");
-  return { success: true, message: "Goal inserted successfully", data: { goalId } };
+  const new_goal = await getUserSingleGoal(user_id, goalId)
+
+  if(new_goal){
+    return { success: true, message: "Goal inserted successfully", data: new_goal};
+  }else{
+    return { success: true, message: "Goal not inserted successfully"};
+  }
 };
 
 export const getGoalCount = async (userId: string): Promise<number | null> => {
@@ -121,7 +126,7 @@ export const updateGoal = async (
   milestones?: object,
   color?: string,
   tags?: object
-): Promise<{ success: boolean; message: string; data?: any }> => {
+): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
   const supabaseClient = supabase; // Ensure supabase is correctly imported
 
   // Step 1: Update goal_objects (excluding habit_ids)
@@ -175,9 +180,13 @@ export const updateGoal = async (
       }
     }
   }
+  const updatedGoalData = await getUserSingleGoal(user_id, id)
+  if (updatedGoalData){
+    return { success: true, message: "Goal updated successfully", data: updatedGoalData };
 
-  //console.log("Goal updated successfully");
-  return { success: true, message: "Goal updated successfully", data };
+  }else{
+    return { success: false, message: "Failed to update habits"};
+  }
 };
 
 const getUserHabitsForGoal = async (
@@ -253,7 +262,7 @@ export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
 export const getUserSingleGoal = async (
   userId: string,
   goal_id: string
-): Promise<Goal | null> => {
+): Promise<Goal | undefined> => {
   const { data, error } = await supabase
     .from("goal_objects")
     .select("*")
@@ -264,10 +273,10 @@ export const getUserSingleGoal = async (
 
   if (error) {
     console.error("Error fetching goal:", error);
-    return null;
+    return undefined;
   }
 
-  if (!data) return null;
+  if (!data) return undefined;
 
   // Fetch associated habits for the goal
   const habits = await getUserHabitsForGoal(goal_id);

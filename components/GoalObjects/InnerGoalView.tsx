@@ -19,6 +19,7 @@ import {
   updateUserMilestones,
 } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
+import { useGoalContext } from "@/context/GoalContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Toast from "react-native-toast-message";
 import moment from "moment";
@@ -69,8 +70,9 @@ const InnerGoalView = ({
   onBeforeClose,
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
+  const {setGoals} = useGoalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedDate, setFormattedDate] = useState<Date>();
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -122,6 +124,10 @@ const InnerGoalView = ({
     closeModal();
   };
 
+  const accomplishGoalState = (goalId: string) => {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+  };
+
   //Accomplishing
   //Archiving
   const handleAccomplish = async (goal_id: string, user_id: string) => {
@@ -146,9 +152,11 @@ const InnerGoalView = ({
           onPress: async () => {
             const result = await accomplishGoal(goal_id, user_id);
             if (result.success) {
-              //console.log("Goal accomplished successfully");
-              // Handle successful deletion, e.g., refresh the habit list
-              //deleteHabitEmitter.emit('deleteHabit')
+              accomplishGoalState(goal_id)
+              if(closeModal){
+                closeModal()
+              }
+
             } else {
               console.error("Error accomplishing goal:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -179,6 +187,10 @@ const InnerGoalView = ({
 
   useEffect(() => {
     fetchSingleGoal();
+
+    const startingDate = new Date(expected_end_date);
+    setFormattedDate(startingDate);
+
   }, [
     contentToggled,
     habit_ids.length,
@@ -239,7 +251,7 @@ const InnerGoalView = ({
         </View>
         <View style={styles.dateContainer}>
           <Text style={styles.description}>
-            by {moment(expected_end_date).format("MMMM D, YYYY")}
+            by {moment(formattedDate).format("MMMM D, YYYY")}
           </Text>
         </View>
         <View

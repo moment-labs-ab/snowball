@@ -4,7 +4,8 @@ import Entypo from "@expo/vector-icons/Entypo";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CurvedArrow from "@/VisualComponents/CurvedArrow";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-
+import AddGoalButton from "./AddGoalButton";
+import AddGoalForm from "./AddGoalForm";
 
 const GoalsWelcome = () => {
     return (
@@ -13,12 +14,10 @@ const GoalsWelcome = () => {
           No Goals
         </Text>
         <View style={styles.subtitleContainer}>
-          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Journey</Text> with the </Text> 
-          <View style={styles.iconButton}>
-          <FontAwesome6 name="wand-magic-sparkles" size={17} color="white" />
-          </View>
-          
+          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Journey</Text> here </Text> 
         </View>
+        <AddGoalButton label='Create a New Goal' content={<AddGoalForm />} style={{width:60, height:60}}/>
+
       </View>
     );
   };
