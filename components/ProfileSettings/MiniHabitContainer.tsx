@@ -94,7 +94,7 @@ const MiniHabitContainer = () => {
             <View style={styles.spacer} />
           </View>
           <View>
-            <SettingsHabits />
+            <SettingsHabits toggleContent={toggleContent}/>
           </View>
         </SafeAreaView>
       </Modal>

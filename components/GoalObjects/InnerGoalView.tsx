@@ -335,6 +335,7 @@ const InnerGoalView = ({
           </View>
         </TouchableOpacity>
       </View>
+      <Toast/>
     </SafeAreaView>
   );
 };

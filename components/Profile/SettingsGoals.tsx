@@ -16,8 +16,13 @@ import {
   deleteGoal,
 } from "@/lib/supabase_goals";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
-const SettingsGoals = () => {
+type SettingsGoalsProps = {
+  toggleContent: ()=>void
+}
+
+const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
   const [archivedGoals, setArchivedGoals] = useState<Goal[]>([]);
   const [accomplishedGoals, setAccomplishedGoals] = useState<Goal[]>([]);
   const { user } = useGlobalContext();
@@ -103,6 +108,9 @@ const SettingsGoals = () => {
           onPress: async () => {
             const result = await deleteGoal(goal_id, user_id);
             if (result.success) {
+              showUpdateToast("deleted")
+              toggleContent()
+
             } else {
               console.error("Error deleting goal:", result.message);
             }
@@ -112,6 +120,22 @@ const SettingsGoals = () => {
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+  };
+
+  const showUpdateToast = (action: string) => {
+    Toast.show({
+      type: "success",
+      text1: "Success!",
+      text2: `Goal ${action}.`,
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
 
   return (

@@ -346,7 +346,7 @@ const showUpdateToast = () => {
     Toast.show({
       type: "success",
       text1: "Success",
-      text2: "Habit Updated",
+      text2: "Goal Updated",
       visibilityTime: 3200,
       position: "top",
       autoHide: true,

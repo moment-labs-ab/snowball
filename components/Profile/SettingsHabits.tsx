@@ -5,8 +5,13 @@ import { getUserArchivedHabits, deleteHabit} from '@/lib/supabase_habits'
 import { useGlobalContext } from '@/context/Context'
 import { useHabitContext } from '@/context/HabitContext'
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
-const SettingsHabits = () => {
+type SettingsHabitsProps = {
+  toggleContent: ()=>void
+}
+
+const SettingsHabits = ({toggleContent}: SettingsHabitsProps) => {
   const { user, isLoading } = useGlobalContext();
   const {habits} = useHabitContext();
   const [settingHabits, setSettingHabits] = useState<Habit[]>([]);
@@ -62,6 +67,8 @@ const SettingsHabits = () => {
           onPress: async () => {
             const result = await deleteHabit(habit_id, user_id);
             if (result.success) {
+              showUpdateToast("deleted")
+              toggleContent()
             } else {
               console.error("Error deleting habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -72,6 +79,22 @@ const SettingsHabits = () => {
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+  };
+
+  const showUpdateToast = (action: string) => {
+    Toast.show({
+      type: "success",
+      text1: "Success!",
+      text2: `Habit ${action}.`,
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+          console.log("Premium Requested!");
+        }, // Navigate to your premium page
+      },
+    });
   };
 
 
