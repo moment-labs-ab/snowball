@@ -40,51 +40,8 @@ const AllGoalsView = () => {
 
   useEffect(() => {
     fetchUserGoals();
-    /** 
-    const listener = goalEmitter.addListener("newGoal", () => {
-      // Perform refresh logic
-      //console.log("Event Emitter")
-      fetchUserGoals();
-    });
-
-    const unsubscribe = listenToGoalsTable((payload) => {
-      //console.log("Change received!", payload);
-      fetchUserGoals();
-
-      switch (payload.eventType) {
-        case "INSERT":
-          if (payload.new) {
-            //console.log("IN INSERT");
-            setGoals((prevGoals) => [...prevGoals, payload.new]);
-          }
-          break;
-        case "UPDATE":
-          if (payload.new) {
-            //console.log("IN UPDATE");
-            setGoals((prevGoals) =>
-              prevGoals.map((Goal) =>
-                Goal.id === payload.new.id ? payload.new : Goal
-              )
-            );
-          }
-          break;
-        case "DELETE":
-          if (payload.old) {
-            //console.log("IN DELETE");
-            setGoals((prevGoals) =>
-              prevGoals.filter((Goal) => Goal.id !== payload.old.id)
-            );
-          }
-          break;
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-      //habitEmitter.emit('dataChanged');
-    };
-    */
-  }, [goals.length]);
+    
+  }, [goals]);
 
   if (!loading && goals.length === 0) {
     return <GoalsWelcome />;
@@ -100,7 +57,7 @@ const AllGoalsView = () => {
       <ScrollView>
         <View style={styles.container}>
           <FlashList
-            data={goals}
+            data={sortedGoals}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View style={styles.goalContainer}>

@@ -176,7 +176,7 @@ const HeatMapDisplay = () => {
     { label: "Bi-weekly", key: "Bi-weekly" },
   ];
 
-  if (!loading && habits.length === 0) {
+  if (habits.length === 0) {
     return (
       <View style={{ marginTop: 50 }}>
         <TrackingWelcome />

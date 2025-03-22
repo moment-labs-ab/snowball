@@ -13,8 +13,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { archiveGoal, deleteGoal } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
-import Octicons from '@expo/vector-icons/Octicons';
-import { goalEmitter } from "@/events/eventEmitters";
+import { useGoalContext } from "@/context/GoalContext";
 
 interface GoalButtonProps {
   label: string;
@@ -37,6 +36,7 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const {user} = useGlobalContext();
+  const {goals, setGoals} = useGoalContext();
 
 
   const toggleContent = () => {
@@ -60,6 +60,10 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
     return child;
   });
 
+  const deleteGoalState = (goalId: string) => {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+  };
+
   const handleDelete = async (goal_id: string, user_id:string)=>{
     Alert.alert(
       'Delete Goal',
@@ -75,10 +79,8 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
           onPress: async () => {
             const result = await deleteGoal(goal_id, user_id);
             if (result.success) {
-              console.log('Goal deleted successfully');
+              deleteGoalState(goal_id)
               
-              // Handle successful deletion, e.g., refresh the habit list
-              goalEmitter.emit('deleteGoal')
             } else {
               console.error('Error deleting goal:', result.message);
             }

@@ -6,7 +6,6 @@ import { useGlobalContext } from "@/context/Context";
 import { useHabitContext } from "@/context/HabitContext";
 import HabitCard from "./HabitCard";
 import { FlashList } from "@shopify/flash-list";
-import { newHabitEmitter, deleteHabitEmitter } from "@/events/eventEmitters";
 import HabitsWelcome from "./HabitsWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 

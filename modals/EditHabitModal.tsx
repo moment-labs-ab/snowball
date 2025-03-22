@@ -74,6 +74,8 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     if (visible) {
       setTrackingCount(trackingCount);
     }
+
+    
   }, [visible, trackingCount]);
 
   const getHabitById = (habitId: string) => {
@@ -104,6 +106,10 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
         habit.id === updatedHabit.id ? { ...habit, ...updatedHabit } : habit
       )
     );
+  };
+
+  const deleteHabitState = (habitId: string) => {
+    setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitId));
   };
   const submit = async () => {
     //console.log(tracking); // Ensure this logs the correct, updated number
@@ -176,10 +182,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           onPress: async () => {
             const result = await deleteHabit(habit_id, user_id);
             if (result.success) {
-              //console.log('Habit deleted successfully');
-              closeHabits();
-              // Handle successful deletion, e.g., refresh the habit list
-              //deleteHabitEmitter.emit("deleteHabit");
+              deleteHabitState(habit_id)
             } else {
               console.error("Error deleting habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
