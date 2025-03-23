@@ -16,7 +16,7 @@ const TermsAndConditions = () => {
       
       <Text className="text-lg font-semibold mt-4">Security & Data Storage</Text>
       <Text className="text-base mt-2">
-        The Snowball app stores and processes personal data. We recommend that you do not jailbreak or root your phone, as it could compromise security and affect app functionality.
+        The Snowball app stores and processes personal data including and limted to Email. We recommend that you do not jailbreak or root your phone, as it could compromise security and affect app functionality.
       </Text>
       
       <Text className="text-lg font-semibold mt-4">Internet & Data Usage</Text>
@@ -41,7 +41,7 @@ const TermsAndConditions = () => {
       
       <Text className="text-lg font-semibold mt-4">Contact Us</Text>
       <Text className="text-base mt-2 pb-20">
-        If you have any questions, contact Moment Labs at aashish.momentlabs@gmail.com or through the Feedback Portal.
+        If you have any questions, contact Moment Labs at snowball@momentlabs.com or through the Feedback Portal.
       </Text>
     </ScrollView>
   );
