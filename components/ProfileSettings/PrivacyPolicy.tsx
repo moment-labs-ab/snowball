@@ -12,17 +12,17 @@ const PrivacyPolicy = () => {
         
         <Text className="text-lg font-semibold mt-4">Information Collection and Use</Text>
         <Text className="text-base mb-4">
-          For a better experience, while using our Service, I may require you to provide us with certain personally identifiable information, including but not limited to Email, Name, and Phone Number. This is only used to create a profile for you to help recover lost passwords. We will never sell your personal data.
+          For a better experience, while using our Service, I may require you to provide us with certain personally identifiable information, including but not limited to Email and Name. This is only used to create a profile for you and to help manage your account. We will never sell your personal data.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Log Data</Text>
         <Text className="text-base mb-4">
-          I want to inform you that whenever you use my Service, in a case of an error in the app I collect data and information (through third-party products) on your phone called Log Data...
+          Whenever you use the Service, in a case of an error in the app information and data is collected (through third-party products) on your phone called Log Data.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Cookies</Text>
         <Text className="text-base mb-4">
-          Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers...
+          Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Service Providers</Text>
@@ -36,27 +36,22 @@ const PrivacyPolicy = () => {
         
         <Text className="text-lg font-semibold mt-4">Security</Text>
         <Text className="text-base mb-4">
-          I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it...
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Links to Other Sites</Text>
-        <Text className="text-base mb-4">
-          This Service may contain links to other sites. If you click on a third-party link, you will be directed to that site...
+          I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Children’s Privacy</Text>
         <Text className="text-base mb-4">
-          I do not knowingly collect personally identifiable information from children...
+          Moment Labs does not knowingly collect personally identifiable information from children.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Changes to This Privacy Policy</Text>
         <Text className="text-base mb-4">
-          I may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes...
+          Moment Labs may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
         </Text>
         
         <Text className="text-lg font-semibold mt-4">Contact Us</Text>
         <Text className="text-base mb-4 pb-20">
-          If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact us at aashish.momentlabs@gmail.com or through the Feeback Portal.
+          If you have any questions or suggestions about the Privacy Policy, do not hesitate to contact us at snowball@momentlabs.com or through the Feeback Portal.
         </Text>
       </ScrollView>
 
