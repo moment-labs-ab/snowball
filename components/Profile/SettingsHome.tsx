@@ -100,7 +100,7 @@ const SECTION = [
         icon: icons.snowflake,
         label: "Habits",
         type: "page",
-        content: <SettingsHabits />,
+        content: <SettingsHabits toggleContent={()=>{}} />,
       },
       {
         id: "goals",
@@ -108,7 +108,7 @@ const SECTION = [
         icon: icons.mountain,
         label: "Goals",
         type: "page",
-        content: <SettingsGoals />,
+        content: <SettingsGoals toggleContent={()=>{}}/>,
       },
       {
         id: "profile-stats",
