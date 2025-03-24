@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CustomButton from '@/components/CustomButtom';
-import { signOut } from '@/lib/supabase';
+import { signOut } from '@/lib/supabase_user';
 import { router } from 'expo-router';
 import { useGlobalContext } from '@/context/Context';
 import { getUserLoginCount } from '@/lib/supabase_profile';

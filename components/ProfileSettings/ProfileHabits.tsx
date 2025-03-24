@@ -1,20 +1,9 @@
-import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
-import React, { useState, useEffect, useCallback } from 'react';
-import { FlashList } from "@shopify/flash-list";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  runOnJS,
-} from 'react-native-reanimated';
-import { GestureDetector, Gesture, PanGestureHandler } from 'react-native-gesture-handler';
-import { supabase } from '@/lib/supabase';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Habit } from '@/types/types';
 import { getUserHabits, getHabitCount } from '@/lib/supabase_habits';
 import { useGlobalContext } from '@/context/Context';
-import DraggableHabitItem from './DraggableHabitItem';
 import { updateHabitOrder } from '@/lib/supabase_profile';
-import MovableHabit from './MovableHabit';
 import DraggableList from './DraggableList';
 
 

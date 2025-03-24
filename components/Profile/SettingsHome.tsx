@@ -14,7 +14,7 @@ import {
 } from "react-native-gesture-handler";
 import { useGlobalContext } from "@/context/Context";
 import { router } from "expo-router";
-import { getCurrentUser, handleUserDeletion, signOut } from "@/lib/supabase";
+import { getCurrentUser, signOut } from "@/lib/supabase_user";
 import {
   ProfileSelectState,
   ProfileToggleState,

@@ -13,11 +13,8 @@ import { Link, router } from "expo-router";
 import FormField from "../../components/FormField";
 import CustomButton from "@/components/CustomButtom";
 
-import { signInWithEmail, getCurrentUser } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
-import GlobalProvider, { useGlobalContext } from "@/context/Context";
-import { useContext } from "react";
+import { signInWithEmail, getCurrentUser } from "@/lib/supabase_user";
+import { useGlobalContext } from "@/context/Context";
 
 const SignIn = () => {
   const { setUser, setIsLoggedIn } = useGlobalContext();

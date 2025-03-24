@@ -13,11 +13,8 @@ import {
   import FormField from "../../components/FormField";
   import CustomButton from "@/components/CustomButtom";
   
-  import { sendResetPasswordEmail } from "@/lib/supabase";
-  import { Session } from "@supabase/supabase-js";
-  import { supabase } from "@/lib/supabase";
-  import GlobalProvider, { useGlobalContext } from "@/context/Context";
-  import { useContext } from "react";
+  import { sendResetPasswordEmail } from "@/lib/supabase_user";
+  import { useGlobalContext } from "@/context/Context";
   
   const ForgotPassword = () => {
     const { setUser, setIsLoggedIn } = useGlobalContext();

@@ -1,20 +1,15 @@
 import { View, Text, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import CustomButton from '@/components/CustomButtom';
-import { signOut } from '@/lib/supabase';
+import { signOut } from '@/lib/supabase_user';
 import { router } from 'expo-router';
 import { useGlobalContext } from '@/context/Context';
 import { getUserLoginCount } from '@/lib/supabase_profile';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import ProfileSettings from '@/components/ProfileSettings';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { LifetimeHabitStats } from '@/types/types';
 import { getLifetimeHabitStats } from '@/lib/supabase_profile';
 import Feather from '@expo/vector-icons/Feather';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import Tooltip from '@/modals/Generic/Tooltip';
 
 const ProfileStats = () => {
   const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();

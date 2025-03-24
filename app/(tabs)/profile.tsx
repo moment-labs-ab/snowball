@@ -10,7 +10,7 @@ import {
     Dimensions
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getCurrentUser, handleUserDeletion, signOut } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/supabase_user";
 import { User } from "@/types/types";
 import CustomButton from "@/components/CustomButtom";
 import { useGlobalContext } from "@/context/Context";
