@@ -1,23 +1,10 @@
 import { AppState, Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
+import { Session } from '@supabase/supabase-js'
+import { useState } from 'react'
 import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, User } from '@/types/types'
-
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey,{
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
+import { User } from '@/types/types'
+import client from './supabase'
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -26,9 +13,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey,{
 // only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
-    supabase.auth.startAutoRefresh()
+    client.auth.startAutoRefresh()
   } else {
-    supabase.auth.stopAutoRefresh()
+    client.auth.stopAutoRefresh()
   }
 })
 
@@ -49,14 +36,14 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
     const {
       data: { session },
       error,
-    } = await supabase.auth.signUp({
+    } = await client.auth.signUp({
       email: email,
       password: password,
     })
     if (error) Alert.alert(error.message)
 
     console.log(session?.user)
-    await supabase.from('profiles').upsert({id: session?.user.id, username: username})
+    await client.from('profiles').upsert({id: session?.user.id, username: username})
 
     if(session?.user.id){
       trackLogin(session.user.id)
@@ -70,7 +57,7 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
  * @param email The users email
  */
 export const sendResetPasswordEmail = async (email: string) =>{
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { data, error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: 'com.momentlabs.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
     });
 
@@ -83,11 +70,11 @@ export const sendResetPasswordEmail = async (email: string) =>{
  * @param accessToken The token recived from the email
  */
 export const resetPassword = async (accessToken: any, newPassword: string) =>{
-    const { error } = await supabase.auth.setSession({access_token: accessToken, refresh_token:""});
+    const { error } = await client.auth.setSession({access_token: accessToken, refresh_token:""});
 
     if (error) Alert.alert(error.message);
 
-    const { data, error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    const { data, error: updateError } = await client.auth.updateUser({ password: newPassword });
 
     if (updateError) Alert.alert(updateError.message);
 }
@@ -98,14 +85,14 @@ export const resetPassword = async (accessToken: any, newPassword: string) =>{
  * @returns the users data.
  */
 export const signInWithEmail = async function signInWithEmail(email:string, password:string) {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await client.auth.signInWithPassword({
       email: email,
       password: password,
     })
 
     if (error) Alert.alert(error.message)
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await client.auth.getUser()
     if(user){
       trackLogin(user.id)
     }
@@ -126,7 +113,7 @@ export const getProfile = async function getProfile(session: Session) {
       setLoading(true)
       if (!session?.user) throw new Error('No user on the session!')
 
-      let { data, error, status } = await supabase
+      let { data, error, status } = await client
         .from('profiles')
         .select(`username, website, avatar_url`)
         .eq('id', session?.user.id)
@@ -175,7 +162,7 @@ export const updateProfile = async function updateProfile(
         updated_at: new Date(),
       }
 
-      let { error } = await supabase.from('profiles').upsert(updates)
+      let { error } = await client.from('profiles').upsert(updates)
 
       if (error) {
         throw error
@@ -196,7 +183,7 @@ export const updateProfile = async function updateProfile(
    */
 export const getUsername = async (userId: string) =>{
     try {
-      const { data, error } = await supabase
+      const { data, error } = await client
       .from('profiles')
       .select(`username`)
       .eq('id', userId)
@@ -213,7 +200,7 @@ export const getUsername = async (userId: string) =>{
 
   export const getPremiumStatus = async (userId: string) =>{
     try {
-      const { data, error } = await supabase
+      const { data, error } = await client
       .from('profiles')
       .select(`premium_user`)
       .eq('id', userId)
@@ -234,7 +221,7 @@ export const getUsername = async (userId: string) =>{
  */
  export const getCurrentUser = async (): Promise<User> => {
     try {
-        const { data } = await supabase.auth.getUser();
+        const { data } = await client.auth.getUser();
         if (!data) {
             Alert.alert("User data not found");
             let defaultUser = {
@@ -280,7 +267,7 @@ export const getUsername = async (userId: string) =>{
     try {
       const { data:{
         session
-      }, error } = await supabase.auth.refreshSession()
+      }, error } = await client.auth.refreshSession()
       if(!session){
         Alert.alert("User not found.")
       }else{
@@ -297,7 +284,7 @@ export const getUsername = async (userId: string) =>{
    /* Signs a user out.
    */
 export const signOut = async (): Promise<{ success: boolean; message: string; data?: any }> =>{
-      const { error } = await supabase.auth.signOut()
+      const { error } = await client.auth.signOut()
 
       if (error) {
         console.error('Error signing user out:', error);
@@ -314,7 +301,7 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
   export const handleUserDeletion = async(user_id: string): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
       // Delete user using admin client
-      const { data, error } = await supabase.auth.admin.deleteUser(user_id)
+      const { data, error } = await client.auth.admin.deleteUser(user_id)
       
       if (error) {
         console.error('Error Deleting User:', error)
@@ -341,7 +328,7 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
 export const trackLogin = async (userId: string) => {
   const now = new Date().toDateString()
     try {
-      await supabase
+      await client
         .from('user_logins')
         .insert([{ user_id: userId}]);
     } catch (error) {

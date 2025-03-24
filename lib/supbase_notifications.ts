@@ -1,26 +1,11 @@
-import { AppState, Alert } from 'react-native'
+import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
 import { NotificationItem } from '@/types/types'
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from 'expo-constants';
 import { Platform } from "react-native";
-import { useGlobalContext } from "@/context/Context";
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
+import client from './supabase'
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -29,15 +14,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
-    supabase.auth.startAutoRefresh()
+    client.auth.startAutoRefresh()
   } else {
-    supabase.auth.stopAutoRefresh()
+    client.auth.stopAutoRefresh()
   }
 })
 
 export const getNotifications = async (userId: string): Promise<NotificationItem[]> => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('user_notifications')
         .select('id, label, time, expo_push_token') // Only fetch count without data
         .eq('user_id', userId);
@@ -57,7 +42,7 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
 export const saveNotifications = async (userId: string, pushToken: string) => {
   try {
     // Check if the user already exists in the table
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await client
       .from("user_notifications")
       .select("user_id")
       .eq("user_id", userId)
@@ -75,7 +60,7 @@ export const saveNotifications = async (userId: string, pushToken: string) => {
     }
 
     // Insert new record
-    const { error: insertError } = await supabase.from("user_notifications").insert({
+    const { error: insertError } = await client.from("user_notifications").insert({
       user_id: userId,
       expo_push_token: pushToken,
     });
@@ -91,7 +76,7 @@ export const saveNotifications = async (userId: string, pushToken: string) => {
 
 export const updateUserExpoPushToken = async (userId: string, pushToken:string)=>{
   try{
-    const {error} = await supabase
+    const {error} = await client
     .from("user_notifications")
     .insert({expo_push_token: pushToken})
     .eq('user_id', userId)
@@ -105,7 +90,7 @@ export const updateUserExpoPushToken = async (userId: string, pushToken:string)=
 
 export const getExpoPushToken = async (userId: string) => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from("user_notifications")
       .select("expo_push_token")
       .eq("user_id", userId)
@@ -155,7 +140,7 @@ export async function sendPushNotification(expoPushToken: string) {
 
 export async function checkUpdate(updatedDate: string){
   const userIds = ['7a6e684a-f2f3-4a1e-b10b-0b3701ace42c']
-  const { error: updateError } = await supabase
+  const { error: updateError } = await client
   .from("user_notifications")
   .update({ last_updated: updatedDate })
   .in("user_id", userIds); // Batch update

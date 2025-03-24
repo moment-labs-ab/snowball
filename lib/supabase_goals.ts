@@ -1,23 +1,9 @@
-import { AppState, Alert } from 'react-native'
+import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, PostgrestError, Session } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
-import { nanoid } from 'nanoid';
+import { PostgrestError} from '@supabase/supabase-js'
 import { Goal, Milestones} from '@/types/types'
+import client from './supabase'
 
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -26,9 +12,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
-    supabase.auth.startAutoRefresh()
+    client.auth.startAutoRefresh()
   } else {
-    supabase.auth.stopAutoRefresh()
+    client.auth.stopAutoRefresh()
   }
 })
 
@@ -44,7 +30,7 @@ export const insertNewGoal = async (
   tags?: object
 ): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
   // Insert the goal into goal_objects
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("goal_objects")
     .insert([
       {
@@ -70,7 +56,7 @@ export const insertNewGoal = async (
 
   // If habit_ids exist, insert them into goal_habits
   if (habit_ids.length > 0) {
-    const { error: habitError } = await supabase
+    const { error: habitError } = await client
       .from("goal_habits_reference")
       .insert(
         habit_ids.map((habit) => ({
@@ -98,7 +84,7 @@ export const insertNewGoal = async (
 
 export const getGoalCount = async (userId: string): Promise<number | null> => {
   try {
-    const { data, error, count } = await supabase
+    const { data, error, count } = await client
       .from('goal_objects')
       .select('id', { count: 'exact', head: true }) // Only fetch count without data
       .eq('user_id', userId);
@@ -127,10 +113,8 @@ export const updateGoal = async (
   color?: string,
   tags?: object
 ): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
-  const supabaseClient = supabase; // Ensure supabase is correctly imported
-
   // Step 1: Update goal_objects (excluding habit_ids)
-  const { data, error } = await supabaseClient
+  const { data, error } = await client
     .from("goal_objects")
     .update({
       ...(name && { name }),
@@ -152,7 +136,7 @@ export const updateGoal = async (
   // Step 2: If habit_ids are provided, update goal_habits table
   if (habit_ids) {
     // Start a transaction-like sequence to ensure consistency
-    const { error: deleteError } = await supabaseClient
+    const { error: deleteError } = await client
       .from("goal_habits_reference")
       .delete()
       .eq("goal_id", id);
@@ -163,7 +147,7 @@ export const updateGoal = async (
     }
 
     if (habit_ids.length > 0) {
-      const { error: insertError } = await supabaseClient
+      const { error: insertError } = await client
         .from("goal_habits_reference")
         .insert(
           habit_ids.map((habit) => ({
@@ -192,7 +176,7 @@ export const updateGoal = async (
 const getUserHabitsForGoal = async (
   goal_id: string
 ): Promise<{ id: string; name: string }[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("goal_habits_reference")
     .select("habit_id, habit_name")
     .eq("goal_id", goal_id);
@@ -210,7 +194,7 @@ const getUserHabitsForGoal = async (
 
 
 export const getUserGoals = async (userId: string): Promise<Goal[]> => {
-  const { data, error } = await supabase.from('goal_objects')
+  const { data, error } = await client.from('goal_objects')
   .select('*')
   .eq('user_id', userId)
   .eq('accomplished', false)
@@ -235,7 +219,7 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
 };
 
 export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await client
   .from('goal_objects')
   .select('*')
   .eq('user_id', userId)
@@ -263,7 +247,7 @@ export const getUserSingleGoal = async (
   userId: string,
   goal_id: string
 ): Promise<Goal | undefined> => {
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("goal_objects")
     .select("*")
     .eq("user_id", userId)
@@ -301,7 +285,7 @@ type ChangeHandler = (payload: { eventType: string; new: Goal; old: Goal}) => vo
  */
 export const listenToGoalsTable = (handleChange: ChangeHandler) => {
     
-    const subscription = supabase
+    const subscription = client
       .channel('table_db_changes')
       .on(
         'postgres_changes',
@@ -329,7 +313,7 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
     id: string,
     user_id: string
   ): Promise<{ success: boolean; message: string; data?: any }> => {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('goal_objects')
       .delete()
       .eq('id', id)
@@ -354,7 +338,7 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
 export const updateUserMilestones= async(userId: string, goalId: string, updatedMilestones: Milestones[]): Promise<void> =>{
   try {
     // Perform the update query
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('goal_objects')
       .update({ milestones: updatedMilestones })
       .eq('user_id', userId)
@@ -373,7 +357,7 @@ export const updateUserMilestones= async(userId: string, goalId: string, updated
 
 export const archiveGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
   
-    const {data, error} = await supabase
+    const {data, error} = await client
     .from('goal_objects')
     .update({archived: true})
     .eq('user_id', userId)
@@ -390,7 +374,7 @@ export const archiveGoal = async (goal_id: string, userId:string): Promise<{ suc
 
 export const accomplishGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
   
-  const {data, error} = await supabase
+  const {data, error} = await client
   .from('goal_objects')
   .update({accomplished: true})
   .eq('user_id', userId)
@@ -411,7 +395,7 @@ type HabitIds = {
 };
 
 async function getHabitsForGoal(goalId: string): Promise<HabitIds[] | null> {
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from("goals_habits_reference")
     .select("habit_id, habit_name")
     .eq("goal_id", goalId);
