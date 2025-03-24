@@ -16,7 +16,8 @@ import { useGlobalContext } from "@/context/Context";
 import Entypo from "@expo/vector-icons/Entypo";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
 import EditHabit from "@/modals/EditHabit";
-import { HabitTracking } from "@/types/types";
+import { HabitTracking, HabitTrackingEntry } from "@/types/types";
+import { useTrackingContext } from "@/context/TrackingContext";
 import EditHabitButton from "@/modals/EditHabitButton";
 import EditHabitModal from "@/modals/EditHabitModal";
 
@@ -48,6 +49,7 @@ const HabitCard = ({
   fetchHabits,
 }: habitCardProps) => {
   const { user, isLoading } = useGlobalContext();
+  const {tracking, setTracking, isLoadingTracking} = useTrackingContext();
   const [trackingCount, setTrackingCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [trackingColor, setTrackingColor] = useState<string>("#9ec8fb");
@@ -136,6 +138,43 @@ const HabitCard = ({
     frequency_rate,
   ]);
 
+  type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
+
+  function incrementHabitCount(
+    habitData: HabitTrackingData,
+    id: string,
+    date: Date
+  ): HabitTrackingData {
+    // Create a copy of the original data to avoid mutating it
+    const updatedHabitData = { ...habitData };    
+    
+    // Look for an entry with the matching date
+    const existingEntryIndex = updatedHabitData[id].findIndex(
+      entry => {
+        // If entry.date is in ISO format (YYYY-MM-DD), extract just the date part
+        const entryDateStr = entry.date.split('T')[0];
+        
+        // Convert date object to YYYY-MM-DD format
+        const dateStr = date.toISOString().split('T')[0];
+
+        
+        return entryDateStr === dateStr;
+      }
+    );
+    
+    if (existingEntryIndex !== -1) {
+      console.log("Updating", id, date)
+      // If entry exists, increment its count
+      updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
+      updatedHabitData[id][existingEntryIndex] = {
+        ...updatedHabitData[id][existingEntryIndex],
+        count: updatedHabitData[id][existingEntryIndex].count + 1
+      };
+    }
+    
+    return updatedHabitData;
+  }
+
   const handlingPress = async (
     id: string,
     frequency: number,
@@ -144,7 +183,8 @@ const HabitCard = ({
     const trackingData = await addTracking(user.userId, id, date);
     //const newTrackingCount = trackingData/frequency;
     setTrackingCount(trackingData);
-    //console.log("HandlingPress", trackingCount);
+    const updatedTracking = incrementHabitCount(tracking, id, date)
+    setTracking(updatedTracking)
   };
 
   const handleTrackingCountChange = (newTrackingCount: number) => {

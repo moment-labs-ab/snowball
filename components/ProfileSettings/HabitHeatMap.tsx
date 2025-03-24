@@ -4,6 +4,7 @@ import Svg, { Rect, Text, G, Line } from "react-native-svg";
 import * as d3 from "d3";
 import { HabitTrackingEntry } from "@/types/types";
 import HeatMapStats from "./HeatMapStats";
+import { useTrackingContext } from "@/context/TrackingContext";
 
 interface HeatMapProps {
   data: HabitTrackingEntry[];
@@ -28,6 +29,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
   const cellPadding: number = 1;
   const [monthLabels, setMonthLabels] = React.useState<MonthLabel[]>([]);
   const [dates, setDates] = React.useState<Date[]>([]);
+  const {tracking} = useTrackingContext();
   
   const entriesKey = data.map(entry => `${entry.date}:${entry.count}`).join('|');
 
@@ -68,7 +70,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
     return () => {
       // Cleanup if needed
     };
-  }, [data, width, height, cellSize, cellPadding, entriesKey]);
+  }, [data, width, height, cellSize, cellPadding, entriesKey, tracking]);
 
   const weekDays: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

@@ -13,7 +13,9 @@ import { getGridTrackingHistory } from "@/lib/supabase_progress";
 
 interface TrackingContextInterface {
   tracking: { [key: string]: HabitTrackingEntry[] };
-  setTracking: React.Dispatch<React.SetStateAction<{ [key: string]: HabitTrackingEntry[] }>>;
+  setTracking: React.Dispatch<
+    React.SetStateAction<{ [key: string]: HabitTrackingEntry[] }>
+  >;
   hasTracking: boolean;
   setHasTracking: React.Dispatch<React.SetStateAction<boolean>>;
   isLoadingTracking: boolean;
@@ -43,12 +45,11 @@ export default function TrackingProvider({ children }: GlobalProviderProps) {
 
   const { habits, setHabits, isLoading } = useHabitContext();
   const [hasTracking, setHasTracking] = useState(false);
-  const [startDate, setStartDate] = useState<Date>(new Date())
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const [tracking, setTracking] = useState<{
     [key: string]: HabitTrackingEntry[];
   }>({});
   const [isLoadingTracking, setLoadingTracking] = useState(false);
-
 
   function getLastMonth(date: Date): Date {
     const lastMonthDate = new Date(date);
@@ -58,7 +59,6 @@ export default function TrackingProvider({ children }: GlobalProviderProps) {
   }
 
   const fetchGridData = async (startDate: Date, today: Date) => {
-    setLoadingTracking(true)
     const data: { [key: string]: HabitTrackingEntry[] } = {};
 
     if (habits.length > 0) {
@@ -77,24 +77,22 @@ export default function TrackingProvider({ children }: GlobalProviderProps) {
           const habitData = null;
         }
       }
-
       //console.log(data)
 
       setTracking(data);
-      setHasTracking(true)
-      setLoadingTracking(false)
+      setHasTracking(true);
+      setLoadingTracking(false);
     }
-    
   };
 
   useEffect(() => {
-    const now = new Date();
-    const today = new Date(now.toDateString());
-    const oneMonthAgo = getLastMonth(new Date());
-    if (isLoggedIn && user.userId && habits.length > 0) {
-        fetchGridData(oneMonthAgo, today);
-    }
-  }, [isLoggedIn, user.userId]);
+    setLoadingTracking(true);
+    if (!isLoggedIn || !user?.userId) return;
+
+    const today = new Date();
+    const oneMonthAgo = getLastMonth(today);
+    fetchGridData(oneMonthAgo, today).then(()=>{setLoadingTracking(false)});
+  }, [isLoggedIn, user?.userId, habits.length]);
 
   return (
     <TrackingContext.Provider

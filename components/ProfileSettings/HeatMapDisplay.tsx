@@ -23,19 +23,18 @@ import dayjs from "dayjs";
 import TrackingWelcome from "./TrackingWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useHabitContext } from "@/context/HabitContext";
+import { useTrackingContext } from "@/context/TrackingContext";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
   const { habits } = useHabitContext();
-  const [heatMapHabits, setHeatMapHabits] = useState<Habit[]>([]);
+  const {tracking, setTracking, isLoadingTracking} = useTrackingContext();
   const [lastHabit, setLastHabit] = useState("");
   const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [startDate, setStartDate] = useState<Date>(new Date());
-  const [gridData, setGridData] = useState<{
-    [key: string]: HabitTrackingEntry[];
-  }>({});
+  
   // Add state for expanded/collapsed groups
   const [expandedGroups, setExpandedGroups] = useState<{
     [key: string]: boolean;
@@ -59,108 +58,16 @@ const HeatMapDisplay = () => {
     }));
   };
 
-  const luxonDate = DateTime; // Automatically uses user's local time zone
-
-  const now = new Date();
-  const today = new Date(now.toDateString());
-  const oneMonthAgo = getLastMonth(endDate);
-
-  function getLastMonth(date: Date): Date {
-    const lastMonthDate = new Date(date);
-    lastMonthDate.setDate(lastMonthDate.getDate() - 100);
-    return lastMonthDate;
-  }
+  
 
   useEffect(() => {
-    setEndDate(today);
-    setStartDate(oneMonthAgo);
-    setHeatMapHabits(habits);
-  }, [user.userId, heatMapHabits.length, habits]);
+    
+  }, [user.userId, habits.length, habits, tracking, isLoadingTracking]);
 
-  useEffect(() => {
-    const fetchGridData = async () => {
-      const data: { [key: string]: HabitTrackingEntry[] } = {};
 
-      if (heatMapHabits.length > 0) {
-        for (const habit of heatMapHabits) {
-          try {
-            const habitData = await getGridTrackingHistory(
-              user.userId,
-              habit.id,
-              startDate,
-              today
-            );
-            if (habitData && Array.isArray(habitData)) {
-              data[habit.id] = habitData;
-            }
-          } catch {
-            const habitData = null;
-          }
-        }
-
-        setGridData(data);
-      }
-    };
-
-    if (heatMapHabits.length > 0) {
-      fetchGridData();
-    } else {
-      fetchGridData();
-    }
-
-    const unsubscribe = listenToTrackingHistory((payload) => {
-      fetchGridData();
-      switch (payload.eventType) {
-        case "INSERT":
-        case "UPDATE":
-        case "DELETE":
-          break;
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [heatMapHabits.length, habits]);
-
-  function calculateMetrics(data: HabitTrackingEntry[]) {
-    let totalTracked = 0;
-    let longestStreak = 0;
-    let currentStreak = 0;
-
-    const startDate = dayjs().subtract(100, "day").startOf("day");
-    const validData = data.filter(
-      (entry) =>
-        (dayjs(entry.date).isAfter(startDate) ||
-          dayjs(entry.date).isSame(startDate)) &&
-        dayjs(entry.date).isBefore(dayjs().endOf("day"))
-    );
-
-    validData.forEach((entry) => {
-      if (entry.count > 0) {
-        totalTracked++;
-        currentStreak++;
-        longestStreak = Math.max(longestStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    });
-
-    const totalDays = validData.length;
-    const consistencyPercentage =
-      totalDays > 0 ? (totalTracked / totalDays) * 100 : 0;
-
-    setMetrics({
-      totalTracked,
-      consistencyPercentage: consistencyPercentage.toFixed(0),
-      longestStreak,
-    });
-
-    return metrics;
-  }
 
   // Group the habits by frequency_rate
-  const groupedHabits = heatMapHabits.reduce((acc, habit) => {
+  const groupedHabits = habits.reduce((acc, habit) => {
     const frequency = habit.frequency_rate;
     if (!acc[frequency]) {
       acc[frequency] = [];
@@ -183,13 +90,18 @@ const HeatMapDisplay = () => {
       </View>
     );
   }
+  else if (isLoadingTracking || isLoading){
+    return (
+      <ActivityIndicator size="large" color="#3e4e88" />
+    )
+  }
 
   return (
     <ScrollView>
       <FlashList
         data={orderedGroups}
         keyExtractor={(item) => item.key}
-        extraData={[gridData, expandedGroups]}
+        extraData={[tracking, expandedGroups]}
         renderItem={({ item }) => {
           const groupHabits = groupedHabits[item.key];
           if (!groupHabits || groupHabits.length === 0) return null;
@@ -224,7 +136,7 @@ const HeatMapDisplay = () => {
               {expandedGroups[item.key] && (
                 <View>
                   {groupHabits.map((habit) => {
-                    const habitData = gridData[habit.id];
+                    const habitData = tracking[habit.id];
                     return (
                       <View
                         key={habit.id}
