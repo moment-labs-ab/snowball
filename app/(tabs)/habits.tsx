@@ -26,7 +26,6 @@ const Habits = () => {
   const { user, isLoading } = useGlobalContext();
   const { habits } = useHabitContext();
   const [deviceShaken, setDeviceShaken] = useState(false);
-  //const { isShaken } = useShakeDetection();
   const [editRequested, setEditRequested] = useState(false);
   const [openWelcome, setOpenWelcome] = useState(false);
   const [userLogins, setUserLogins] = useState(0);

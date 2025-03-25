@@ -2,7 +2,7 @@ import { View, Text, ScrollView, ActivityIndicator, SafeAreaView } from 'react-n
 import React, {useState, useEffect} from 'react'
 import { useGlobalContext } from '@/context/Context'
 import { HabitTrackingEntry } from '@/types/types'
-import { getGridTrackingHistory, listenToTrackingHistory } from '@/lib/supabase_progress'
+import { getGridTrackingHistory } from '@/lib/supabase_progress'
 import CommitHistory from './CommitHistory'
 import CommitHistoryGrid from './CommitHistoryGrid'
 

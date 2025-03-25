@@ -5,7 +5,6 @@ import {
   useContext,
   ReactNode,
 } from "react";
-import { getCurrentUser } from "@/lib/supabase";
 import { Habit } from "@/types/types";
 import { useGlobalContext } from "./Context";
 import { getUserHabits } from "@/lib/supabase_habits";
