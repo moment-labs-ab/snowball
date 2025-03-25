@@ -1,12 +1,10 @@
 import { View, Text, Dimensions, ScrollView, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getUserGoals, listenToGoalsTable } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { useGoalContext } from "@/context/GoalContext";
 import { FlashList } from "@shopify/flash-list";
 import { Goal } from "@/types/types";
 import GoalObject from "./GoalObject";
-import { goalEmitter } from "@/events/eventEmitters";
 import { ActivityIndicator } from "react-native";
 import GoalsWelcome from "./GoalsWelcome";
 

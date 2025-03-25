@@ -8,11 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { Habit, HabitTrackingEntry } from "@/types/types";
-import {
-  getGridTrackingHistory,
-  listenToTrackingHistory,
-} from "@/lib/supabase_progress";
+import { Habit } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
 import { DateTime } from "luxon";
 import { FlashList } from "@shopify/flash-list";

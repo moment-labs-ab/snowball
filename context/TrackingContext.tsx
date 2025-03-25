@@ -5,8 +5,7 @@ import {
   useContext,
   ReactNode,
 } from "react";
-import { getCurrentUser } from "@/lib/supabase";
-import { Habit, HabitTrackingEntry } from "@/types/types";
+import { HabitTrackingEntry } from "@/types/types";
 import { useGlobalContext } from "./Context";
 import { useHabitContext } from "./HabitContext";
 import { getGridTrackingHistory } from "@/lib/supabase_progress";

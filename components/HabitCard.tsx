@@ -8,15 +8,9 @@ import {
 import React, { useRef, useState, useEffect } from "react";
 import {
   addTracking,
-  getTrackingCount,
-  removeTracking,
-  listenToHabitTrackingTable,
 } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
-import Entypo from "@expo/vector-icons/Entypo";
-import { TapGestureHandler, State } from "react-native-gesture-handler";
-import EditHabit from "@/modals/EditHabit";
-import { HabitTracking, HabitTrackingEntry } from "@/types/types";
+import { HabitTrackingEntry } from "@/types/types";
 import { useTrackingContext } from "@/context/TrackingContext";
 import EditHabitButton from "@/modals/EditHabitButton";
 import EditHabitModal from "@/modals/EditHabitModal";
@@ -49,10 +43,11 @@ const HabitCard = ({
   fetchHabits,
 }: habitCardProps) => {
   const { user, isLoading } = useGlobalContext();
-  const {tracking, setTracking, isLoadingTracking} = useTrackingContext();
+  const { tracking, setTracking, isLoadingTracking } = useTrackingContext();
   const [trackingCount, setTrackingCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [trackingColor, setTrackingColor] = useState<string>("#9ec8fb");
+  const [formattedDate, setFormattedDate] = useState<string>("");
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   // PanResponder to detect swipe gestures
@@ -67,111 +62,82 @@ const HabitCard = ({
     })
   ).current;
 
+  function getInitialCount(
+    habitEntries: HabitTrackingEntry[],
+    date: string
+  ): number {
+    // Find the entry matching the specific date
+    const matchingEntry = habitEntries.find((entry) => {
+      // Compare normalized dates
+      return entry.date === date;
+    });
+
+    // Return the count, or 0 if no entry found
+    return matchingEntry ? matchingEntry.count : 0;
+  }
+
   useEffect(() => {
-    //console.log("USEEFFECT: HabitCard");
+    setFormattedDate(date.toISOString().split("T")[0]);
     const fetchTrackingCount = async () => {
-      const count = await getTrackingCount(id, user.userId, date);
+      if (!tracking[id]) return; // Ensure tracking data exists
+      const count = getInitialCount(tracking[id], formattedDate);
       setTrackingCount(count);
-      //console.log("fetchTrackingCount", trackingCount);
       setLoading(false);
 
-      const initialProgress = count / frequency;
       Animated.timing(animatedValue, {
-        toValue: Math.min(initialProgress),
-        duration: 250,
+        toValue: count / frequency, // Ensure correct fraction calculation
+        duration: 225,
         useNativeDriver: false,
       }).start();
     };
+
     fetchTrackingCount();
-    const unsubscribe = listenToHabitTrackingTable((payload) => {
-      let newCount;
-      //console.log("Pre Payload, habit_id:", payload.new?.habit_id, id);
-
-      // Check if the update is for the current habit card
-      if (payload.new?.habit_id === id || payload.old?.habit_id === id) {
-        //console.log("Entering Payload, habit_id:", payload.new?.habit_id, id);
-        switch (payload.eventType) {
-          case "INSERT":
-            if (payload.new) {
-              //console.log("payload.new")
-              newCount = Number(payload.new.tracking_count);
-            }
-            break;
-          case "UPDATE":
-            if (payload.new) {
-              //console.log("payload.new")
-              newCount = Number(payload.new.tracking_count);
-            }
-            break;
-          case "DELETE":
-            if (payload.old) {
-              //console.log("payload.new")
-              newCount = Number(payload.old.tracking_count);
-            }
-            break;
-        }
-      }
-      if (newCount !== trackingCount && newCount !== undefined) {
-        setTrackingCount(newCount);
-        //console.log("Listener", trackingCount);
-
-        // Trigger the progress bar animation for the specific habit
-        Animated.timing(animatedValue, {
-          toValue: Math.min(newCount / frequency),
-          duration: 250,
-          useNativeDriver: false,
-        }).start();
-      }
-    });
-
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [
-    id,
-    user.userId,
-    date,
-    frequency_rate_int,
-    trackingCount,
-    name,
-    frequency_rate,
-  ]);
+  }, [id, date, frequency, tracking, formattedDate, trackingCount]);
 
   type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
 
   function incrementHabitCount(
     habitData: HabitTrackingData,
     id: string,
-    date: Date
+    date: string,
+    type: string,
+    newCount: number
   ): HabitTrackingData {
-    // Create a copy of the original data to avoid mutating it
-    const updatedHabitData = { ...habitData };    
-    
-    // Look for an entry with the matching date
-    const existingEntryIndex = updatedHabitData[id].findIndex(
-      entry => {
-        // If entry.date is in ISO format (YYYY-MM-DD), extract just the date part
-        const entryDateStr = entry.date.split('T')[0];
-        
-        // Convert date object to YYYY-MM-DD format
-        const dateStr = date.toISOString().split('T')[0];
+    const updatedHabitData = { ...habitData };
 
-        
-        return entryDateStr === dateStr;
-      }
-    );
-    
-    if (existingEntryIndex !== -1) {
-      console.log("Updating", id, date)
-      // If entry exists, increment its count
-      updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
-      updatedHabitData[id][existingEntryIndex] = {
-        ...updatedHabitData[id][existingEntryIndex],
-        count: updatedHabitData[id][existingEntryIndex].count + 1
-      };
+    // Ensure there is an array for this habit
+    if (!updatedHabitData[id]) {
+      updatedHabitData[id] = [];
     }
-    
+
+    // Find the entry with the matching date
+    const existingEntryIndex = updatedHabitData[id].findIndex((entry) => {
+      return entry.date === date;
+    });
+
+    if (existingEntryIndex !== -1) {
+      if (type == "increment") {
+        // If entry exists, increment its count
+        updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
+        updatedHabitData[id][existingEntryIndex] = {
+          ...updatedHabitData[id][existingEntryIndex],
+          count: updatedHabitData[id][existingEntryIndex].count + 1,
+        };
+      } else if (type == "update") {
+        updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
+        updatedHabitData[id][existingEntryIndex] = {
+          ...updatedHabitData[id][existingEntryIndex],
+          count: newCount,
+        };
+      }
+    } else {
+      // If no entry exists for today, add a new entry
+      updatedHabitData[id].push({
+        date: date, // Store as local date string
+        count: 1,
+      });
+    }
+
     return updatedHabitData;
   }
 
@@ -181,16 +147,40 @@ const HabitCard = ({
     habitTrackingAmount: number
   ) => {
     const trackingData = await addTracking(user.userId, id, date);
-    //const newTrackingCount = trackingData/frequency;
-    setTrackingCount(trackingData);
-    const updatedTracking = incrementHabitCount(tracking, id, date)
-    setTracking(updatedTracking)
+
+    Animated.timing(animatedValue, {
+      toValue: Math.min(trackingData / frequency),
+      duration: 225,
+      useNativeDriver: false,
+    }).start();
+
+    setTracking((prevTracking) => {
+      return incrementHabitCount(
+        prevTracking,
+        id,
+        formattedDate,
+        "increment",
+        1
+      );
+    });
   };
 
   const handleTrackingCountChange = (newTrackingCount: number) => {
-    if (newTrackingCount !== trackingCount) {
-      setTrackingCount(newTrackingCount);
-    }
+    setTrackingCount(newTrackingCount);
+    setTracking((prevTracking) => {
+      return incrementHabitCount(
+        prevTracking,
+        id,
+        formattedDate,
+        "update",
+        newTrackingCount
+      );
+    });
+    Animated.timing(animatedValue, {
+      toValue: Math.min(newTrackingCount / frequency),
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
   };
 
   const backgroundColor = animatedValue.interpolate({
@@ -247,52 +237,52 @@ const HabitCard = ({
       />
       <View
         style={{
-          flexDirection: "row", 
+          flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 5,
           flex: 1,
         }}
       >
-        <View style={{flexDirection:'row', alignItems:'center'}}><Text style={{ fontSize: 24 }}>{emoji}</Text>
-        <View style={{ flex: 1, paddingLeft: 5 }}>
-          <Text
-            style={{
-              color: "black",
-              fontWeight: "600",
-              fontSize: 18,
-              zIndex: 1,
-            }}
-          >
-            {name} 
-          </Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={{ fontSize: 24 }}>{emoji}</Text>
+          <View style={{ flex: 1, paddingLeft: 5 }}>
+            <Text
+              style={{
+                color: "black",
+                fontWeight: "600",
+                fontSize: 18,
+                zIndex: 1,
+              }}
+            >
+              {name}
+            </Text>
 
-          <Text
-            style={{
-              color: "#525756",
-              fontSize: 10,
-              fontWeight: "200",
-            }}
-          >
-            {trackingCount}/{frequency}
-          </Text>
+            <Text
+              style={{
+                color: "#525756",
+                fontSize: 10,
+                fontWeight: "200",
+              }}
+            >
+              {trackingCount}/{frequency}
+            </Text>
+          </View>
+
+          <EditHabitButton
+            content={
+              <EditHabitModal
+                visible={modalVisible}
+                onClose={handleCloseModal}
+                title={"Edit "}
+                habit_id={id}
+                selectedDate={date}
+                trackingCount={trackingCount}
+                onTrackingCountChange={handleTrackingCountChange}
+              />
+            }
+          />
         </View>
-        
-
-        <EditHabitButton
-          content={
-            <EditHabitModal
-              visible={modalVisible}
-              onClose={handleCloseModal}
-              title={"Edit "}
-              habit_id={id}
-              selectedDate={date}
-              trackingCount={trackingCount}
-              onTrackingCountChange={handleTrackingCountChange}
-            />
-          }
-        />
-      </View>
       </View>
     </TouchableOpacity>
   );

@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
-import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
+import { getUserHabits } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { useHabitContext } from "@/context/HabitContext";
 import HabitCard from "./HabitCard";

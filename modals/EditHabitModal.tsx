@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Switch,
   Platform,
   TouchableOpacity,
   Alert,
@@ -16,7 +15,6 @@ import NumberInput from "@/components/NumberInput";
 import TimeIntervalPicker from "@/components/TimeIntervalPicker";
 import {
   deleteHabit,
-  getHabit,
   updateHabitIfChanged,
   updateTracking,
   archiveHabit,
@@ -150,7 +148,8 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           selectedDate,
           tracking
         );
-        onTrackingCountChange(tracking);
+        console.log(result)
+        onTrackingCountChange(result);
       }
     } catch (error) {
       Alert.alert(String(error));
@@ -225,7 +224,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           onPress: async () => {
             const result = await archiveHabit(habit_id, user_id);
             if (result.success) {
-              //habitEmitter.emit("updatedHabit");
               closeHabits();
               showUpdateToast("archived")
             } else {

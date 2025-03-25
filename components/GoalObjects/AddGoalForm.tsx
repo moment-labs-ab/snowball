@@ -15,12 +15,10 @@ import EmojiSelector from "react-native-emoji-selector"; // You might need to in
 import { insertNewGoal, getGoalCount } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { useHabitContext } from "@/context/HabitContext";
-import { getUserHabits, listenToHabitsTable } from "@/lib/supabase_habits";
 import { Goal } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { goalEmitter } from "@/events/eventEmitters";
 import NewHabitButton from "@/modals/NewHabitButton";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
@@ -183,7 +181,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       if (closeModal) {
         closeModal();
       }
-      goalEmitter.emit("newGoal");
     }
   };
 
