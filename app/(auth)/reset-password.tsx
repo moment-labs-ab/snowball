@@ -13,7 +13,7 @@ import {
   import FormField from "../../components/FormField";
   import CustomButton from "@/components/CustomButtom";
   
-  import { resetPassword, getCurrentUser } from "@/lib/supabase";
+  import { resetPassword } from "@/lib/supabase_user";
   import { useGlobalContext } from "@/context/Context";
   
   const ResetPassword = () => {

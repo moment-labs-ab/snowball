@@ -7,7 +7,7 @@ import FormField from '../../components/FormField';
 import CustomButton from '@/components/CustomButtom';
 
 import { useGlobalContext } from '@/context/Context';
-import { signUpWithEmail } from '@/lib/supabase';
+import { signUpWithEmail } from '@/lib/supabase_user';
 
 const SignUp = () => {
 

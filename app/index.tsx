@@ -8,7 +8,7 @@ import CustomButton from '../components/CustomButtom'
 import images from '../constants/images'
 
 import { useGlobalContext } from '@/context/Context';
-import { trackLogin } from '@/lib/supabase';
+import { trackLogin } from '@/lib/supabase_user';
 
 import Toast from 'react-native-toast-message';
 

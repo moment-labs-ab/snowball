@@ -1,23 +1,8 @@
-import { AppState, Alert } from 'react-native'
+import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, PostgrestError, Session } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
-import { nanoid } from 'nanoid';
+import { PostgrestError } from '@supabase/supabase-js'
 import { Habit, HabitTracking } from '@/types/types'
-
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
+import client from './supabase'
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -26,9 +11,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
-    supabase.auth.startAutoRefresh()
+    client.auth.startAutoRefresh()
   } else {
-    supabase.auth.stopAutoRefresh()
+    client.auth.stopAutoRefresh()
   }
 })
 //**
@@ -85,7 +70,7 @@ AppState.addEventListener('change', (state) => {
     const frequency_rate_int = getFrequencyNumber(frequency_rate)
 
     const created_at = new Date().toISOString();
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('habits')
       .insert([
         {
@@ -113,7 +98,7 @@ AppState.addEventListener('change', (state) => {
 
 export const getHabitCount = async (userId: string): Promise<number | null> => {
   try {
-    const { data, error, count } = await supabase
+    const { data, error, count } = await client
       .from('habits')
       .select('id', { count: 'exact', head: true }) // Only fetch count without data
       .eq('user_id', userId);
@@ -135,7 +120,7 @@ export const updateHabitOrder = async (
   userId: string
 ): Promise<{ success: boolean; message: string; data?: any }> => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('habits')
       .update({ order: newOrder })
       .eq('id', habitId)
@@ -167,7 +152,7 @@ export const updateHabitIfChanged = async (
   }
 
   // Fetch the existing habit from the database
-  const { data: existingHabit, error: fetchError } = await supabase
+  const { data: existingHabit, error: fetchError } = await client
     .from('habits')
     .select('*')
     .eq('id', habit_id)
@@ -201,7 +186,7 @@ export const updateHabitIfChanged = async (
   }
 
   // Update the habit if any field has changed
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('habits')
     .update({
       name,
@@ -229,7 +214,7 @@ export const deleteHabit = async (
   user_id: string
 ): Promise<{ success: boolean; message: string; data?: any }> => {
   // Check if the habit exists and belongs to the user
-  const { data: existingHabit, error: fetchError } = await supabase
+  const { data: existingHabit, error: fetchError } = await client
     .from('habits')
     .select('id')
     .eq('id', habit_id)
@@ -246,7 +231,7 @@ export const deleteHabit = async (
   }
 
   // Delete the habit
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('habits')
     .delete()
     .eq('id', habit_id)
@@ -269,7 +254,7 @@ export const deleteHabit = async (
    * @returns array of Habit objects
    */
   export const getUserHabits = async (userId: string): Promise<Habit[]> => {
-    const { data, error } = await supabase.from('habits')
+    const { data, error } = await client.from('habits')
     .select('*')
     .eq('user_id', userId)
     .eq('archived', false)
@@ -282,7 +267,7 @@ export const deleteHabit = async (
   };
 
   export const getHabit = async (userId: string,habit_id: string): Promise<Habit | null> => {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('habits')
       .select('*')
       .eq('user_id', userId)
@@ -307,7 +292,7 @@ type ChangeHandler = (payload: { eventType: string; new: Habit; old: Habit}) => 
  */
 export const listenToHabitsTable = (handleChange: ChangeHandler) => {
     
-    const subscription = supabase
+    const subscription = client
       .channel('table_db_changes')
       .on(
         'postgres_changes',
@@ -340,7 +325,7 @@ type HabitTrackingChangeHandler = (payload: { eventType: string; new: HabitTrack
  */
 export const listenToHabitTrackingTable = (handleChange: HabitTrackingChangeHandler) => {
     
-    const subscription = supabase
+    const subscription = client
       .channel('table_db_changes')
       .on(
         'postgres_changes',
@@ -375,7 +360,7 @@ export const listenToHabitTrackingTable = (handleChange: HabitTrackingChangeHand
 export const getTrackingCount = async (habit_id: string, user_id: string, date: Date)=>{
   const selectedDate = new Date(date.toDateString())
   //const time_frame_end = getDateAfterTimeFrame(selectedDate, frequency_rate_int);
-  const { data: existingTracking, error } = await supabase
+  const { data: existingTracking, error } = await client
     .from('habit_tracking')
     .select('tracking_count')
     .eq('user_id', user_id)
@@ -399,7 +384,7 @@ export const getTrackingCount = async (habit_id: string, user_id: string, date: 
  * @returns frequency and time frame
  */
 export const getHabitFrequency = async (habit_id: string) =>{
-  const { data, error } = await supabase.from('habits')
+  const { data, error } = await client.from('habits')
     .select('frequency, frequency_rate_int')
     .eq('id', habit_id);
     if (error) {
@@ -438,7 +423,7 @@ export const addTracking = async (user_id: string, habit_id: string, date: Date,
   const time_frame_end = getDateAfterTimeFrame(selectedDate, frequency_rate_int);
 
   // Check if there is already a tracking record for the given user, habit, and time frame
-  const { data: existingTracking, error } = await supabase
+  const { data: existingTracking, error } = await client
     .from('habit_tracking')
     .select('id, tracking_count, tracking_goal')
     .eq('user_id', user_id)
@@ -457,7 +442,7 @@ export const addTracking = async (user_id: string, habit_id: string, date: Date,
     const newTrackingCount = existingTracking[0].tracking_count + 1;
     //console.log(newTrackingCount)
 
-    const { data, error: updateError } = await supabase
+    const { data, error: updateError } = await client
       .from('habit_tracking')
       .update({ tracking_count: newTrackingCount })
       .eq('id', trackingId)
@@ -472,7 +457,7 @@ export const addTracking = async (user_id: string, habit_id: string, date: Date,
     }
   } else if(newValue !== undefined){
     const newTrackingCount = 1
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await client
       .from('habit_tracking')
       .insert({
         user_id,
@@ -496,7 +481,7 @@ export const addTracking = async (user_id: string, habit_id: string, date: Date,
   }else {
     // If no record exists, insert a new one
     const newTrackingCount = 1
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await client
       .from('habit_tracking')
       .insert({
         user_id,
@@ -522,7 +507,7 @@ export const addTracking = async (user_id: string, habit_id: string, date: Date,
 
 export const addTrackingHistory = async (tracking_id: string, habit_id: string, tracked_habit_date: Date, user_id: string)=>{
     if(tracking_id){
-        const {error: insertError} = await supabase
+        const {error: insertError} = await client
             .from('habit_tracking_history')
             .insert({
                 tracking_id: tracking_id,
@@ -553,7 +538,7 @@ export const removeTracking = async (user_id: string, habit_id: string, date: Da
   //console.log(newTrackingCount)
   
 
-  const { data, error: updateError } = await supabase
+  const { data, error: updateError } = await client
   .from("habits_tracking")
   .update({ tracking_count: newTrackingCount })
   .eq('user_id', user_id)
@@ -573,7 +558,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
   const selectedDate = new Date(date.toDateString())
 
   // Check if the tracking record exists
-  const { data: existingTracking, error: selectError } = await supabase
+  const { data: existingTracking, error: selectError } = await client
     .from("habit_tracking")
     .select("id")
     .eq('user_id', user_id)
@@ -590,7 +575,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
     const trackingId = existingTracking[0].id;
     //console.log("TrackingHistoryId:", existingTracking)
     if(updatedValue === 0){
-    const { data, error: updateError } = await supabase
+    const { data, error: updateError } = await client
       .from("habit_tracking")
       .delete()
       .eq('user_id', user_id)
@@ -608,7 +593,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
     }
     else{
     // If the record exists, and new value is not equal to 0 update it
-    const { data, error: updateError } = await supabase
+    const { data, error: updateError } = await client
       .from("habit_tracking")
       .update({ tracking_count: updatedValue })
       .eq('user_id', user_id)
@@ -634,7 +619,7 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
 
 export const archiveHabit = async (habit_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
   
-  const {data, error} = await supabase
+  const {data, error} = await client
   .from('habits')
   .update({archived: true})
   .eq('user_id', userId)
@@ -651,7 +636,7 @@ export const archiveHabit = async (habit_id: string, userId:string): Promise<{ s
 }
 
 export const getUserArchivedHabits= async (userId: string): Promise<Habit[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await client
   .from('habits')
   .select('*')
   .eq('user_id', userId)

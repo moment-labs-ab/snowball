@@ -1,27 +1,10 @@
-import { AppState, Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
-import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, LifetimeHabitStats } from '@/types/types'
-
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey,{
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
+import { LifetimeHabitStats } from '@/types/types'
+import client from './supabase'
 
 export async function getUserLoginCount(user_id: string): Promise<number> {
     try {
-      const { data, error, count } = await supabase
+      const { data, error, count } = await client
         .from('user_logins')
         .select('id', { count: 'exact', head: true }) // Only fetch count without data
         .eq('user_id', user_id);
@@ -45,7 +28,7 @@ export async function getUserLoginCount(user_id: string): Promise<number> {
     user_id: string
 ): Promise<LifetimeHabitStats | null> => {
         // Get user join date
-        const { data: loginData, error: loginError } = await supabase
+        const { data: loginData, error: loginError } = await client
             .from('user_logins')
             .select('logged_in_at')
             .eq('user_id', user_id)
@@ -56,7 +39,7 @@ export async function getUserLoginCount(user_id: string): Promise<number> {
         if (loginError) throw loginError;
 
         // Get all habits and their creation dates
-        const { data: habitsData, error: habitsError } = await supabase
+        const { data: habitsData, error: habitsError } = await client
             .from('habits')
             .select('id, name, created_at')
             .eq('user_id', user_id);
@@ -64,7 +47,7 @@ export async function getUserLoginCount(user_id: string): Promise<number> {
         if (habitsError) throw habitsError;
 
         // Get all tracking history
-        const { data: trackingData, error: trackingError } = await supabase
+        const { data: trackingData, error: trackingError } = await client
             .from('habit_tracking_history')
             .select('habit_id, tracked_habit_date')
             .eq('user_id', user_id)
@@ -165,7 +148,7 @@ export async function getUserLoginCount(user_id: string): Promise<number> {
 };
 
 export const updateHabitOrder = async (habitId: string, newOrder: number) => {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('habits')
       .update({ order: newOrder })
       .eq('id', habitId);
@@ -181,7 +164,7 @@ export const sendFeedback = async(
     user_id: string,
     short_description: string,
     long_description: string)=>{
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('feedback')
       .insert([
         {
@@ -205,7 +188,7 @@ export const updateUserSetting = async (
   settingName: string,
   settingValue: string
 ): Promise<boolean | string> => {
-  const { data, error } = await supabase.auth.getUser();
+  const { data, error } = await client.auth.getUser();
 
   if (error) {
     console.error("Error fetching user when updating user:", error);
@@ -215,7 +198,7 @@ export const updateUserSetting = async (
   if (!data) return "User not found";
 
   if (settingName === "email") {
-    const result = await supabase.auth.updateUser({ email: settingValue });
+    const result = await client.auth.updateUser({ email: settingValue });
     if (result.error) {
       console.error("Error updating email:", result.error);
       return result.error.message;
@@ -224,7 +207,7 @@ export const updateUserSetting = async (
   }
 
   if (settingName === "name") {
-    const { error } = await supabase
+    const { error } = await client
       .from("profiles")
       .update({ username: settingValue })
       .eq("id", data.user.id);
@@ -237,7 +220,7 @@ export const updateUserSetting = async (
   }
 
   if (settingName === "password") {
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await client.auth.updateUser({
       password: settingValue,
     });
 

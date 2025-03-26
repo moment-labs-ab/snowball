@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from "react";
-import { getCurrentUser } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/supabase_user";
 import { User } from "@/types/types";
 
 interface GlobalContextInterface {

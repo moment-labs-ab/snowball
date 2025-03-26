@@ -1,26 +1,9 @@
-import { AppState, Alert } from 'react-native'
+import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient, Session } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
-import { nanoid } from 'nanoid';
-import { Habit, HabitTracking, ProgressData, HabitTrackingEntry } from '@/types/types'
+import { Habit, ProgressData, HabitTrackingEntry } from '@/types/types'
 import { getUserHabits, getHabit } from './supabase_habits'
-import { DateTime } from 'luxon';
-//type ProgressData = Record<string, number[]>;
+import client from './supabase'
 
-
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -29,11 +12,12 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // only be registered once.
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
-    supabase.auth.startAutoRefresh()
+    client.auth.startAutoRefresh()
   } else {
-    supabase.auth.stopAutoRefresh()
+    client.auth.stopAutoRefresh()
   }
-})
+});
+
 function getRelativeDates(baseDate: Date) {
   // Create a new Date object for each calculation to avoid mutating the original date
   const oneWeekAgo = new Date(baseDate);
@@ -51,7 +35,7 @@ function getRelativeDates(baseDate: Date) {
 }
 
 export const getHabitTrackingCount = async (habit_id: string, startDate: string, endDate: string) =>{
-  const { data, error, count } = await supabase
+  const { data, error, count } = await client
     .from('habit_tracking_history')
     .select('id', { count: 'exact' }) // 'exact' will return the total count of matching rows
     .eq('habit_id', habit_id)
@@ -325,7 +309,7 @@ export const listenToTrackingHistory = (handleChange: ChangeHandler) => {
   const now = new Date();
   
     
-  const subscription = supabase
+  const subscription = client
     .channel('table_db_changes')
     .on(
       'postgres_changes',
@@ -377,7 +361,7 @@ export const getGridTrackingHistory = async (
 ): Promise<HabitTrackingEntry[] | null>  => {
   
   
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('habit_tracking_history')
     .select('tracked_habit_date', { count: 'exact' })
     .eq('habit_id', habitId)
