@@ -33,6 +33,8 @@ function generateUniqueId(): string {
  * @returns The newly created session of the user.
  */
 export const signUpWithEmail = async function signUpWithEmail(email: string, password: string, username:string) {
+    
+    // Check for duplicate emails
     const {
       data: { session },
       error,
@@ -43,6 +45,8 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
     if (error) Alert.alert(error.message)
 
     console.log(session?.user)
+
+    // Check for duplicate usernames
     await client.from('profiles').upsert({id: session?.user.id, username: username})
 
     if(session?.user.id){
