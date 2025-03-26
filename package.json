@@ -30,7 +30,6 @@
     "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.13",
     "eslint-plugin-react-hooks": "^5.1.0",
-    "EventEmitter": "^1.0.0",
     "expo": "~52.0.36",
     "expo-constants": "~17.0.6",
     "expo-dev-client": "~5.0.12",

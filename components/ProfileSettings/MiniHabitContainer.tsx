@@ -9,19 +9,8 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
-import {
-  getUserHabits,
-  listenToHabitsTable,
-  updateHabitOrder,
-} from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
-import {
-  newHabitEmitter,
-  deleteHabitEmitter,
-  habitEmitter,
-} from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import SettingsGoals from "../Profile/SettingsGoals";
 import SettingsHabits from "../Profile/SettingsHabits";
 import { useHabitContext } from "@/context/HabitContext";
 

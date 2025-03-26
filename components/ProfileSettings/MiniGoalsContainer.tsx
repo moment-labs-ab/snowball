@@ -10,9 +10,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Goal } from "@/types/types";
-import { getUserGoals, listenToGoalsTable } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
-import { goalEmitter } from "@/events/eventEmitters";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SettingsGoals from "../Profile/SettingsGoals";
 import { ActivityIndicator } from "react-native";

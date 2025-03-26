@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/Context";
 import HabitProvider from "@/context/HabitContext";
 import GoalProvider from "@/context/GoalContext";
+import TrackingProvider from "@/context/TrackingContext";
 
 import { GestureDetector } from "react-native-gesture-handler";
 import Toast, {
@@ -55,12 +56,14 @@ export default function RootLayout() {
     <GlobalProvider>
       <GoalProvider>
       <HabitProvider>
+        <TrackingProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
         <Toast config={toastConfig} topOffset={50} />
+        </TrackingProvider>
       </HabitProvider>
       </GoalProvider>
     </GlobalProvider>

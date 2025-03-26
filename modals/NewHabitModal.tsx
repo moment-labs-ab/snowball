@@ -17,7 +17,6 @@ import NumberInput from "@/components/NumberInput";
 import TimeIntervalPicker from "@/components/TimeIntervalPicker";
 import { insertHabit, getHabitCount } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
-import { newHabitEmitter } from "@/events/eventEmitters";
 import HabitSelector from "./HabitSelector";
 import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
@@ -30,7 +29,6 @@ interface NewHabitProps {
   title: string;
   closeModal?: () => void;
 }
-//export const newHabitEmitter = new EventEmitter();
 
 const NewHabitModal: React.FC<NewHabitProps> = ({
   visible,
@@ -127,7 +125,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         reminder: false,
         emoji: '❄️'
       });
-      //newHabitEmitter.emit("newHabit");
       if (closeModal) {
         closeModal();
         
