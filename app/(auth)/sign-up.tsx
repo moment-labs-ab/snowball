@@ -16,35 +16,32 @@ const SignUp = () => {
   /** Use State Field -- used in the FormField component */
   const [form, setForm] = useState({
     username: '',
+    name: '',
     email: '',
-    password: ''
+    password: '',
   })
   const [isSubmitting, setisSubmitting] = useState(false)
 
   const submit = async () =>{
-    if(form.username === "" || form.email === "" || form.password === ""){
+    if(form.name === "" || form.email === "" || form.password === ""){
       Alert.alert('Error', 'Please fill in all the fields')
     }
     setisSubmitting(true)
 
     try{
-      const result = await signUpWithEmail(form.email, form.password, form.username)
-      setUser({
-        email: result?.email || '',
-        username: form.username,
-        userId: result?.id || '',
-        premiumUser: false
-      })
-      setIsLoggedIn(true);
+      const result = await signUpWithEmail(form.email, form.password, form.name, "") //TODO: Add user name functionality
+      
       if(result){
+        setUser(result);
+        setIsLoggedIn(true);
+        
         router.replace('/habits')
-
       }
-      }catch (error){
+
+      } catch (error){
         Alert.alert(String(error))
         setisSubmitting(false)
     }
-    
   }
 
   return (
@@ -58,8 +55,8 @@ const SignUp = () => {
         
         <FormField 
           title = "Name"
-          value = {form.username}
-          handleChangeText ={(e) => setForm({ ...form, username:e})}
+          value = {form.name}
+          handleChangeText ={(e) => setForm({ ...form, name:e})}
           otherStyles="mt-10 px-3"
           placeholder="What's your name?"
         />

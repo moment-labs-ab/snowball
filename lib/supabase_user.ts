@@ -32,28 +32,30 @@ function generateUniqueId(): string {
  * @param username User's selected username
  * @returns The newly created session of the user.
  */
-export const signUpWithEmail = async function signUpWithEmail(email: string, password: string, username:string) {
+export const signUpWithEmail = async function signUpWithEmail(email: string, password: string, name: string, username:string): Promise<User | null> {
     
-    // Check for duplicate emails
-    const {
-      data: { session },
-      error,
-    } = await client.auth.signUp({
+    // TODO: Check for duplicate emails
+    const { data: { session }, error } = await client.auth.signUp({
       email: email,
       password: password,
-    })
-    if (error) Alert.alert(error.message)
+    });
 
-    console.log(session?.user)
-
-    // Check for duplicate usernames
-    await client.from('profiles').upsert({id: session?.user.id, username: username})
-
-    if(session?.user.id){
-      trackLogin(session.user.id)
+    if (error || !session?.user) {
+        Alert.alert("Unable to Signup:", error?.message);
+        return null;
     }
 
-    return session?.user
+    // TODO: Check for duplicate usernames
+    await client.from('profiles').upsert({id: session?.user.id, full_name: name, username: username}) 
+    trackLogin(session.user.id)
+
+    return {
+        userId: session?.user.id,
+        name: name,
+        username: username,
+        email: email,
+        premiumUser: false
+    } as User;
   }
 
 /**

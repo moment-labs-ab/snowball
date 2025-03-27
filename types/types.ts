@@ -2,6 +2,7 @@ import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 export type User = {
     username?: string;
+    name?: string;
     email: string;
     userId: string;
     premiumUser: boolean;
