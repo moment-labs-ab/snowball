@@ -71,7 +71,7 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Delete canceled'),
+          onPress: () => {},
           style: 'cancel',
         },
         {

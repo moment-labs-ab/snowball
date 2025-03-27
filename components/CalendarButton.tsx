@@ -38,7 +38,6 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

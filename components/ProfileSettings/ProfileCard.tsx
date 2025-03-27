@@ -23,7 +23,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   description,
   onProfilePicturePress,
 }) => {
-  console.log("icons:", icons.settings);
   useEffect(()=>{
 
   }, [name])
@@ -43,7 +42,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   <SettingsButton
       label="Settings"
       action={() => {
-        console.log("Settings button Pressed");
       }}
       content={<Settings />}
     />

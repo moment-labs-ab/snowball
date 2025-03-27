@@ -107,7 +107,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       );
       
       if (result.success == false) {
-        console.log(result.message);
         Alert.alert("Error", result.message);
       } else if (result.data) {
         const habit = result.data as Habit;
@@ -149,7 +148,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

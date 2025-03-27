@@ -50,9 +50,6 @@ const Setting: React.FC<SettingProps> = ({
     setIsVisible(!isVisible);
   };
 
-  console.log(
-    `accountSetting: ${accountSetting} | id: ${id} | value: ${selectValue} `
-  );
 
   let iconColor;
 

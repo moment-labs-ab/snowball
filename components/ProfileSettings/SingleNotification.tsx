@@ -42,7 +42,6 @@ const SingleNotificationPage = () => {
     userId: string,
     notifications: NotificationItem[]
   ) => {
-    //console.log(notifications)
     await saveNotifications(user.userId, expoPushToken);
   };
 
@@ -50,7 +49,6 @@ const SingleNotificationPage = () => {
     handleSave(user.userId, notifications);
     showToast();
 
-    //console.log(notifications[0].time);
   };
 
   const showToast = () => {
@@ -63,7 +61,6 @@ const SingleNotificationPage = () => {
       autoHide: true,
       props: {
         onPress: () => {
-          //console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
