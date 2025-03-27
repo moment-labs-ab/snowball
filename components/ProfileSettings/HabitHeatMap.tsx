@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Dimensions, StyleSheet } from "react-native";
+import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
 import Svg, { Rect, Text, G, Line } from "react-native-svg";
 import * as d3 from "d3";
 import { HabitTrackingEntry } from "@/types/types";
@@ -25,11 +25,11 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const cellSize: number = Math.floor((width - 60) / 13);
+  const cellSize: number = Math.floor((width - 60) / 14);
   const cellPadding: number = 1;
   const [monthLabels, setMonthLabels] = React.useState<MonthLabel[]>([]);
   const [dates, setDates] = React.useState<Date[]>([]);
-  const {tracking} = useTrackingContext();
+  const {tracking, isLoadingTracking} = useTrackingContext();
   
   const entriesKey = data.map(entry => `${entry.date}:${entry.count}`).join('|');
 
@@ -86,6 +86,9 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
       .interpolator(d3.interpolateBlues);
     return colorScale(count);
   };
+  if(data.length == 0){
+    return <ActivityIndicator></ActivityIndicator>
+  }
 
   return (
     <View>

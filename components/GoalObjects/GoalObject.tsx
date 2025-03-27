@@ -15,6 +15,7 @@ import { Milestones } from "@/types/types";
 import {
   updateUserMilestones,
 } from "@/lib/supabase_goals";
+import LoadingSkeleton from "../LoadingSkeloton";
 
 interface SelectedHabits {
   id: string;
@@ -110,7 +111,20 @@ const GoalObject = ({
       setIsVisible(true);
     }
   };
-
+  if(isLoading){
+    return <LoadingSkeleton style={{
+      // Remove the border and add shadow properties
+    borderRadius: 8,
+    width: "100%",
+    aspectRatio: 1,
+    shadowColor: "#000", // Shadow color
+    shadowOffset: { width: 0, height: 4 }, // Shadow position
+    shadowOpacity: 0.3, // Shadow transparency
+    shadowRadius: 6, // Shadow spread
+    elevation: 5,
+    backgroundColor:color
+    }}/>
+  }
   return (
     <View style={styles.wrapper}>
       <TouchableOpacity onPress={toggleContent}>

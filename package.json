@@ -65,6 +65,7 @@
     "react-native-heatmap": "^0.1.2",
     "react-native-js-shimmer-placeholder": "^1.0.7",
     "react-native-keychain": "^8.2.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-paper": "^5.12.5",
@@ -82,7 +83,8 @@
     "react-native-web": "~0.19.13",
     "react-native-wheel-color-picker": "^1.3.1",
     "tailwind-rn": "^4.2.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "expo-linear-gradient": "~14.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
