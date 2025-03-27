@@ -99,7 +99,6 @@ const FeedbackFormComponent = () => {
     }
   };
 
-  console.log("Feedback");
   return (
     <ScrollView>
       <View style={styles.formContainer}>

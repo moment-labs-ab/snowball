@@ -82,7 +82,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

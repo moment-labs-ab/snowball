@@ -59,7 +59,6 @@ const SettingsHabits = ({toggleContent}: SettingsHabitsProps) => {
       [
         {
           text: "Cancel",
-          //onPress: () => console.log('Delete canceled'),
           style: "cancel",
         },
         {
@@ -91,7 +90,6 @@ const SettingsHabits = ({toggleContent}: SettingsHabitsProps) => {
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

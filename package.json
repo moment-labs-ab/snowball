@@ -29,12 +29,14 @@
     "d3": "^7.9.0",
     "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.13",
+    "emoji-mart-native": "^0.6.5-beta",
     "eslint-plugin-react-hooks": "^5.1.0",
     "expo": "~52.0.36",
     "expo-constants": "~17.0.6",
     "expo-dev-client": "~5.0.12",
     "expo-device": "~7.0.2",
     "expo-font": "~13.0.1",
+    "expo-linear-gradient": "~14.0.2",
     "expo-linking": "~7.0.5",
     "expo-notifications": "~0.29.13",
     "expo-router": "~4.0.5",
@@ -83,8 +85,7 @@
     "react-native-web": "~0.19.13",
     "react-native-wheel-color-picker": "^1.3.1",
     "tailwind-rn": "^4.2.0",
-    "uuid": "^10.0.0",
-    "expo-linear-gradient": "~14.0.2"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

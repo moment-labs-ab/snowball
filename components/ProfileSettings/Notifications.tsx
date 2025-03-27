@@ -65,7 +65,6 @@ const NotificationSettings = () => {
     userId: string,
     notifications: NotificationItem[]
   ) => {
-    //console.log(notifications)
     await saveNotifications(user.userId, notifications);
   };
 
@@ -210,7 +209,7 @@ const NotificationSettings = () => {
         title="Press to Send Notification"
         onPress={async () => {
           await getExpoPushToken(user.userId).then((token)=>{
-            console.log(token)
+            //console.log(token)
           });
         }}
       />

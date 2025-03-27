@@ -144,7 +144,6 @@ const InnerGoalView = ({
       [
         {
           text: "Cancel",
-          //onPress: () => console.log("Accomplish canceled"),
           style: "cancel",
         },
         {
@@ -179,7 +178,6 @@ const InnerGoalView = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
