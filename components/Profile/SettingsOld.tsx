@@ -119,6 +119,7 @@ const Settings = () => {
               setUser({
                 email: '',
                 username: '',
+                name: '',
                 userId: '',
                 premiumUser:false
               });

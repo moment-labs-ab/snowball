@@ -201,6 +201,7 @@ const SettingsHome = () => {
               setUser({
                 email: "",
                 username: "",
+                name: "",
                 userId: "",
                 premiumUser: false,
               });
@@ -245,6 +246,7 @@ const SettingsHome = () => {
                 setUser({
                   email: "",
                   username: "",
+                  name: "",
                   userId: "",
                   premiumUser: false,
                 });
@@ -291,11 +293,11 @@ const SettingsHome = () => {
 
   useEffect(() => {
     setSelect({
-      name: user.username || "",
+      name: user.name || "",
       email: user.email || "",
       password: "",
     });
-  }, [user.username, user.email]);
+  }, [user.name, user.email]);
 
   const [toggle, setToggle] = useState<ProfileToggleState>({
     logout: false,

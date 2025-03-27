@@ -30,8 +30,8 @@ const SignUp = () => {
 
     try{
       const result = await signUpWithEmail(form.email, form.password, form.name, "") //TODO: Add user name functionality
-      
-      if(result){
+
+      if(result?.email && result?.userId){
         setUser(result);
         setIsLoggedIn(true);
         

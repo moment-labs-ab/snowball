@@ -105,88 +105,11 @@ export const signInWithEmail = async function signInWithEmail(email:string, pass
     return user
   }
 
-//** Getter method that checks to see if a profile for the current session exists.
- /* 
- * @param session 
- */
-export const getProfile = async function getProfile(session: Session) {
-    const [loading, setLoading] = useState(true)
-    const [username, setUsername] = useState('')
-    const [website, setWebsite] = useState('')
-    const [avatarUrl, setAvatarUrl] = useState('')
-
-    try {
-      setLoading(true)
-      if (!session?.user) throw new Error('No user on the session!')
-
-      let { data, error, status } = await client
-        .from('profiles')
-        .select(`username, website, avatar_url`)
-        .eq('id', session?.user.id)
-        .single()
-      if (error && status !== 406) {
-        throw error
-      }
-
-      if (data) {
-        setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      }
-    } finally {
-      setLoading(false)
-    }
-}
-
-//** Updates a profiles user data.
- /* 
- * @param username 
- * @param session supabase session object
- * @param website 
- * @param avatar_url 
- */
-export const updateProfile = async function updateProfile(
-    username: string,
-    session?: Session,
-    website?: string,
-    avatar_url?: string
-  ) {
-    const [loading, setLoading] = useState(true)
-    try {
-      setLoading(true)
-      if (!session?.user) throw new Error('No user on the session!')
-
-      const updates = {
-        id: session?.user.id,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date(),
-      }
-
-      let { error } = await client.from('profiles').upsert(updates)
-
-      if (error) {
-        throw error
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  //**
-   /* Getter method to get user's username base on their userId.
-   * @param userId 
-   * @returns 
-   */
+//**
+/* Getter method to get user's username base on their userId.
+* @param userId 
+* @returns 
+*/
 export const getUsername = async (userId: string) =>{
     try {
       const { data, error } = await client
@@ -202,24 +125,40 @@ export const getUsername = async (userId: string) =>{
       return(undefined)
       
     }
-  }
+}
 
-  export const getPremiumStatus = async (userId: string) =>{
+export const getPremiumStatus = async (userId: string) =>{
     try {
-      const { data, error } = await client
-      .from('profiles')
-      .select(`premium_user`)
-      .eq('id', userId)
-      if(data){
+        const { data, error } = await client
+        .from('profiles')
+        .select(`premium_user`)
+        .eq('id', userId)
+        if(data){
         return(data[0].premium_user)
-      }
-      
+        }
+        
     } catch (error) {
-      console.log("There was an error trying to query users' premium user status")
-      return(undefined)
-      
+        console.log("There was an error trying to query users' premium user status")
+        return(undefined)
+        
     }
-  }
+}
+
+export const getName = async (userId: string) =>{
+    try {
+        const { data, error } = await client
+        .from('profiles')
+        .select(`full_name`)
+        .eq('id', userId)
+        if(data){
+        return(data[0].full_name)
+        }
+        
+    } catch (error) {
+        console.log("There was an error trying to query user's name")
+        return(undefined)
+    }
+}
 
 //**
  /* Gets the current user on the app.
@@ -233,21 +172,26 @@ export const getUsername = async (userId: string) =>{
             let defaultUser = {
                 userId: "",
                 username: "",
+                name: "",
                 email: "",
                 premiumUser: false
             } as User;
             
             return defaultUser;
         } else {
+
+            // TODO: This needs to be refactored into one call.
             const userId = data.user?.id || "";
             const username = await getUsername(userId);
             const premiumUser = await getPremiumStatus(userId);
+            const name = await getName(userId);
 
             let currentUser = {
                 userId: userId,
                 username: username,
                 email: data.user?.email || "",
-                premiumUser: premiumUser
+                premiumUser: premiumUser,
+                name: name
             } as User;
 
             return currentUser;
@@ -257,6 +201,7 @@ export const getUsername = async (userId: string) =>{
         let defaultUser = {
             userId: "",
             username: "",
+            name: "",
             email: "",
             premiumUser: false
         } as User;

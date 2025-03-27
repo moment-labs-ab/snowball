@@ -79,7 +79,7 @@ const Habits = () => {
 
   useEffect(() => {
     fetchUserLogins();
-  }, [user.username]); // Only fetch once when the component mounts
+  }, [user.name]); // Only fetch once when the component mounts
 
   if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -95,7 +95,7 @@ const Habits = () => {
             Good {time_of_day},
           </Text>
           <Text className="text-xl font-bold text-secondary pl-3">
-            {user.username}
+            {user.name}
           </Text>
         </View>
 

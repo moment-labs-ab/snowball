@@ -46,7 +46,7 @@ const Profile = () => {
     useEffect(() => {
         setIsLoading(true);
         getUserData().finally(() => setIsLoading(false));
-    }, [user.username]);
+    }, [user.name]);
 
     if (isLoading) {
         return (
@@ -69,7 +69,7 @@ const Profile = () => {
             <View style={styles.profileInfo}>
               <ProfileCard
                 profileImage={icons.profileImage}
-                name={user.username}
+                name={user.name}
                 description={"Some description placeholder"}
                 onProfilePicturePress={() =>
                   console.log("Profile Picture Pressed")

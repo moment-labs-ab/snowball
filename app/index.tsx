@@ -22,7 +22,7 @@ export default function App() {
     trackLogin(user.userId)
   }
 
-  if(user.username != ''){
+  if(user.name != ''){
     return <Redirect href = "/habits" />
   }
   else{

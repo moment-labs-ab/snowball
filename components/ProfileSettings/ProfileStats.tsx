@@ -112,6 +112,7 @@ const ProfileStats = () => {
               setUser({
                 email: '',
                 username: '',
+                name: '',
                 userId: '',
                 premiumUser: false
               });

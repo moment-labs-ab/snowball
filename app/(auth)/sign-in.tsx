@@ -39,7 +39,7 @@ const SignIn = () => {
       setUser(result);
       setIsLoggedIn(true);
 
-      if (result?.username != undefined) {
+      if (result?.email && result?.userId) {
         router.replace("/habits");
       }
     } catch (error) {

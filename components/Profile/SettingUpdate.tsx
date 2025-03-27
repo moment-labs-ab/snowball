@@ -43,7 +43,7 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
       if (settingId == 'name'){
         setUser((prevUser)=> ({
           ...prevUser,
-          username: value
+          name: value
         }))
       }
       else if(settingId == 'email'){
