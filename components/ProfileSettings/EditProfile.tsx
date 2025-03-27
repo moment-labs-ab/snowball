@@ -57,6 +57,7 @@ const EditProfile = () => {
                 setUser({
                   email: '',
                   username: '',
+                  name: '',
                   userId: '',
                   premiumUser:false
                 })
@@ -110,7 +111,7 @@ const EditProfile = () => {
               <Text style={styles.value}>{user.email}</Text>
               
               <Text style={styles.label}>Name:</Text>
-              <Text style={styles.value}>{user.username}</Text>
+              <Text style={styles.value}>{user.name}</Text>
 
               <TouchableOpacity onPress={changePasswordRequested} style={styles.passwordButton}>
                 <Text style={styles.password}>Change Password</Text>

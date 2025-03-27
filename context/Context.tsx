@@ -11,7 +11,7 @@ interface GlobalContextInterface {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const defaultUser: User = { username: "", email: "", userId: "", premiumUser:false };
+const defaultUser: User = { username: "", name: "", email: "", userId: "", premiumUser:false };
 
 const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 
@@ -40,6 +40,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
           setUser({
             email: result.email || "",
             username: result.username || "",
+            name: result.name || "",
             userId: result.userId || "",
             premiumUser: result.premiumUser || false
           });
