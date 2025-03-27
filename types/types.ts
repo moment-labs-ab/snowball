@@ -1,5 +1,3 @@
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
-
 export type User = {
     username?: string;
     name?: string;

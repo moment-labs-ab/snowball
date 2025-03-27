@@ -46,7 +46,14 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
     }
 
     // TODO: Check for duplicate usernames
-    await client.from('profiles').upsert({id: session?.user.id, full_name: name, username: username}) 
+    const {data, error: upsertError } = await client.from('profiles')
+        .upsert({id: session?.user.id, full_name: name}).select();
+    
+    if (upsertError) {
+        Alert.alert("Error creating user profile");
+        return null;
+    }
+
     trackLogin(session.user.id)
 
     return {

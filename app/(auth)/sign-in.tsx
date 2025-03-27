@@ -1,13 +1,5 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  Image,
-  Alert,
-  StyleSheet,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
+import React, { useState } from "react";
 import images from "../../constants/images";
 import { Link, router } from "expo-router";
 import FormField from "../../components/FormField";
@@ -42,28 +34,14 @@ const SignIn = () => {
       if (result?.email && result?.userId) {
         router.replace("/habits");
       }
+      else {
+        setisSubmitting(false);
+      }
     } catch (error) {
       //Alert.alert(String(error))
     } finally {
       setisSubmitting(false);
     }
-
-    //setisSubmitting(true)
-    /**
-    try {
-      await signIn(form.email, form.password)
-      const result = await getCurrentUser();
-      setUser(result);
-      setisLoggedIn(true);
-    
-      router.replace('/home')
-    } catch (error) {
-      Alert.alert('Error', error.message)
-      setisSubmitting(false)
-    } finally{
-      setisSubmitting(false);
-    }
-    */
   };
   return (
     <ScrollView style={{ backgroundColor: "#edf5fe", height: "100%" }}>
@@ -101,7 +79,6 @@ const SignIn = () => {
           otherMethods={() => {}}
         />
 
-        
         <View className="justify-center pt-8 flex-row gap-2">
           <Text className="text-lg text-black-100 font-pregular">
             Don't have an account?

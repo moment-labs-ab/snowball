@@ -37,6 +37,9 @@ const SignUp = () => {
         
         router.replace('/habits')
       }
+      else {
+        setisSubmitting(false);
+      }
 
       } catch (error){
         Alert.alert(String(error))

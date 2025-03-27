@@ -209,7 +209,7 @@ export const updateUserSetting = async (
   if (settingName === "name") {
     const { error } = await client
       .from("profiles")
-      .update({ username: settingValue })
+      .update({ full_name: settingValue })
       .eq("id", data.user.id);
 
     if (error) {
