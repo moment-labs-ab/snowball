@@ -128,7 +128,6 @@ export const getUsername = async (userId: string) =>{
       }
       
     } catch (error) {
-      console.log("There was an error trying to query users' username")
       return(undefined)
       
     }
@@ -248,7 +247,7 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
         console.error('Error signing user out:', error);
         return { success: false, message: 'Error signing user out'};
       } else {
-        console.log('User signed out successfully:');
+        //console.log('User signed out successfully:');
         return { success: true, message: 'User signed out successfully'};
       }
     

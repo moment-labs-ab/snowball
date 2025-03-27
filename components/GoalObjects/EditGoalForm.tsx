@@ -171,7 +171,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       tags
     );
     if (result.success == false) {
-      console.log(result.message);
       Alert.alert("Error", result.message);
     } else if (result.data) {
       const goal = result.data as Goal;
@@ -259,7 +258,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
   const handleColorChange = (color: string) => {
     setColor(color);
-    //console.log(color)
   };
 
   //NEW HABIT MODAL LOGIC
@@ -336,7 +334,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
@@ -352,7 +349,6 @@ const showUpdateToast = () => {
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
@@ -448,7 +444,7 @@ const showUpdateToast = () => {
                   );
                 }}
               >
-                <Text>{habit.name}</Text>
+                <Text>{habit.emoji} {habit.name}</Text>
                 {selectedHabits.some((h) => h.id === habit.id) && (
                   <Text style={styles.checkmark}>✓</Text>
                 )}

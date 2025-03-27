@@ -80,32 +80,32 @@ const ProfileSettings = ({ visible, onClose, title }: ProfileSettingsProp) => {
           />
             <ProfileButton 
               label='Profile' 
-              action={() => { console.log("Profile Pressed") }}
+              action={() => { }}
               content={<EditProfile/>} 
             />
             <ProfileButton 
               label='Habits' 
-              action={() => { console.log("Habits Pressed") }} 
+              action={() => {}} 
             />
             <ProfileButton 
               label='Terms & Conditions' 
-              action={() => { console.log("Terms Pressed") }} 
+              action={() => {  }} 
             />
             <ProfileButton 
               label='Privacy Policy' 
-              action={() => { console.log("Privacy Policy Pressed") }} 
+              action={() => { }} 
             />
             <ProfileButton 
               label='Feedback' 
-              action={() => { console.log("Feedback Pressed") }} 
+              action={() => {  }} 
             />
             <ProfileButton 
               label='Donate' 
-              action={() => { console.log("Donate Pressed") }} 
+              action={() => {}} 
             />
             <ProfileButton 
               label='Profile Stats' 
-              action={() => { console.log("Donate Pressed") }}
+              action={() => { }}
               content={<ProfileStats/>}
             />
           </View>

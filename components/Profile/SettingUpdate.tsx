@@ -72,7 +72,6 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
@@ -88,7 +87,6 @@ const SettingUpdate: React.FC<SettingUpdateProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
+  ActivityIndicator,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import {
@@ -14,6 +15,7 @@ import { HabitTrackingEntry } from "@/types/types";
 import { useTrackingContext } from "@/context/TrackingContext";
 import EditHabitButton from "@/modals/EditHabitButton";
 import EditHabitModal from "@/modals/EditHabitModal";
+import LoadingSkeleton from "./LoadingSkeloton";
 
 type habitCardProps = {
   id: string;
@@ -68,7 +70,6 @@ const HabitCard = ({
   ): number {
     // Find the entry matching the specific date
     const matchingEntry = habitEntries.find((entry) => {
-      // Compare normalized dates
       return entry.date === date;
     });
 
@@ -77,7 +78,8 @@ const HabitCard = ({
   }
 
   useEffect(() => {
-    setFormattedDate(date.toISOString().split("T")[0]);
+    
+    setFormattedDate(new Date(date.toDateString()).toISOString().split("T")[0]);
     const fetchTrackingCount = async () => {
       if (!tracking[id]) return; // Ensure tracking data exists
       const count = getInitialCount(tracking[id], formattedDate);
@@ -204,6 +206,18 @@ const HabitCard = ({
     setModalVisible(false);
     fetchHabits();
   };
+  if(isLoadingTracking){
+    return <LoadingSkeleton style={{
+    borderRadius: 15,
+    minHeight: 62,
+    justifyContent: "center",
+    borderWidth: 0.9,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    overflow: "hidden",
+    position: "relative",
+    flex: 1,}}/>
+  }
 
   return (
     <TouchableOpacity

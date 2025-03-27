@@ -148,7 +148,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           selectedDate,
           tracking
         );
-        console.log(result)
+        //console.log(result)
         onTrackingCountChange(result);
       }
     } catch (error) {
@@ -248,7 +248,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
@@ -264,7 +263,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
+          //console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

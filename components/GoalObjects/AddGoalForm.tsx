@@ -11,7 +11,7 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
-import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
+import EmojiSelector from "react-native-emoji-selector";
 import { insertNewGoal, getGoalCount } from "@/lib/supabase_goals";
 import { useGlobalContext } from "@/context/Context";
 import { useHabitContext } from "@/context/HabitContext";
@@ -162,7 +162,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
         tags
       );
       if (result.success == false) {
-        console.log(result.message);
         Alert.alert("Error", result.message);
       } else if (result.data) {
         const habit = result.data as Goal;
@@ -194,7 +193,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });
@@ -271,7 +269,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
   const handleColorChange = (color: string) => {
     setColor(color);
-    //console.log(color)
   };
 
   //NEW HABIT MODAL LOGIC
@@ -350,7 +347,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                     style={styles.closeButton}
                     onPress={() => setIsEmojiSelectorVisible(false)}
                   >
-                    <Text style={{ color: "white" }}>Close</Text>
+                              <AntDesign name="close" size={24} color="black" />
                   </TouchableOpacity>
                   <EmojiSelector
                     onEmojiSelected={handleEmojiSelect}
@@ -379,7 +376,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
                   );
                 }}
               >
-                <Text>{habit.name}</Text>
+                <Text>{habit.emoji} {habit.name}</Text>
                 {selectedHabits.some((h) => h.id === habit.id) && (
                   <Text style={styles.checkmark}>✓</Text>
                 )}
@@ -585,9 +582,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     alignSelf: "center",
-    padding: 10,
-    backgroundColor: "black",
-    borderRadius: 5,
+    paddingBottom:10
   },
   milestoneSection: {
     marginVertical: 8,

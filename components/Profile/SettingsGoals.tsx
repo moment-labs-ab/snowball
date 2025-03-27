@@ -100,7 +100,7 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Delete canceled"),
+          onPress: () => {},
           style: "cancel",
         },
         {
@@ -132,7 +132,6 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
       autoHide: true,
       props: {
         onPress: () => {
-          console.log("Premium Requested!");
         }, // Navigate to your premium page
       },
     });

@@ -74,7 +74,7 @@ const ProfileStats = () => {
     if(data) {
       setLifetimeStats(data);
     } else {
-      console.log("Error fetching lifetime stats");
+      //console.log("Error fetching lifetime stats");
     }
   };
 
@@ -99,7 +99,7 @@ const ProfileStats = () => {
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Sign Out canceled'),
+          onPress: () => {},
           style: 'cancel',
         },
         {
@@ -107,7 +107,6 @@ const ProfileStats = () => {
           onPress: async () => {
             const result = await signOut();
             if (result.success) {
-              console.log('User Signed out successfully');
               setIsLoggedIn(false);
               setUser({
                 email: '',

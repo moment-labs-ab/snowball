@@ -90,7 +90,6 @@ const EditProfile = () => {
     )
   }
   const changePasswordRequested = ()=>{
-    console.log("Change Password Requested")
 
   }
 

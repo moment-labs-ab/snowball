@@ -188,7 +188,7 @@ const SettingsHome = () => {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("log Out canceled"),
+          onPress: () => {},
           style: "cancel",
         },
         {
@@ -196,7 +196,6 @@ const SettingsHome = () => {
           onPress: async () => {
             const result = await signOut();
             if (result.success) {
-              console.log("User Signed out successfully");
               setIsLoggedIn(false);
               setUser({
                 email: "",
