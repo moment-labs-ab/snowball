@@ -378,6 +378,28 @@ export const getTrackingCount = async (habit_id: string, user_id: string, date: 
     return totalTrackingCount;
   };
 
+  export const getTrackingCountDates = async (habit_id: string, user_id: string, date: Date) => {
+    const selectedDate = new Date(date.toDateString());
+  
+    const { data: existingTrackingDates, error } = await client
+      .from('habit_tracking')
+      .select('time_frame_start, time_frame_end')
+      .eq('user_id', user_id)
+      .eq('habit_id', habit_id)
+      .lte('time_frame_start', selectedDate.toISOString())
+      .gte('time_frame_end', selectedDate.toISOString())
+      .single(); // Ensure only a single object is returned
+  
+    if (error || !existingTrackingDates) {
+      return {
+        time_frame_start: new Date(),
+        time_frame_end: new Date(),
+      };
+    }
+  
+    return existingTrackingDates;
+  };
+
 //** Getter method to retreive the frequency and time frame that user selected for specfic habit.
  /* 
  * @param habit_id 

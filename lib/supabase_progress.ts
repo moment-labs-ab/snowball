@@ -1,7 +1,7 @@
 import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import { Habit, ProgressData, HabitTrackingEntry } from '@/types/types'
-import { getUserHabits, getHabit } from './supabase_habits'
+import { getUserHabits, getHabit, getTrackingCount } from './supabase_habits'
 import client from './supabase'
 
 
@@ -389,13 +389,13 @@ export const getGridTrackingHistory = async (
   ));
 
   // Step 4: Map over the date range and fill in with count 0 for missing dates
-  const result = dateRange.map(date => {
+  const result = await Promise.all(dateRange.map(async (date) => {
     const formattedDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
     return {
       date: formattedDate,
-      count: trackedDates.has(formattedDate) ? 1 : 0
+      count: trackedDates.has(formattedDate) ? 1 : 0,
     };
-  });
+  }));
 
   return result;
 };
