@@ -27,6 +27,7 @@ import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
+import { getTrackingCountDates } from "@/lib/supabase_habits";
 
 interface EditHabitProps {
   visible: boolean;
@@ -55,7 +56,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [color, setColor] = useState("#3e4e88");
   const [name, setName] = useState("Habit");
-  const [frequency, setFrequency] = useState<number>(1);
   const [frequencyRate, setFrequencyRate] = useState("Daily");
   const [reminder, setReminder] = useState(false);
   const [emoji, setEmoji] = useState("");
@@ -67,13 +67,34 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const { habits, isLoading, setHabits } = useHabitContext();
   const [tracking, setTrackingCount] = useState<number>(trackingCount);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  const fetchTimeFrameDates = async () => {
+    const dates = await getTrackingCountDates(
+      habit_id,
+      user.userId,
+      selectedDate
+    );
+    if (dates) {
+      setEndDate(formatDate(dates.time_frame_end));
+      setStartDate(formatDate(dates.time_frame_start));
+    }
+  };
   useEffect(() => {
     if (visible) {
       setTrackingCount(trackingCount);
     }
 
-    
+    fetchTimeFrameDates();
   }, [visible, trackingCount]);
 
   const getHabitById = (habitId: string) => {
@@ -88,7 +109,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       setHabit(habit_data);
       setLoading(false);
     }
-    
   }, [user.userId, habit_id]);
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
@@ -107,7 +127,9 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   };
 
   const deleteHabitState = (habitId: string) => {
-    setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitId));
+    setHabits((prevHabits) =>
+      prevHabits.filter((habit) => habit.id !== habitId)
+    );
   };
   const submit = async () => {
     //console.log(tracking); // Ensure this logs the correct, updated number
@@ -136,7 +158,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       } else if (result.data) {
         const habit = result.data as Habit;
         updateHabit(habit);
-        showUpdateToast("updated")
+        showUpdateToast("updated");
       }
 
       // Update tracking count if changed
@@ -182,8 +204,8 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           onPress: async () => {
             const result = await deleteHabit(habit_id, user_id);
             if (result.success) {
-              deleteHabitState(habit_id)
-              showUpdateToast("deleted")
+              deleteHabitState(habit_id);
+              showUpdateToast("deleted");
             } else {
               console.error("Error deleting habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -225,7 +247,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             const result = await archiveHabit(habit_id, user_id);
             if (result.success) {
               closeHabits();
-              showUpdateToast("archived")
+              showUpdateToast("archived");
             } else {
               console.error("Error Archiving habit:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -247,8 +269,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       position: "top",
       autoHide: true,
       props: {
-        onPress: () => {
-        }, // Navigate to your premium page
+        onPress: () => {}, // Navigate to your premium page
       },
     });
   };
@@ -337,6 +358,9 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           placeholder={trackingCount}
           handleChangeNumber={(e) => setTrackingCount(e)}
         />
+        <Text style={{ textAlign: "center" }}>
+          {startDate === endDate ? formatDate(selectedDate.toString()) : `${startDate} - ${endDate}`}
+        </Text>
 
         <View style={{ marginBottom: 5 }}>
           <Text
@@ -404,22 +428,22 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             </View>
           </Modal>
         </View>
-        <NumberInput
-          title="Frequency"
-          placeholder={String(habit.frequency)}
-          handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
-          otherStyles="px-2 mt-3"
-          initialValue={habit.frequency}
-        />
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-          otherStyles="mt-3"
-          initialValue={habit.frequency_rate}
+          initialValue="Daily"
+          otherStyles="mt-5"
+        />
+        <NumberInput
+          title="Frequency"
+          placeholder=" "
+          handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
+          initialValue={habit.frequency}
+          otherStyles="mt-10"
         />
 
         <View
           style={{
-            marginTop: 20,
+            marginTop: 10,
             flexDirection: "row",
             alignItems: "center",
             paddingLeft: 4,
@@ -428,7 +452,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
         <View
           style={{
-            marginTop: 30,
+            marginTop: 10,
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",

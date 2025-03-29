@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import {
-  addTracking,
+  addTracking, getTrackingCount,
 } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { HabitTrackingEntry } from "@/types/types";
@@ -64,37 +64,47 @@ const HabitCard = ({
     })
   ).current;
 
-  function getInitialCount(
+  const getInitialCount = async (
     habitEntries: HabitTrackingEntry[],
-    date: string
-  ): number {
-    // Find the entry matching the specific date
-    const matchingEntry = habitEntries.find((entry) => {
-      return entry.date === date;
-    });
-
-    // Return the count, or 0 if no entry found
-    return matchingEntry ? matchingEntry.count : 0;
+    inputedDate: string
+  ): Promise<number> => {
+    if(frequency_rate_int == 1){
+      const matchingEntry = habitEntries.find((entry) => entry.date === inputedDate);
+      
+      if (matchingEntry) {
+        return matchingEntry.count;
+      }
   }
-
+  
+    // Fetch count from database if not found in entries
+    return await getTrackingCount(id, user.userId, date);
+  };
+  
   useEffect(() => {
-    
     setFormattedDate(new Date(date.toDateString()).toISOString().split("T")[0]);
+  }, [date]);
+  
+  useEffect(() => {
     const fetchTrackingCount = async () => {
       if (!tracking[id]) return; // Ensure tracking data exists
-      const count = getInitialCount(tracking[id], formattedDate);
+      const count = await getInitialCount(tracking[id], formattedDate);
       setTrackingCount(count);
-      setLoading(false);
-
+    };
+  
+    fetchTrackingCount();
+  }, [id, formattedDate, tracking]);
+  
+  useEffect(() => {
+    if (trackingCount !== null) {
+      setLoading(false); // Set loading after count is updated
+  
       Animated.timing(animatedValue, {
-        toValue: count / frequency, // Ensure correct fraction calculation
+        toValue: trackingCount / frequency,
         duration: 225,
         useNativeDriver: false,
       }).start();
-    };
-
-    fetchTrackingCount();
-  }, [id, date, frequency, tracking, formattedDate, trackingCount]);
+    }
+  }, [trackingCount]);
 
   type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
 
@@ -136,8 +146,8 @@ const HabitCard = ({
       // If no entry exists for today, add a new entry
       updatedHabitData[id].push({
         date: date, // Store as local date string
-        count: 1,
-      });
+        count: 1
+        });
     }
 
     return updatedHabitData;
@@ -162,7 +172,7 @@ const HabitCard = ({
         id,
         formattedDate,
         "increment",
-        1
+        trackingCount + 1
       );
     });
   };
