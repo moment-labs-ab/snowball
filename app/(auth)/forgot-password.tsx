@@ -14,17 +14,14 @@ import {
   import CustomButton from "@/components/CustomButtom";
   
   import { sendResetPasswordEmail } from "@/lib/supabase_user";
-  import { useGlobalContext } from "@/context/Context";
   
   const ForgotPassword = () => {
-    const { setUser, setIsLoggedIn } = useGlobalContext();
-  
     const [form, setForm] = useState({
       email: "",
     });
   
     const [isSubmitting, setisSubmitting] = useState(false);
-  
+    
     // TODO: The following needs to be refactored and account for sign in failing.
     const submit = async () => {
       if (form.email === "") {

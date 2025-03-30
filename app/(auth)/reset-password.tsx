@@ -18,12 +18,13 @@ import {
   
   const ResetPassword = () => {
     const { setUser, setIsLoggedIn } = useGlobalContext();
-    const { access_token } = useLocalSearchParams();
+    const { email, access_token } = useLocalSearchParams();
   
     const [form, setForm] = useState({
-      password: "",
-      confirmPassword: "",
-      accessToken: access_token,
+        email: email as string,
+        accessToken: access_token as string,
+        password: "",
+        confirmPassword: "",
     });
   
     const [isSubmitting, setisSubmitting] = useState(false);
@@ -37,7 +38,7 @@ import {
 
       setisSubmitting(true);
       try {
-        await resetPassword(form.accessToken, form.password);
+        await resetPassword(form.email, form.accessToken, form.password);
   
         router.replace("/sign-in");
       } catch (error) {
@@ -57,22 +58,21 @@ import {
             />
             <Text style={styles.headerTitle}>Enter New Password</Text>
           </View>
+            <FormField
+                title="Password"
+                value={form.password}
+                handleChangeText={(e: string) => setForm({ ...form, password: e })}
+                otherStyles="mt-7 px-2"
+                placeholder="Password"
+            />
 
-          <FormField
-            title="Password"
-            value={form.password}
-            handleChangeText={(e: string) => setForm({ ...form, password: e })}
-            otherStyles="mt-7 px-2"
-            placeholder="Password"
-          />
-
-        <FormField
-            title="Confirm Password"
-            value={form.confirmPassword}
-            handleChangeText={(e: string) => setForm({ ...form, confirmPassword: e })}
-            otherStyles="mt-7 px-2"
-            placeholder="Password"
-          />
+            <FormField
+                title="Password"
+                value={form.confirmPassword}
+                handleChangeText={(e: string) => setForm({ ...form, confirmPassword: e })}
+                otherStyles="mt-7 px-2"
+                placeholder="Confirm Password"
+            />
   
           <CustomButton
             title="Reset"
