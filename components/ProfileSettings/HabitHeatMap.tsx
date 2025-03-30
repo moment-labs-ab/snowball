@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Dimensions, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import Svg, { Rect, Text, G, Line } from "react-native-svg";
 import * as d3 from "d3";
 import { HabitTrackingEntry } from "@/types/types";
@@ -29,9 +29,12 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
   const cellPadding: number = 1;
   const [monthLabels, setMonthLabels] = React.useState<MonthLabel[]>([]);
   const [dates, setDates] = React.useState<Date[]>([]);
-  const {tracking, isLoadingTracking} = useTrackingContext();
-  
-  const entriesKey = data.map(entry => `${entry.date}:${entry.count}`).join('|');
+  const [todaysDate, setTodaysDate] = useState(new Date())
+  const { tracking, isLoadingTracking } = useTrackingContext();
+
+  const entriesKey = data
+    .map((entry) => `${entry.date}:${entry.count}`)
+    .join("|");
 
   useEffect(() => {
     if (!data.length) return;
@@ -86,8 +89,8 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
       .interpolator(d3.interpolateBlues);
     return colorScale(count);
   };
-  if(data.length == 0){
-    return <ActivityIndicator></ActivityIndicator>
+  if (data.length == 0) {
+    return <ActivityIndicator></ActivityIndicator>;
   }
 
   return (
@@ -144,6 +147,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
           </G>
 
           {/* Heat map cells */}
+          
           <G transform={`translate(40, 30)`}>
             {dates.map((date: Date, i: number) => {
               const dateStr: string = getDateStr(date);
@@ -152,8 +156,10 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
                   ?.count || 0;
               const weekOfYear: number = d3.timeWeek.count(dates[0], date);
               const dayOfWeek: number = date.getDay();
+              const isToday: boolean = dateStr === getDateStr(todaysDate);
 
               return (
+                
                 <Rect
                   key={i}
                   x={weekOfYear * (cellSize + cellPadding)}
@@ -162,6 +168,9 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
                   height={cellSize}
                   fill={getColor(count)}
                   rx={2}
+                  stroke={isToday ? "#8BBDFA" : "none"}
+                  strokeWidth={isToday ? 3 : 0}
+                  onPressIn={()=>{}} 
                 />
               );
             })}
