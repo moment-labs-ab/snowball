@@ -82,15 +82,45 @@ export const sendResetPasswordEmail = async (email: string) =>{
  * @param email The users email
  * @param accessToken The token recived from the email
  */
-export const resetPassword = async (accessToken: any, newPassword: string) =>{
-    const { error } = await client.auth.setSession({access_token: accessToken, refresh_token:""});
+export const resetPassword = async (
+    email: string,
+    accessToken: string,
+    newPassword: string
+  ) => {
+    const { data, error: sessionError } = await client.auth.verifyOtp({
+      email,
+      token: accessToken,
+      type: "recovery",
+    });
+  
+    if (sessionError) {
+      return Alert.alert("Unable to Reset Password", sessionError.message);
+    }
+  
+    if (!data.session) {
+      return Alert.alert("Unable to Reset Password", "Invalid session data.");
+    }
+  
+    const { error: setSessionError } = await client.auth.setSession({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    });
+  
+    if (setSessionError) {
+      return Alert.alert("Unable to Reset Password", setSessionError.message);
+    }
+  
+    const { error: updateError } = await client.auth.updateUser({
+      password: newPassword,
+    });
+  
+    if (updateError) {
+      return Alert.alert("Unable to Reset Password", updateError.message);
+    }
+  
+    Alert.alert("Password Reset!", "Please login with your new password.");
+};
 
-    if (error) Alert.alert(error.message);
-
-    const { data, error: updateError } = await client.auth.updateUser({ password: newPassword });
-
-    if (updateError) Alert.alert(updateError.message);
-}
 /**
  * Allows a user to sign in with an email and password
  * @param email Users email
