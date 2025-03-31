@@ -1,61 +1,70 @@
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { ScrollView, Text, View } from 'react-native';
 
-const PrivacyPolicy = () => {
+const PrivacyPolicy: React.FC = () => {
   return (
+    <ScrollView className="p-4 mb-150">
+      <Text className="text-gray-600 mb-4">Last updated: March 23, 2025</Text>
+      
+      <Text className="text-lg font-semibold mt-4">Introduction</Text>
+      <Text className="text-base mt-2">
+        This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your
+        information when You use the Service and tells You about Your privacy rights and how the law protects You.
+      </Text>
+      
+      <Text className="text-base mt-2">
+        We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection
+        and use of information in accordance with this Privacy Policy.
+      </Text>
 
-      <ScrollView showsVerticalScrollIndicator={false} className='p-4'>
-        
-        <Text className="text-base mb-4">
-          Moment Labs built the Snowball app as a Freemium app. This SERVICE is provided by Moment Labs at no cost and is intended for use as is.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Information Collection and Use</Text>
-        <Text className="text-base mb-4">
-          For a better experience, while using our Service, I may require you to provide us with certain personally identifiable information, including but not limited to Email and Name. This is only used to create a profile for you and to help manage your account. We will never sell your personal data.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Log Data</Text>
-        <Text className="text-base mb-4">
-          Whenever you use the Service, in a case of an error in the app information and data is collected (through third-party products) on your phone called Log Data.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Cookies</Text>
-        <Text className="text-base mb-4">
-          Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Service Providers</Text>
-        <Text className="text-base mb-4">
-          I may employ third-party companies and individuals due to the following reasons:
-        </Text>
-        <Text className="text-base ml-4 mb-4">• To facilitate our Service;
-        {'\n'}• To provide the Service on our behalf;
-        {'\n'}• To perform Service-related services; or
-        {'\n'}• To assist us in analyzing how our Service is used.</Text>
-        
-        <Text className="text-lg font-semibold mt-4">Security</Text>
-        <Text className="text-base mb-4">
-          I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Children’s Privacy</Text>
-        <Text className="text-base mb-4">
-          Moment Labs does not knowingly collect personally identifiable information from children.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Changes to This Privacy Policy</Text>
-        <Text className="text-base mb-4">
-          Moment Labs may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
-        </Text>
-        
-        <Text className="text-lg font-semibold mt-4">Contact Us</Text>
-        <Text className="text-base mb-4 pb-20">
-          If you have any questions or suggestions about the Privacy Policy, do not hesitate to contact us at snowball@momentlabs.com or through the Feeback Portal.
-        </Text>
-      </ScrollView>
+      <Text className="text-lg font-bold mb-2">Interpretation and Definitions</Text>
+      <Text className="text-md font-semibold mb-2">Definitions</Text>
+      <Text className="mb-4">
+        <Text className="font-bold">Account:</Text> A unique account created for You to access our Service.
+      </Text>
+      <Text className="mb-4">
+        <Text className="font-bold">Application:</Text> Refers to Snowball, the software program provided by the Company.
+      </Text>
+      <Text className="mb-4">
+        <Text className="font-bold">Company:</Text> Moment Labs LLC, 433 S 7th St, Minneapolis, MN 55415.
+      </Text>
+      
+      <Text className="text-lg font-bold mb-2">Collecting and Using Your Personal Data</Text>
+      <Text className="text-md font-semibold mb-2">Types of Data Collected</Text>
+      <Text className="text-base mt-2">
+        <Text className="font-bold">Personal Data:</Text> While using Our Service, We may ask You to provide Us with
+        personally identifiable information, including but not limited to: Email address and Usage Data.
+      </Text>
 
+      <Text className="text-lg font-bold mb-2">Use of Your Personal Data</Text>
+      <Text className="text-base mt-2">
+        The Company may use Personal Data for the following purposes:
+      </Text>
+      <Text className="text-base mt-2">• To provide and maintain our Service</Text>
+      <Text className="text-base mt-2">• To manage Your Account</Text>
+      <Text className="text-base mt-2">• To contact You regarding updates or services</Text>
+      <Text className="text-base mt-2">• To manage Your requests</Text>
+      <Text className="text-base mt-2">• For other legal and business purposes</Text>
+      
+      <Text className="text-lg font-bold mb-2">Retention and Security of Your Data</Text>
+      <Text className="text-base mt-2">
+        The Company will retain Your Personal Data only for as long as necessary for legal and business purposes. We
+        strive to use commercially acceptable means to protect Your data but cannot guarantee absolute security. Users may
+        request to delete their account and data at anytime.
+      </Text>
+
+      <Text className="text-lg font-bold mb-2">Children's Privacy</Text>
+      <Text className="text-base mt-2">
+        Our Service does not address anyone under the age of 13. If You are a parent and become aware that Your child has
+        provided Us with Personal Data, please contact Us.
+      </Text>
+
+      <Text className="text-lg font-bold mb-2">Contact Us</Text>
+      <Text className="text-base mt-2">If you have any questions about this Privacy Policy, You can contact us:</Text>
+      <Text className="text-base mt-2">• By email: snowball@momentlabs.com</Text>
+      <Text className="text-base mt-2 mb-100">• By visiting our website: https://moment-labs.com/snowball</Text>
+    </ScrollView>
   );
-}
+};
 
 export default PrivacyPolicy;

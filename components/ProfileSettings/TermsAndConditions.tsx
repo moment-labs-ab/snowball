@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 const TermsAndConditions = () => {
   return (
     <ScrollView className="p-4 mb-150">
+    <Text className="text-gray-600 mb-4">Last updated: March 23, 2025</Text>
       
       <Text className="text-lg font-semibold mt-4">Usage Restrictions</Text>
       <Text className="text-base mt-2">
@@ -36,7 +37,7 @@ const TermsAndConditions = () => {
       
       <Text className="text-lg font-semibold mt-4">Changes to Terms</Text>
       <Text className="text-base mt-2">
-        These terms may be updated periodically. Changes will be posted on this page. Effective date: 2025-03-01.
+        These terms may be updated periodically. Changes will be posted on this page. Effective date: 2025-04-01.
       </Text>
       
       <Text className="text-lg font-semibold mt-4">Contact Us</Text>
