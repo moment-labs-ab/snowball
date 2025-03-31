@@ -1,14 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { ScrollView, Text, View, Image } from 'react-native';
-import { Redirect, router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from "expo-status-bar";
+import { ScrollView, Text, View, Image, StyleSheet } from "react-native";
+import { Redirect, router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect } from "react";
+import * as SplashScreen from "expo-splash-screen";
 
-import CustomButton from '../components/CustomButtom';
-import images from '../constants/images';
-import { useGlobalContext } from '@/context/Context';
-import { trackLogin } from '@/lib/supabase_user';
+import CustomButton from "../components/CustomButtom";
+import images from "../constants/images";
+import { useGlobalContext } from "@/context/Context";
+import { trackLogin } from "@/lib/supabase_user";
+import icons from "@/constants/icons";
 
 SplashScreen.preventAutoHideAsync(); // Keep the splash screen visible until we manually hide it.
 
@@ -25,7 +26,11 @@ export default function App() {
   }, [isLoading]);
 
   if (isLoading) {
-    return null; // Keep splash screen visible while loading
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Image source={images.snowballlogo} style={{ width: 60, height: 60 }} />
+      </View>
+    ); 
   }
 
   if (user?.email) {
@@ -37,8 +42,8 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#edf5fe', height: '100%' }}>
-      <ScrollView contentContainerStyle={{ height: '100%' }}>
+    <SafeAreaView style={{ backgroundColor: "#edf5fe", height: "100%" }}>
+      <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full justify-center items-center min-h-[85vh] px-2">
           <Image
             source={images.snowballlogo}
@@ -58,7 +63,7 @@ export default function App() {
 
           <CustomButton
             title="Continue with Email"
-            handlePress={() => router.push('/sign-in')}
+            handlePress={() => router.push("/sign-in")}
             containerStyles="w-full mt-10 bg-secondary"
             otherMethods={() => {}}
           />
