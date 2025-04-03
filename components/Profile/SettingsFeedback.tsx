@@ -45,7 +45,7 @@ const FeedbackFormComponent = () => {
   const intervals = [
     { label: "Bug", value: "Bug", color: "black" }, // Add color property for each item
     { label: "Feedback", value: "Feedback", color: "black" },
-    { label: "Feature Request", value: "Bi-Feature Request", color: "black" },
+    { label: "Feature Request", value: "Feature Request", color: "black" },
     { label: "General", value: "General", color: "black" },
   ];
 
@@ -87,7 +87,8 @@ const FeedbackFormComponent = () => {
           user.userId,
           user.email,
           formData.subject,
-          formData.description
+          formData.description,
+          formData.type
         );
 
         if (response.success) {
