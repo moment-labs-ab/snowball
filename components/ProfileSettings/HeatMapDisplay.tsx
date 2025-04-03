@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  useWindowDimensions
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
@@ -18,6 +19,8 @@ import TrackingWelcome from "./TrackingWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useHabitContext } from "@/context/HabitContext";
 import { useTrackingContext } from "@/context/TrackingContext";
+import { ScreenHeight } from "@rneui/themed/dist/config";
+import HeatMapStats from "./HeatMapStats";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
@@ -28,6 +31,17 @@ const HeatMapDisplay = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [startDate, setStartDate] = useState<Date>(new Date());
+  
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= 768; // Adjust threshold as needed
+
+  const habitContainerStyle = {
+    height: isLargeScreen
+      ? Dimensions.get("window").height / 2
+      : Dimensions.get("window").height/2.5,
+  };
+
+  
   
   // Add state for expanded/collapsed groups
   const [expandedGroups, setExpandedGroups] = useState<{
@@ -137,7 +151,8 @@ const HeatMapDisplay = () => {
                         style={{ marginBottom: 20, padding: 8 }}
                       >
                         {habitData ? (
-                          <View style={styles.habitContainer}>
+                          <View>
+                          <View style={[styles.habitContainer, habitContainerStyle]}>
                             <View
                               style={{
                                 width: "100%",
@@ -162,6 +177,8 @@ const HeatMapDisplay = () => {
                               />
                             </View>
                             <HabitHeatMap data={habitData} />
+                            <HeatMapStats data={habitData} />
+                          </View>
                           </View>
                         ) : (
                           <View style={styles.container}>

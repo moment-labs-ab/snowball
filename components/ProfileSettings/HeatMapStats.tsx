@@ -84,8 +84,7 @@ const styles = StyleSheet.create({
   metricContainer: {
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
-    marginTop: 20,
+    alignSelf: "center"
   },
   metric: {
     fontWeight: "bold",

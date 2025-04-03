@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Dimensions, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Dimensions,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import Svg, { Rect, Text, G, Line } from "react-native-svg";
 import * as d3 from "d3";
 import { HabitTrackingEntry } from "@/types/types";
@@ -8,7 +15,6 @@ import { useTrackingContext } from "@/context/TrackingContext";
 
 interface HeatMapProps {
   data: HabitTrackingEntry[];
-  width?: number;
   height?: number;
 }
 
@@ -18,19 +24,27 @@ interface MonthLabel {
   x: number;
 }
 
-const HabitHeatMap: React.FC<HeatMapProps> = ({
-  data,
-  width = Dimensions.get("window").width - 20,
-  height = 200,
-}) => {
+const HabitHeatMap: React.FC<HeatMapProps> = ({ data, height = Dimensions.get("window").height }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const cellSize: number = Math.floor((width - 60) / 14);
+  const { width: screenWidth } = useWindowDimensions();
+  const width = Dimensions.get("window").width;
+
+  const isLargeScreen = screenWidth > 390; // Detect iPad screens
+  const cellSize: number = isLargeScreen
+    ? Math.floor((width - 100) / 14) // More cells for bigger screens
+    : Math.floor((width - 60) / 14);
   const cellPadding: number = 1;
   const [monthLabels, setMonthLabels] = React.useState<MonthLabel[]>([]);
   const [dates, setDates] = React.useState<Date[]>([]);
-  const [todaysDate, setTodaysDate] = useState(new Date())
   const { tracking, isLoadingTracking } = useTrackingContext();
+
+  const getStartOfToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Resets time to 00:00:00
+    return today;
+  };
+  const [todaysDate, setTodaysDate] = useState(getStartOfToday());
 
   const entriesKey = data
     .map((entry) => `${entry.date}:${entry.count}`)
@@ -73,7 +87,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
     return () => {
       // Cleanup if needed
     };
-  }, [data, width, height, cellSize, cellPadding, entriesKey, tracking]);
+  }, [data, tracking]);
 
   const weekDays: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -82,7 +96,8 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
   };
 
   const getColor = (count: number): string => {
-    const maxCount = d3.max(data, (d: HabitTrackingEntry) => d.count) || 1;
+    //const maxCount = d3.max(data, (d: HabitTrackingEntry) => d.count) || 1;
+    const maxCount = 1
     const colorScale = d3
       .scaleSequential()
       .domain([0, maxCount])
@@ -94,7 +109,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
   }
 
   return (
-    <View>
+    <View style={{ flex: 1,alignItems: "center" }}>
       <View style={{ marginVertical: 1 }}>
         <Svg width={width} height={height}>
           {/* Month labels */}
@@ -147,7 +162,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
           </G>
 
           {/* Heat map cells */}
-          
+
           <G transform={`translate(40, 30)`}>
             {dates.map((date: Date, i: number) => {
               const dateStr: string = getDateStr(date);
@@ -159,7 +174,6 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
               const isToday: boolean = dateStr === getDateStr(todaysDate);
 
               return (
-                
                 <Rect
                   key={i}
                   x={weekOfYear * (cellSize + cellPadding)}
@@ -170,14 +184,13 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({
                   rx={2}
                   stroke={isToday ? "#8BBDFA" : "none"}
                   strokeWidth={isToday ? 3 : 0}
-                  onPressIn={()=>{}} 
+                  onPressIn={() => {}}
                 />
               );
             })}
           </G>
         </Svg>
       </View>
-      <HeatMapStats data={data} />
     </View>
   );
 };

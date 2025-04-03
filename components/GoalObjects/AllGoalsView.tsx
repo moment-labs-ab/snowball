@@ -52,7 +52,6 @@ const AllGoalsView = () => {
     );
   } else {
     return (
-      <ScrollView>
         <View style={styles.container}>
           <FlashList
             data={sortedGoals}
@@ -83,7 +82,6 @@ const AllGoalsView = () => {
             contentContainerStyle={styles.listContent}
           />
         </View>
-      </ScrollView>
     );
   }
 };
@@ -92,8 +90,9 @@ export default AllGoalsView;
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get("window").height,
+    height: Dimensions.get("window").height + 200,
     width: "100%",
+    flex: 1
   },
   goalContainer: {
     flex: 1, // Ensures the items share space equally
