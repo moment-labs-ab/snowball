@@ -10,23 +10,45 @@ import {
 } from "react-native";
 import { sendFeedback } from "@/lib/supabase_profile";
 import { useGlobalContext } from "@/context/Context";
+import RNPickerSelect from "react-native-picker-select";
+import Entypo from "@expo/vector-icons/Entypo";
+
+type FeedbackType = "Bug" | "Feedback" | "Feature Request" | "General";
 
 interface FeedbackForm {
-  shortDescription: string;
-  longDescription: string;
+  type: FeedbackType;
+  subject: string;
+  description: string;
 }
 
 interface FormErrors {
-  shortDescription?: string;
-  longDescription?: string;
+  type?: string;
+  subject?: string;
+  description?: string;
 }
 
 const FeedbackFormComponent = () => {
   const { user } = useGlobalContext();
   const [formData, setFormData] = useState<FeedbackForm>({
-    shortDescription: "",
-    longDescription: "",
+    type: "Feedback",
+    subject: "",
+    description: ""
   });
+
+  const handleDropDownChange = (value: string) => {
+    setFormData({
+      ...formData,
+      type: value as FeedbackType,
+    });
+  };
+
+  const intervals = [
+    { label: "Bug", value: "Bug", color: "black" }, // Add color property for each item
+    { label: "Feedback", value: "Feedback", color: "black" },
+    { label: "Feature Request", value: "Bi-Feature Request", color: "black" },
+    { label: "General", value: "General", color: "black" },
+  ];
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -34,33 +56,25 @@ const FeedbackFormComponent = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.shortDescription.trim()) {
-      newErrors.shortDescription = "Short description is required";
-    } else if (formData.shortDescription.length > 100) {
-      newErrors.shortDescription =
-        "Short description must be less than 100 characters";
+    if (!formData.subject.trim()) {
+      newErrors.subject = "Subject is required";
+    } else if (formData.subject.length > 100) {
+      newErrors.subject = "Subject must be less than 100 characters";
     }
 
-    if (!formData.longDescription.trim()) {
-      newErrors.longDescription = "Long description is required";
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSendFeedback = async (
-    user_id: string,
-    shortDescription: string,
-    longDescription: string
-  ) => {
-    const data = sendFeedback(user_id, shortDescription, longDescription);
-    return data;
-  };
   const clearForm = () => {
     setFormData({
-      shortDescription: "",
-      longDescription: "",
+      type: "Feedback",
+      subject: "",
+      description: "",
     });
     setErrors({});
   };
@@ -71,8 +85,9 @@ const FeedbackFormComponent = () => {
       try {
         const response = await sendFeedback(
           user.userId,
-          formData.shortDescription,
-          formData.longDescription
+          user.email,
+          formData.subject,
+          formData.description
         );
 
         if (response.success) {
@@ -102,43 +117,58 @@ const FeedbackFormComponent = () => {
   return (
     <ScrollView>
       <View style={styles.formContainer}>
-        <Text style={styles.label}>Short Description</Text>
+        <Text style={styles.label}>Feedback Category</Text>
+        <RNPickerSelect
+          onValueChange={handleDropDownChange}
+          items={intervals}
+          placeholder={{
+            label: "Select an interval",
+            value: null,
+            color: "gray",
+          }}
+          style={{
+            ...pickerSelectStyles,
+          }}
+          value={formData.type}
+          Icon={() => {
+            return <Entypo name="chevron-down" size={38} color="black" />;
+          }}
+        />
+        <Text style={styles.label}>Subject</Text>
         <TextInput
           style={styles.input}
-          value={formData.shortDescription}
-          onChangeText={(text) =>
-            setFormData({ ...formData, shortDescription: text })
-          }
+          value={formData.subject}
+          onChangeText={(text) => setFormData({ ...formData, subject: text })}
           placeholder="Brief summary of your feedback"
           placeholderTextColor={"#898989"}
           maxLength={100}
         />
-        {errors.shortDescription && (
-          <Text style={styles.errorText}>{errors.shortDescription}</Text>
+        {errors.subject && (
+          <Text style={styles.errorText}>{errors.subject}</Text>
         )}
 
-        <Text style={styles.label}>Detailed Description</Text>
+        <Text style={styles.label}>Description</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          value={formData.longDescription}
+          value={formData.description}
           onChangeText={(text) =>
-            setFormData({ ...formData, longDescription: text })
+            setFormData({ ...formData, description: text })
           }
-          placeholder="Provide detailed feedback here"
+          placeholder="Provide details of your feedback or issue"
           placeholderTextColor={"#898989"}
           multiline
           numberOfLines={6}
           textAlignVertical="top"
         />
-        {errors.longDescription && (
-          <Text style={styles.errorText}>{errors.longDescription}</Text>
+        {errors.description && (
+          <Text style={styles.errorText}>{errors.description}</Text>
         )}
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit Feedback</Text>
         </TouchableOpacity>
       </View>
-      </ScrollView>
+    </ScrollView>
   );
 };
 
@@ -165,7 +195,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   textArea: {
-    height: 120,
+    height: 200, // Adjust height as needed
   },
   errorText: {
     color: "#ff0000",
@@ -183,6 +213,36 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    fontWeight: "bold",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black", // Change text color for iOS
+    marginBottom: 3,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    fontWeight: "bold",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "blue", // Change text color for Android
+  },
+  viewContainer: {
+    marginBottom: 10, // Add some margin to the container
+    backgroundColor: "#fff", // Ensure the background is white for visibility
+    borderRadius: 8, // Match the border radius with input fields
+  },
+  placeholder: {
+    color: "gray", // Change placeholder text color
   },
 });
 

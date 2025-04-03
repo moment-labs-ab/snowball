@@ -161,18 +161,15 @@ export const updateHabitOrder = async (habitId: string, newOrder: number) => {
   };
 
 export const sendFeedback = async(
-    user_id: string,
-    short_description: string,
-    long_description: string)=>{
+    userId: string,
+    email: string,
+    subject: string,
+    description: string) => {
+
     const { data, error } = await client
       .from('feedback')
-      .insert([
-        {
-          user_id,
-          short_description,
-          long_description
-        },
-      ]);
+      .insert({user_id: userId, email, subject, description, status: 'new'})
+      .single(); // Use .single() to get the inserted row or error
 
       if (error) {
         console.error('Error Sending Feedback', error);
