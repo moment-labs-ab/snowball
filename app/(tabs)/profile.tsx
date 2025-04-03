@@ -5,29 +5,20 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
-  TouchableOpacity,
-  Image,
-  Dimensions,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getCurrentUser } from "@/lib/supabase_user";
 import { User } from "@/types/types";
-import CustomButton from "@/components/CustomButtom";
 import { useGlobalContext } from "@/context/Context";
-import { router } from "expo-router";
 import icons from "@/constants/icons";
-import { ImageSourcePropType } from "react-native";
 import ProfileCard from "@/components/ProfileSettings/ProfileCard";
-import SettingsButton from "@/components/SettingsButton";
-import Settings from "@/components/Profile/SettingsHome";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
 import { StatusBar } from "expo-status-bar";
 
 const Profile = () => {
-  const { isLoggedIn, setIsLoggedIn, setUser, user } = useGlobalContext();
+  const { user } = useGlobalContext();
   const [userData, setUserData] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const getUserData = async () => {
     try {
