@@ -5,11 +5,10 @@ import {
   Animated,
   PanResponder,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
-import {
-  addTracking, getTrackingCount,
-} from "@/lib/supabase_habits";
+import { addTracking, getTrackingCount } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { HabitTrackingEntry } from "@/types/types";
 import { useTrackingContext } from "@/context/TrackingContext";
@@ -50,6 +49,9 @@ const HabitCard = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [trackingColor, setTrackingColor] = useState<string>("#9ec8fb");
   const [formattedDate, setFormattedDate] = useState<string>("");
+  const [singleDayCount, setSingleDayCount] = useState(0);
+
+  type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   // PanResponder to detect swipe gestures
@@ -68,36 +70,47 @@ const HabitCard = ({
     habitEntries: HabitTrackingEntry[],
     inputedDate: string
   ): Promise<number> => {
-    if(frequency_rate_int == 1){
-      const matchingEntry = habitEntries.find((entry) => entry.date === inputedDate);
-      
+      const matchingEntry = habitEntries.find(
+        (entry) => entry.date === inputedDate
+      );
+
       if (matchingEntry) {
+        if (frequency_rate_int == 1) {
+        setSingleDayCount(matchingEntry.count)
         return matchingEntry.count;
+        }
+        else{
+          setSingleDayCount(matchingEntry.count)
+          return await getTrackingCount(id, user.userId, date);
+        }
       }
-  }
-  
+
+
     // Fetch count from database if not found in entries
     return await getTrackingCount(id, user.userId, date);
   };
-  
+
+
+
   useEffect(() => {
     setFormattedDate(new Date(date.toDateString()).toISOString().split("T")[0]);
   }, [date]);
-  
+
   useEffect(() => {
     const fetchTrackingCount = async () => {
       if (!tracking[id]) return; // Ensure tracking data exists
       const count = await getInitialCount(tracking[id], formattedDate);
       setTrackingCount(count);
     };
-  
+
     fetchTrackingCount();
+
   }, [id, formattedDate, tracking]);
-  
+
   useEffect(() => {
     if (trackingCount !== null) {
       setLoading(false); // Set loading after count is updated
-  
+
       Animated.timing(animatedValue, {
         toValue: trackingCount / frequency,
         duration: 225,
@@ -105,8 +118,6 @@ const HabitCard = ({
       }).start();
     }
   }, [trackingCount]);
-
-  type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
 
   function incrementHabitCount(
     habitData: HabitTrackingData,
@@ -136,6 +147,7 @@ const HabitCard = ({
           count: updatedHabitData[id][existingEntryIndex].count + 1,
         };
       } else if (type == "update") {
+        console.log(newCount)
         updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
         updatedHabitData[id][existingEntryIndex] = {
           ...updatedHabitData[id][existingEntryIndex],
@@ -146,8 +158,8 @@ const HabitCard = ({
       // If no entry exists for today, add a new entry
       updatedHabitData[id].push({
         date: date, // Store as local date string
-        count: 1
-        });
+        count: 1,
+      });
     }
 
     return updatedHabitData;
@@ -159,12 +171,6 @@ const HabitCard = ({
     habitTrackingAmount: number
   ) => {
     const trackingData = await addTracking(user.userId, id, date);
-
-    Animated.timing(animatedValue, {
-      toValue: Math.min(trackingData / frequency),
-      duration: 225,
-      useNativeDriver: false,
-    }).start();
 
     setTracking((prevTracking) => {
       return incrementHabitCount(
@@ -188,11 +194,6 @@ const HabitCard = ({
         newTrackingCount
       );
     });
-    Animated.timing(animatedValue, {
-      toValue: Math.min(newTrackingCount / frequency),
-      duration: 250,
-      useNativeDriver: false,
-    }).start();
   };
 
   const backgroundColor = animatedValue.interpolate({
@@ -216,17 +217,22 @@ const HabitCard = ({
     setModalVisible(false);
     fetchHabits();
   };
-  if(isLoadingTracking){
-    return <LoadingSkeleton style={{
-    borderRadius: 15,
-    minHeight: 62,
-    justifyContent: "center",
-    borderWidth: 0.9,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    overflow: "hidden",
-    position: "relative",
-    flex: 1,}}/>
+  if (isLoadingTracking) {
+    return (
+      <LoadingSkeleton
+        style={{
+          borderRadius: 15,
+          minHeight: 62,
+          justifyContent: "center",
+          borderWidth: 0.9,
+          marginHorizontal: 16,
+          marginBottom: 16,
+          overflow: "hidden",
+          position: "relative",
+          flex: 1,
+        }}
+      />
+    );
   }
 
   return (
@@ -303,6 +309,7 @@ const HabitCard = ({
                 selectedDate={date}
                 trackingCount={trackingCount}
                 onTrackingCountChange={handleTrackingCountChange}
+                singleDayCount={singleDayCount}
               />
             }
           />

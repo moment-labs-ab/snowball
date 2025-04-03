@@ -37,6 +37,7 @@ interface EditHabitProps {
   selectedDate: Date;
   trackingCount: number;
   onTrackingCountChange: (newTrackingCount: number) => void;
+  singleDayCount: number,
   closeModal?: () => void;
 }
 
@@ -48,6 +49,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   selectedDate,
   trackingCount,
   onTrackingCountChange,
+  singleDayCount,
   closeModal,
 }) => {
   const [time, setTime] = useState<Date>(new Date());
@@ -65,17 +67,15 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   const { user } = useGlobalContext();
   const { habits, isLoading, setHabits } = useHabitContext();
-  const [tracking, setTrackingCount] = useState<number>(trackingCount);
+  const [tracking, setTrackingCount] = useState<number>(singleDayCount);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-    });
+    const date =  new Date(dateString).toISOString().split("T")[0];
+    const [year, month, day] = date.split("-"); // Split into components
+    return `${month}-${day}`;
   };
 
   const fetchTimeFrameDates = async () => {
@@ -162,16 +162,18 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       }
 
       // Update tracking count if changed
-      if (trackingCount !== tracking) {
+      if (singleDayCount !== tracking) {
+
         //console.log("Calling updateTracking...")
         const result = await updateTracking(
           user.userId,
           habit_id,
           selectedDate,
-          tracking
+          -(singleDayCount - tracking)
         );
-        //console.log(result)
-        onTrackingCountChange(result);
+        console.log("trackingCount - tracking *-1 =", -(trackingCount - tracking) )
+        onTrackingCountChange(tracking)
+        
       }
     } catch (error) {
       Alert.alert(String(error));
@@ -355,7 +357,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
         <NumberBox
           title="Number Tracked"
-          placeholder={trackingCount}
+          placeholder={singleDayCount}
           handleChangeNumber={(e) => setTrackingCount(e)}
         />
         <Text style={{ textAlign: "center" }}>

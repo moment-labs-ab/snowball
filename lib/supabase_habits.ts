@@ -582,57 +582,56 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
   // Check if the tracking record exists
   const { data: existingTracking, error: selectError } = await client
     .from("habit_tracking")
-    .select("id")
+    .select("id, tracking_count")
     .eq('user_id', user_id)
     .eq('habit_id', habit_id)
     .lte('time_frame_start', selectedDate.toISOString())
     .gte('time_frame_end', selectedDate.toISOString());
 
-  if (selectError) {
-    console.error('Error checking existing tracking record:', selectError);
-    return;
-  }
-
-  if (existingTracking && existingTracking.length > 0) {
-    const trackingId = existingTracking[0].id;
-    //console.log("TrackingHistoryId:", existingTracking)
-    if(updatedValue === 0){
-    const { data, error: updateError } = await client
-      .from("habit_tracking")
-      .delete()
-      .eq('user_id', user_id)
-      .eq('habit_id', habit_id)
-      .lte('time_frame_start', selectedDate.toISOString())
-      .gte('time_frame_end', selectedDate.toISOString());
-
-      if (updateError) {
-        console.error('Error updating tracking data:', updateError);
+    if (existingTracking && existingTracking.length > 0) {
+      const trackingId = existingTracking[0].id;
+      const currentTrackingCount = existingTracking[0].tracking_count;
+      const newTrackingCount = currentTrackingCount + updatedValue;
+      console.log("cuurent tracking:", currentTrackingCount)
+      console.log("updatedValue:", updatedValue)
+    
+      if (newTrackingCount <= 0) {
+        // Delete the record if the new count is 0 or less
+        const { error: deleteError } = await client
+          .from("habit_tracking")
+          .delete()
+          .eq("user_id", user_id)
+          .eq("habit_id", habit_id)
+          .lte("time_frame_start", selectedDate.toISOString())
+          .gte("time_frame_end", selectedDate.toISOString());
+    
+        if (deleteError) {
+          //console.error("Error deleting tracking data:", deleteError);
+        } else {
+          //console.log("Tracking record deleted.");
+          return 0;
+        }
       } else {
-        //console.log("Habit Tracking Updated.");
-        return updatedValue;
+        // Update the record with the new tracking count
+        const { data, error: updateError } = await client
+          .from("habit_tracking")
+          .update({ tracking_count: newTrackingCount })
+          .eq("user_id", user_id)
+          .eq("habit_id", habit_id)
+          .lte("time_frame_start", selectedDate.toISOString())
+          .gte("time_frame_end", selectedDate.toISOString())
+          .select("tracking_count")
+          .single();
+    
+        if (updateError) {
+          //console.error("Error updating tracking data:", updateError);
+        } else {
+          //console.log("Habit Tracking Updated.");
+          addTrackingHistory(trackingId, habit_id, selectedDate, user_id);
+          return newTrackingCount;
+        }
       }
-
-    }
-    else{
-    // If the record exists, and new value is not equal to 0 update it
-    const { data, error: updateError } = await client
-      .from("habit_tracking")
-      .update({ tracking_count: updatedValue })
-      .eq('user_id', user_id)
-      .eq('habit_id', habit_id)
-      .lte('time_frame_start', selectedDate.toISOString())
-      .gte('time_frame_end', selectedDate.toISOString());
-
-    if (updateError) {
-      console.error('Error updating tracking data:', updateError);
-    } else {
-      //console.log("Habit Tracking Updated.");
-      addTrackingHistory(trackingId, habit_id, selectedDate, user_id)
-      return updatedValue;
-    }
-    }
-
-  } else {
+    }else {
     // If the record does not exist, call addTracking
     //console.log("Record doesn't exist, adding new tracking record.");
     return await addTracking(user_id, habit_id, selectedDate, updatedValue);
