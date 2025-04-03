@@ -164,11 +164,12 @@ export const sendFeedback = async(
     userId: string,
     email: string,
     subject: string,
-    description: string) => {
+    description: string,
+    type: string) => {
 
     const { data, error } = await client
       .from('feedback')
-      .insert({user_id: userId, email, subject, description, status: 'new'})
+      .insert({user_id: userId, email, subject, description, type, status: 'new'})
       .single(); // Use .single() to get the inserted row or error
 
       if (error) {
