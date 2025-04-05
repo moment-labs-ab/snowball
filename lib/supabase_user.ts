@@ -174,7 +174,7 @@ export const getPremiumStatus = async (userId: string) =>{
         }
         
     } catch (error) {
-        console.log("There was an error trying to query users' premium user status")
+        //console.log("There was an error trying to query users' premium user status")
         return(undefined)
         
     }
@@ -191,7 +191,7 @@ export const getName = async (userId: string) =>{
         }
         
     } catch (error) {
-        console.log("There was an error trying to query user's name")
+        //console.log("There was an error trying to query user's name")
         return(undefined)
     }
 }

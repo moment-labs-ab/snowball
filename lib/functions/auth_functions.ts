@@ -12,10 +12,10 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
           body: JSON.stringify({ user_id: userId })
         }
       );
-      console.log("Function Response:", response.body);
+      //console.log("Function Response:", response.body);
 
         if (response.ok) {
-            console.log("User deleted successfully");
+            //console.log("User deleted successfully");
             return true;
         } else {
             console.error("Error deleting user:", response.body);

@@ -60,12 +60,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderRightWidth: 1,
     borderLeftWidth: 1,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
+    margin:1
   },
   headerRow: {
     flexDirection: 'row',
