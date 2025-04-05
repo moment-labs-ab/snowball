@@ -2,7 +2,7 @@ import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import { PostgrestError} from '@supabase/supabase-js'
 import { Goal, Milestones} from '@/types/types'
-import client from './supabase'
+import { useSupabaseClient } from './supabase'
 
 
 // Tells Supabase Auth to continuously refresh the session automatically
@@ -11,7 +11,8 @@ import client from './supabase'
 // `SIGNED_OUT` event if the user's session is terminated. This should
 // only be registered once.
 AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
+  const client = useSupabaseClient();
+    if (state === 'active') {
     client.auth.startAutoRefresh()
   } else {
     client.auth.stopAutoRefresh()
@@ -29,7 +30,9 @@ export const insertNewGoal = async (
   color: string,
   tags?: object
 ): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
-  // Insert the goal into goal_objects
+    const client = useSupabaseClient();
+  
+    // Insert the goal into goal_objects
   const { data, error } = await client
     .from("goal_objects")
     .insert([
@@ -83,7 +86,9 @@ export const insertNewGoal = async (
 };
 
 export const getGoalCount = async (userId: string): Promise<number | null> => {
-  try {
+    const client = useSupabaseClient();
+  
+    try {
     const { data, error, count } = await client
       .from('goal_objects')
       .select('id', { count: 'exact', head: true }) // Only fetch count without data
@@ -113,7 +118,9 @@ export const updateGoal = async (
   color?: string,
   tags?: object
 ): Promise<{ success: boolean; message: string; data?: Goal | PostgrestError }> => {
-  // Step 1: Update goal_objects (excluding habit_ids)
+    const client = useSupabaseClient();
+  
+    // Step 1: Update goal_objects (excluding habit_ids)
   const { data, error } = await client
     .from("goal_objects")
     .update({
@@ -176,7 +183,9 @@ export const updateGoal = async (
 const getUserHabitsForGoal = async (
   goal_id: string
 ): Promise<{ id: string; name: string }[]> => {
-  const { data, error } = await client
+    const client = useSupabaseClient();
+  
+    const { data, error } = await client
     .from("goal_habits_reference")
     .select("habit_id, habit_name")
     .eq("goal_id", goal_id);
@@ -194,7 +203,9 @@ const getUserHabitsForGoal = async (
 
 
 export const getUserGoals = async (userId: string): Promise<Goal[]> => {
-  const { data, error } = await client.from('goal_objects')
+    const client = useSupabaseClient();
+  
+    const { data, error } = await client.from('goal_objects')
   .select('*')
   .eq('user_id', userId)
   .eq('accomplished', false)
@@ -219,7 +230,9 @@ export const getUserGoals = async (userId: string): Promise<Goal[]> => {
 };
 
 export const getUserArchivedGoals = async (userId: string): Promise<Goal[]> => {
-  const { data, error } = await client
+    const client = useSupabaseClient();
+  
+    const { data, error } = await client
   .from('goal_objects')
   .select('*')
   .eq('user_id', userId)
@@ -247,7 +260,9 @@ export const getUserSingleGoal = async (
   userId: string,
   goal_id: string
 ): Promise<Goal | undefined> => {
-  const { data, error } = await client
+    const client = useSupabaseClient();
+  
+    const { data, error } = await client
     .from("goal_objects")
     .select("*")
     .eq("user_id", userId)
@@ -284,7 +299,8 @@ type ChangeHandler = (payload: { eventType: string; new: Goal; old: Goal}) => vo
  * @returns 
  */
 export const listenToGoalsTable = (handleChange: ChangeHandler) => {
-    
+    const client = useSupabaseClient();
+
     const subscription = client
       .channel('table_db_changes')
       .on(
@@ -313,6 +329,8 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
     id: string,
     user_id: string
   ): Promise<{ success: boolean; message: string; data?: any }> => {
+    const client = useSupabaseClient();
+    
     const { data, error } = await client
       .from('goal_objects')
       .delete()
@@ -336,7 +354,9 @@ export const listenToGoalsTable = (handleChange: ChangeHandler) => {
  * @returns A promise with the response from Supabase.
  */
 export const updateUserMilestones= async(userId: string, goalId: string, updatedMilestones: Milestones[]): Promise<void> =>{
-  try {
+    const client = useSupabaseClient();
+  
+    try {
     // Perform the update query
     const { data, error } = await client
       .from('goal_objects')
@@ -356,7 +376,8 @@ export const updateUserMilestones= async(userId: string, goalId: string, updated
 }
 
 export const archiveGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
-  
+    const client = useSupabaseClient();
+
     const {data, error} = await client
     .from('goal_objects')
     .update({archived: true})
@@ -373,7 +394,8 @@ export const archiveGoal = async (goal_id: string, userId:string): Promise<{ suc
 }
 
 export const accomplishGoal = async (goal_id: string, userId:string): Promise<{ success: boolean; message: string; data?: any }> =>{
-  
+  const client = useSupabaseClient();
+
   const {data, error} = await client
   .from('goal_objects')
   .update({accomplished: true})
@@ -395,7 +417,9 @@ type HabitIds = {
 };
 
 async function getHabitsForGoal(goalId: string): Promise<HabitIds[] | null> {
-  const { data, error } = await client
+    const client = useSupabaseClient();
+    
+    const { data, error } = await client
     .from("goals_habits_reference")
     .select("habit_id, habit_name")
     .eq("goal_id", goalId);
