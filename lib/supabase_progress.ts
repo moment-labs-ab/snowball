@@ -2,7 +2,7 @@ import { AppState } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import { Habit, ProgressData, HabitTrackingEntry } from '@/types/types'
 import { getUserHabits, getHabit, getTrackingCount } from './supabase_habits'
-import client from './supabase'
+import { useSupabaseClient } from './supabase';
 
 
 // Tells Supabase Auth to continuously refresh the session automatically
@@ -11,6 +11,7 @@ import client from './supabase'
 // `SIGNED_OUT` event if the user's session is terminated. This should
 // only be registered once.
 AppState.addEventListener('change', (state) => {
+    const client = useSupabaseClient();
   if (state === 'active') {
     client.auth.startAutoRefresh()
   } else {
@@ -35,7 +36,9 @@ function getRelativeDates(baseDate: Date) {
 }
 
 export const getHabitTrackingCount = async (habit_id: string, startDate: string, endDate: string) =>{
-  const { data, error, count } = await client
+    const client = useSupabaseClient();
+  
+    const { data, error, count } = await client
     .from('habit_tracking_history')
     .select('id', { count: 'exact' }) // 'exact' will return the total count of matching rows
     .eq('habit_id', habit_id)
@@ -306,9 +309,9 @@ export const getOneHabitTrackingProgress = async (habitId: string, date:Date, us
 
 type ChangeHandler = (payload: { eventType: string; habitId: string; new: number[]; old: number[]}) => void;
 export const listenToTrackingHistory = (handleChange: ChangeHandler) => {
-  const now = new Date();
+    const client = useSupabaseClient();
   
-    
+const now = new Date();
   const subscription = client
     .channel('table_db_changes')
     .on(
@@ -359,7 +362,7 @@ export const getGridTrackingHistory = async (
   startDate: Date, 
   endDate: Date
 ): Promise<HabitTrackingEntry[] | null>  => {
-  
+    const client = useSupabaseClient();
   
   const { data, error } = await client
     .from('habit_tracking_history')

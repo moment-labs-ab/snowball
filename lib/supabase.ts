@@ -7,13 +7,11 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 let supabaseClient: SupabaseClient | null = null;
 
-export const supabaseInitialized = supabaseClient !== null;
-
 export const initSupabaseClient = async() => {
     if (supabaseClient) {
         return;
     }
-    
+
     const secrets = await fetchSupabaseSecrets();
 
     if (!secrets) {
@@ -51,14 +49,3 @@ export const useSupabaseClient = () => {
 export const resetSupabaseClient = () => {
     supabaseClient = null;
 };
-
-export const client = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
-
-export default client;
