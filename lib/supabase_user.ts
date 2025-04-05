@@ -202,7 +202,7 @@ export const getCurrentUser = async (): Promise<User> => {
     const client = useSupabaseClient();
 
     try {
-        console.log("Fetching current user data...");
+        //console.log("Fetching current user data...");
         const { data } = await client.auth.getUser();
         if (!data) {
             Alert.alert("User data not found");
