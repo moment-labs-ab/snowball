@@ -592,8 +592,6 @@ export const updateTracking = async (user_id: string, habit_id: string, date: Da
       const trackingId = existingTracking[0].id;
       const currentTrackingCount = existingTracking[0].tracking_count;
       const newTrackingCount = currentTrackingCount + updatedValue;
-      console.log("cuurent tracking:", currentTrackingCount)
-      console.log("updatedValue:", updatedValue)
     
       if (newTrackingCount <= 0) {
         // Delete the record if the new count is 0 or less

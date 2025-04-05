@@ -60,7 +60,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    padding: 10,
     borderBottomWidth: 1,
     borderRightWidth: 1,
     borderLeftWidth: 1,
