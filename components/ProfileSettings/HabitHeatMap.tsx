@@ -62,7 +62,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({ data, height = Dimensions.get("w
       d3.max(sortedData, (d: HabitTrackingEntry) => d.count) || 1;
     const colorScale = d3
       .scaleSequential()
-      .domain([0, maxCount])
+      .domain([maxCount, 0])
       .interpolator(d3.interpolateBlues);
 
     const today: Date = new Date();
@@ -96,12 +96,12 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({ data, height = Dimensions.get("w
   };
 
   const getColor = (count: number): string => {
-    //const maxCount = d3.max(data, (d: HabitTrackingEntry) => d.count) || 1;
-    const maxCount = 1
+    const maxCount = d3.max(data, (d: HabitTrackingEntry) => d.count) || 1;
+    //const maxCount = 1
     const colorScale = d3
-      .scaleSequential()
+      .scaleSequential(['white',"#3e4e88"])
       .domain([0, maxCount])
-      .interpolator(d3.interpolateBlues);
+
     return colorScale(count);
   };
   if (data.length == 0) {
@@ -154,7 +154,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({ data, height = Dimensions.get("w
                 y1={0}
                 x2={month.x - cellPadding}
                 y2={7 * (cellSize + cellPadding)}
-                stroke="#8BBDFA"
+                stroke="black"
                 strokeWidth={4}
                 strokeOpacity={0.5}
               />
@@ -182,7 +182,7 @@ const HabitHeatMap: React.FC<HeatMapProps> = ({ data, height = Dimensions.get("w
                   height={cellSize}
                   fill={getColor(count)}
                   rx={2}
-                  stroke={isToday ? "#8BBDFA" : "none"}
+                  stroke={isToday ? "#acc936" : "none"}
                   strokeWidth={isToday ? 3 : 0}
                   onPressIn={() => {}}
                 />

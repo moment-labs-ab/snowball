@@ -21,7 +21,7 @@ interface HabitSelectorProps {
 
 const HabitSelector: React.FC<HabitSelectorProps> = ({ setHabit }) => {
   const habits = [
-    'Read', 'Meditate', 'Journal', 'Code', 'Exercise', 
+    'Read', 'Meditate', 'Journal', 'Exercise', 'Code',
     'Stretch', 'Take Vitamins', 'Go on a Walk', 'Practice Yoga', 'Meal Prep', 
     'Gratitude', 'Floss', 'Skincare', 'Call Parents', 'Drink Water', 'Learn',
     'Clean', 'Socialize'
