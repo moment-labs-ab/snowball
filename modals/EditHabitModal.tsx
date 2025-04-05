@@ -37,7 +37,7 @@ interface EditHabitProps {
   selectedDate: Date;
   trackingCount: number;
   onTrackingCountChange: (newTrackingCount: number) => void;
-  singleDayCount: number,
+  singleDayCount: number;
   closeModal?: () => void;
 }
 
@@ -72,11 +72,27 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  const formatDate = (dateString: string) => {
-    const date =  new Date(dateString).toISOString().split("T")[0];
-    const [year, month, day] = date.split("-"); // Split into components
-    return `${month}-${day}`;
+  const formatDate = (input: Date | string) => {
+    const date = typeof input === "string" ? new Date(input + "T00:00:00") : input;
+  
+    const getOrdinal = (day: number) => {
+      if (day > 3 && day < 21) return "th";
+      switch (day % 10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
+      }
+    };
+  
+    const day = date.getDate();
+    const ordinal = getOrdinal(day);
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+  
+    return `${month} ${day}${ordinal}, ${year}`;
   };
+  
 
   const fetchTimeFrameDates = async () => {
     const dates = await getTrackingCountDates(
@@ -110,12 +126,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       setLoading(false);
     }
   }, [user.userId, habit_id]);
-
-  const onTimeChange = (event: any, selectedTime?: Date) => {
-    const currentTime = selectedTime || time;
-    setShowTimePicker(Platform.OS === "ios");
-    setTime(currentTime);
-  };
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const updateHabit = (updatedHabit: Habit) => {
@@ -163,7 +173,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
       // Update tracking count if changed
       if (singleDayCount !== tracking) {
-
         //console.log("Calling updateTracking...")
         const result = await updateTracking(
           user.userId,
@@ -171,9 +180,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           selectedDate,
           -(singleDayCount - tracking)
         );
-        console.log("trackingCount - tracking *-1 =", -(trackingCount - tracking) )
-        onTrackingCountChange(tracking)
-        
+        onTrackingCountChange(tracking);
       }
     } catch (error) {
       Alert.alert(String(error));
@@ -360,9 +367,22 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           placeholder={singleDayCount}
           handleChangeNumber={(e) => setTrackingCount(e)}
         />
-        <Text style={{ textAlign: "center" }}>
-          {startDate === endDate ? formatDate(selectedDate.toString()) : `${startDate} - ${endDate}`}
-        </Text>
+        <View
+          style={{
+            backgroundColor: "#B5C2C7", // light gray
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 10,
+            alignSelf: "center",
+            marginVertical: 8,
+          }}
+        >
+          <Text style={{ textAlign: "center", fontSize: 16, color: "#333" }}>
+            {startDate === endDate
+              ? startDate
+              : `${startDate} - ${endDate}`}
+          </Text>
+        </View>
 
         <View style={{ marginBottom: 5 }}>
           <Text

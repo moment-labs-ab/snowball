@@ -147,7 +147,6 @@ const HabitCard = ({
           count: updatedHabitData[id][existingEntryIndex].count + 1,
         };
       } else if (type == "update") {
-        console.log(newCount)
         updatedHabitData[id] = [...updatedHabitData[id]]; // Create a new array to avoid mutation
         updatedHabitData[id][existingEntryIndex] = {
           ...updatedHabitData[id][existingEntryIndex],
