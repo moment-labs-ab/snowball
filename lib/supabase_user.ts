@@ -4,7 +4,8 @@ import { Session } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { nanoid } from 'nanoid';
 import { User } from '@/types/types'
-import client from './supabase'
+import { useSupabaseClient } from './supabase';
+//import client from './supabase'
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -12,11 +13,12 @@ import client from './supabase'
 // `SIGNED_OUT` event if the user's session is terminated. This should
 // only be registered once.
 AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    client.auth.startAutoRefresh()
-  } else {
-    client.auth.stopAutoRefresh()
-  }
+    const client = useSupabaseClient();
+    if (state === 'active') {
+        client.auth.startAutoRefresh()
+    } else {
+        client.auth.stopAutoRefresh()
+    }
 })
 
 // Function to generate a unique ID
@@ -33,6 +35,7 @@ function generateUniqueId(): string {
  * @returns The newly created session of the user.
  */
 export const signUpWithEmail = async function signUpWithEmail(email: string, password: string, name: string, username:string): Promise<User | null> {
+    const client = useSupabaseClient();
     
     // TODO: Check for duplicate emails
     const { data: { session }, error } = await client.auth.signUp({
@@ -70,6 +73,8 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
  * @param email The users email
  */
 export const sendResetPasswordEmail = async (email: string) =>{
+    const client = useSupabaseClient();
+    
     const { data, error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: 'com.momentlabs.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
     });
@@ -87,6 +92,8 @@ export const resetPassword = async (
     accessToken: string,
     newPassword: string
   ) => {
+    const client = useSupabaseClient();
+    
     const { data, error: sessionError } = await client.auth.verifyOtp({
       email,
       token: accessToken,
@@ -128,6 +135,8 @@ export const resetPassword = async (
  * @returns the users data.
  */
 export const signInWithEmail = async function signInWithEmail(email:string, password:string) {
+    const client = useSupabaseClient();
+    
     const { error } = await client.auth.signInWithPassword({
       email: email,
       password: password,
@@ -148,6 +157,8 @@ export const signInWithEmail = async function signInWithEmail(email:string, pass
 * @returns 
 */
 export const getUsername = async (userId: string) =>{
+    const client = useSupabaseClient();
+    
     try {
       const { data, error } = await client
       .from('profiles')
@@ -164,6 +175,8 @@ export const getUsername = async (userId: string) =>{
 }
 
 export const getPremiumStatus = async (userId: string) =>{
+    const client = useSupabaseClient();
+    
     try {
         const { data, error } = await client
         .from('profiles')
@@ -181,6 +194,8 @@ export const getPremiumStatus = async (userId: string) =>{
 }
 
 export const getName = async (userId: string) =>{
+    const client = useSupabaseClient();
+    
     try {
         const { data, error } = await client
         .from('profiles')
@@ -201,7 +216,10 @@ export const getName = async (userId: string) =>{
  * @returns current_user data 
  */
  export const getCurrentUser = async (): Promise<User> => {
+    const client = useSupabaseClient();
+    
     try {
+        console.log("Fetching current user data...");
         const { data } = await client.auth.getUser();
         if (!data) {
             Alert.alert("User data not found");
@@ -233,6 +251,7 @@ export const getName = async (userId: string) =>{
             return currentUser;
         }
     } catch (error) {
+        console.log("Error fetching current user info:", error);
         Alert.alert("Issue fetching current user info.");
         let defaultUser = {
             userId: "",
@@ -251,6 +270,8 @@ export const getName = async (userId: string) =>{
  * @returns 
  */
   export const refreshUserSession = async () =>{
+    const client = useSupabaseClient();
+    
     try {
       const { data:{
         session
@@ -271,7 +292,9 @@ export const getName = async (userId: string) =>{
    /* Signs a user out.
    */
 export const signOut = async (): Promise<{ success: boolean; message: string; data?: any }> =>{
-      const { error } = await client.auth.signOut()
+    const client = useSupabaseClient();  
+    
+    const { error } = await client.auth.signOut()
 
       if (error) {
         console.error('Error signing user out:', error);
@@ -286,6 +309,8 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
 
   // This functionality needs to be handled on server. We could use Supabase edge function for now for this.
   export const handleUserDeletion = async(user_id: string): Promise<{ success: boolean; message: string; data?: any }> => {
+    const client = useSupabaseClient();
+    
     try {
       // Delete user using admin client
       const { data, error } = await client.auth.admin.deleteUser(user_id)
@@ -313,7 +338,9 @@ export const signOut = async (): Promise<{ success: boolean; message: string; da
   }
 
 export const trackLogin = async (userId: string) => {
-  const now = new Date().toDateString()
+    const client = useSupabaseClient();
+  
+    const now = new Date().toDateString()
     try {
       await client
         .from('user_logins')

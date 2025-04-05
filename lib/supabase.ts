@@ -7,14 +7,18 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 let supabaseClient: SupabaseClient | null = null;
 
-export const getSupabaseClient = async (): Promise<SupabaseClient | null> => {
-    if (supabaseClient) return supabaseClient;
+export const supabaseInitialized = supabaseClient !== null;
+
+export const initSupabaseClient = async() => {
+    if (supabaseClient) {
+        return;
+    }
     
     const secrets = await fetchSupabaseSecrets();
 
     if (!secrets) {
         console.error("Failed to fetch Supabase secrets");
-        return null;
+        throw new Error("Supabase secrets not available");
     }
 
     const { supabaseUrl, supabaseAnonKey } = secrets;
@@ -29,9 +33,24 @@ export const getSupabaseClient = async (): Promise<SupabaseClient | null> => {
             }
         });
     }
-
-    return null;
 }
+
+export const useSupabaseClient = () => {
+    try {
+    if (!supabaseClient) {
+        throw new Error("Supabase client not initialized. Call initSupabaseClient() first.");
+    }
+    return supabaseClient;
+
+    } catch (err) {
+      console.warn("Supabase client not initialized yet.");
+      throw err;
+    }
+}
+
+export const resetSupabaseClient = () => {
+    supabaseClient = null;
+};
 
 export const client = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

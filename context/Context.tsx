@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { getCurrentUser } from "@/lib/supabase_user";
 import { User } from "@/types/types";
+import { initSupabaseClient } from "@/lib/supabase";
 
 interface GlobalContextInterface {
   user: User;
@@ -32,25 +33,34 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    getCurrentUser()
-      .then((result) => {
-        if (result) {
-          setIsLoggedIn(true);
-          setUser({
-            email: result.email || "",
-            username: result.username || "",
-            name: result.name || "",
-            userId: result.userId || "",
-            premiumUser: result.premiumUser || true
-          });
-        } else {
-          setIsLoggedIn(false);
-          setUser(defaultUser);
+  useEffect(() => {    
+    async function preLoadingSteps () {
+        try {
+            await initSupabaseClient();
+            
+            const result = await getCurrentUser();
+            if (result) {
+            setUser({
+                email: result.email || "",
+                username: result.username || "",
+                name: result.name || "",
+                userId: result.userId || "",
+                premiumUser: result.premiumUser || true
+            });
+            setIsLoggedIn(true);
+            } else {
+            setUser(defaultUser);
+            setIsLoggedIn(false);
+            }
+        } catch (error) {
+            console.error("Error fetching user:", error);
         }
-      })
-      .catch((error) => console.error("Error fetching user:", error))
-      .finally(() => setIsLoading(false));
+        finally {
+            setIsLoading(false);
+        }
+    }
+    
+    preLoadingSteps();
   }, []);
 
   return (
