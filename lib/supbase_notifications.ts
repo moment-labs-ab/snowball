@@ -7,21 +7,6 @@ import Constants from 'expo-constants';
 import { Platform } from "react-native";
 import { useSupabaseClient } from './supabase';
 
-// Tells Supabase Auth to continuously refresh the session automatically
-// if the app is in the foreground. When this is added, you will continue
-// to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
-// `SIGNED_OUT` event if the user's session is terminated. This should
-// only be registered once.
-AppState.addEventListener('change', (state) => {
-    const client = useSupabaseClient();
-
-    if (state === 'active') {
-        client.auth.startAutoRefresh()
-    } else {
-        client.auth.stopAutoRefresh()
-    }
-});
-
 export const getNotifications = async (userId: string): Promise<NotificationItem[]> => {
     const client = useSupabaseClient();
 
