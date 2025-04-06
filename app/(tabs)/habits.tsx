@@ -21,6 +21,8 @@ import WelcomeModal from "@/components/HabitObjects/WelcomeModal";
 
 import { getUserLoginCount } from "@/lib/supabase_profile";
 import { useHabitContext } from "@/context/HabitContext";
+import FeedbackButton from "@/modals/FeedbackButton";
+import Feedback from "@/components/Profile/SettingsFeedback";
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
@@ -136,10 +138,32 @@ const Habits = () => {
         <View>{userLogins === 1 && <WelcomeModal isOpen={openWelcome} />}</View>
       </View>
 
-      <DailyHabitDisplay
-        selectedDate={selectedDate}
-        editHabitOrder={editRequested}
-      />
+      <View style={{ flex: 1 }}>
+        <DailyHabitDisplay
+          selectedDate={selectedDate}
+          editHabitOrder={editRequested}
+        />
+
+        {/* Overlay container for FeedbackButton */}
+        <View
+          style={{
+            position: "absolute",
+            bottom: 20,
+            right: 0,
+            backgroundColor: "transparent", // transparent background
+            zIndex: 10, // make sure it's above other components
+          }}
+        >
+          <FeedbackButton
+            label="Feedback"
+            content={<Feedback />}
+            style={{
+              width: 48,
+              height: 48, // if FeedbackButton supports this
+            }}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 };

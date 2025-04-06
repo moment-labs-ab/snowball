@@ -14,6 +14,8 @@ import icons from "@/constants/icons";
 import ProfileCard from "@/components/ProfileSettings/ProfileCard";
 import HeatMapDisplay from "@/components/ProfileSettings/HeatMapDisplay";
 import { StatusBar } from "expo-status-bar";
+import FeedbackButton from "@/modals/FeedbackButton";
+import Feedback from "@/components/Profile/SettingsFeedback";
 
 const Profile = () => {
   const { user } = useGlobalContext();
@@ -34,10 +36,10 @@ const Profile = () => {
     }
   };
 
-    useEffect(() => {
-        setIsLoading(true);
-        getUserData().finally(() => setIsLoading(false));
-    }, [user.name]);
+  useEffect(() => {
+    setIsLoading(true);
+    getUserData().finally(() => setIsLoading(false));
+  }, [user.name]);
 
   if (isLoading) {
     return (
@@ -69,7 +71,27 @@ const Profile = () => {
             <Text style={styles.errorText}>Unable to load user data</Text>
           )}
         </View>
-        <HeatMapDisplay />
+        <View style={{ flex: 1 }}>
+          <HeatMapDisplay />
+          <View
+            style={{
+              position: "absolute",
+              bottom: 20,
+              right: 0,
+              backgroundColor: "transparent", // transparent background
+              zIndex: 10, // make sure it's above other components
+            }}
+          >
+            <FeedbackButton
+              label="Feedback"
+              content={<Feedback />}
+              style={{
+                width: 48,
+                height: 48, // if FeedbackButton supports this
+              }}
+            />
+          </View>
+        </View>
 
         <View style={styles.divider} />
       </View>

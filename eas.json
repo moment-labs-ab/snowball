@@ -28,6 +28,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "aashidash123@yahoo.com",
+        "ascAppId": "6744297395",
+        "appleTeamId": "MHA7TR7N8Q"
+      }
+    }
   }
 }

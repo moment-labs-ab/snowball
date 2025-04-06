@@ -1,44 +1,61 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AddGoalButton from "@/components/GoalObjects/AddGoalButton";
-import GoalObject from "@/components/GoalObjects/GoalObject";
 import AddGoalForm from "@/components/GoalObjects/AddGoalForm";
 import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
 import { useGlobalContext } from "@/context/Context";
 import { useGoalContext } from "@/context/GoalContext";
-import { Goal } from "@/types/types";
-import { getUserGoals } from "@/lib/supabase_goals";
+import FeedbackButton from "@/modals/FeedbackButton";
+import Feedback from "@/components/Profile/SettingsFeedback";
 
 const goals = () => {
-
   const { user } = useGlobalContext();
-  const { goals } = useGoalContext()
+  const { goals } = useGoalContext();
   const [loading, setLoading] = useState<boolean>(true);
-
-  
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-          <View style={styles.flexRow}>
-            <View>
-              <View style={[styles.flexRow, styles.headerRow]}>
-                <Text style={styles.headerText}>Goals</Text>
-              </View>
-              <View style={[styles.flexRow, styles.subHeaderRow]}>
-                <Text style={styles.subHeaderText}>Who do you want to be?</Text>
-              </View>
+        <View style={styles.flexRow}>
+          <View>
+            <View style={[styles.flexRow, styles.headerRow]}>
+              <Text style={styles.headerText}>Goals</Text>
             </View>
-            {goals.length !== 0 && (
-            <AddGoalButton label='Create a New Goal' content={<AddGoalForm />}/>
-            )}
+            <View style={[styles.flexRow, styles.subHeaderRow]}>
+              <Text style={styles.subHeaderText}>Who do you want to be?</Text>
+            </View>
           </View>
-          <View style={styles.divider} />
-        
-        <AllGoalsView />
+          {goals.length !== 0 && (
+            <AddGoalButton
+              label="Create a New Goal"
+              content={<AddGoalForm />}
+            />
+          )}
+        </View>
+        <View style={styles.divider} />
+        <View style={{ flex: 1 }}>
+          <AllGoalsView />
+          <View
+            style={{
+              position: 'absolute',
+              alignContent:'flex-end',
+              bottom: 20,
+              right:0,
+              backgroundColor: "transparent", // transparent background
+              zIndex: 10, // make sure it's above other components
+            }}
+          >
+            <FeedbackButton
+              label="Feedback"
+              content={<Feedback />}
+              style={{
+                width: 48,
+                height: 48, // if FeedbackButton supports this
+              }}
+            />
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -46,7 +63,7 @@ const goals = () => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#edf5fe', // Replace with your bg-background class color if different
+    backgroundColor: "#edf5fe", // Replace with your bg-background class color if different
     flex: 1,
   },
   container: {
@@ -65,9 +82,9 @@ const styles = StyleSheet.create({
   },
   flexRow: {
     flexDirection: "row",
-    alignItems:'center',
-    justifyContent: 'space-between',
-    alignContent:'space-between'
+    alignItems: "center",
+    justifyContent: "space-between",
+    alignContent: "space-between",
   },
   headerRow: {
     marginTop: 24, // Equivalent to mt-6
