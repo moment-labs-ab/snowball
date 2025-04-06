@@ -4,18 +4,16 @@ import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
-
 import CustomButton from "../components/CustomButtom";
 import images from "../constants/images";
 import { useGlobalContext } from "@/context/Context";
 import { trackLogin } from "@/lib/supabase_user";
-import icons from "@/constants/icons";
 
 SplashScreen.preventAutoHideAsync(); // Keep the splash screen visible until we manually hide it.
 
 export default function App() {
   const { isLoading, isLoggedIn, user } = useGlobalContext();
-
+  
   useEffect(() => {
     async function handleSplashScreen() {
       if (!isLoading) {
