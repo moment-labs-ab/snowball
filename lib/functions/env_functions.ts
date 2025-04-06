@@ -1,8 +1,11 @@
+import { SNOWBALL_DB_URL } from '@env'
+
 /**
  * Fetch supabase secrets
  */
 export const fetchSupabaseSecrets = async() => {
-    const response = await fetch("https://eykpncisvbuptalctkjx.supabase.co/functions/v1/get-secrets", {
+    const url = `${SNOWBALL_DB_URL}/functions/v1/get-secrets`;
+    const response = await fetch(url, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -16,7 +19,8 @@ export const fetchSupabaseSecrets = async() => {
     }
 
     const data = await response.json();
-    
+    console.log("Fetched Supabase secrets:", JSON.stringify(data));
+
     return {
         supabaseUrl: data.url,
         supabaseAnonKey: data.key
