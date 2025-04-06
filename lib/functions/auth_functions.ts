@@ -1,8 +1,10 @@
+import { SNOWBALL_DB_URL } from '@env'
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
     try {
-      const response = await fetch(
-        `https://eykpncisvbuptalctkjx.supabase.co/functions/v1/delete_user`, // replace from secrets
+        const url = `${SNOWBALL_DB_URL}/functions/v1/delete_user`;
+
+      const response = await fetch(url,
         {
           method: "DELETE",
           headers: {

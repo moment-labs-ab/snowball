@@ -1,3 +1,4 @@
+import { SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY } from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { fetchSupabaseSecrets } from './functions/env_functions';
@@ -10,25 +11,14 @@ export const initSupabaseClient = async() => {
         return;
     }
 
-    const secrets = await fetchSupabaseSecrets();
-
-    if (!secrets) {
-        console.error("Failed to fetch Supabase secrets");
-        throw new Error("Supabase secrets not available");
-    }
-
-    const { supabaseUrl, supabaseAnonKey } = secrets;
-
-    if (supabaseUrl && supabaseAnonKey) {
-        supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-            auth: {
-                storage: AsyncStorage,
-                autoRefreshToken: true,
-                persistSession: true,
-                detectSessionInUrl: false,
-            }
-        });
-    }
+    supabaseClient = createClient(SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY, {
+        auth: {
+            storage: AsyncStorage,
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: false,
+        }
+    });
 
     if (supabaseClient) {
         registerSupabaseListeners();
