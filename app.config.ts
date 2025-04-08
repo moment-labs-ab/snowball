@@ -1,5 +1,6 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
 import { version } from "./package.json";
+import 'dotenv/config';
 
 // Replace these with your EAS project ID and project slug.
 // You can find them at https://expo.dev/accounts/[account]/projects/[project].
@@ -80,6 +81,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: EAS_PROJECT_ID,
       },
+      SNOWBALL_DB_URL: process.env.SNOWBALL_DB_URL,
+      SNOWBALL_DB_ANON_KEY: process.env.SNOWBALL_DB_ANON_KEY,
     },
     plugins: [
       "expo-router",
