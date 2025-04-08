@@ -22,6 +22,7 @@ import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
+import EmojiModal from "./EmojiModal";
 
 interface NewHabitProps {
   visible: boolean;
@@ -210,22 +211,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         </View>
 
         <View style={{flexDirection:'row'}}>
-        <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{habit.emoji}</Text>
-            </TouchableOpacity>
+        <EmojiModal color={color} emoji={habit.emoji} handleEmojiSelect={handleEmojiSelect}/>
            <View style={{flex:1}}>
           <TextInput
             style={{
@@ -242,26 +228,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             textAlignVertical="center"
           />
           </View>
-          <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                    <Text style={{ color: "white" }}>Close</Text>
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
-              </View>
-            </Modal>
+          
         </View>
         <HabitSelector setHabit={setHabit} />
 

@@ -12,6 +12,8 @@ export const initSupabaseClient = async() => {
     const SNOWBALL_DB_URL = process.env.SNOWBALL_DB_URL || '';
     const SNOWBALL_DB_ANON_KEY = process.env.SNOWBALL_DB_ANON_KEY || '';
 
+    console.log("Creds", SNOWBALL_DB_URL);
+
     supabaseClient = createClient(SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY, {
         auth: {
             storage: AsyncStorage,
