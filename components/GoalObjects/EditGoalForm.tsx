@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import EmojiSelector from "react-native-emoji-selector"; // You might need to install this package
 import { useGlobalContext } from "@/context/Context";
-import { Milestones, Goal} from "@/types/types";
+import { Milestones, Goal } from "@/types/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -21,14 +21,11 @@ import NewHabitButton from "@/modals/NewHabitButton";
 import GoalColorPicker from "./GoalColorPicker";
 import NewHabitModal from "@/modals/NewHabitModal";
 import { archiveGoal, updateGoal } from "@/lib/supabase_goals";
-import Octicons from '@expo/vector-icons/Octicons';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import Octicons from "@expo/vector-icons/Octicons";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { useGoalContext } from "@/context/GoalContext";
-
-
-
 
 interface SelectedHabits {
   id: string;
@@ -77,26 +74,24 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
-  
+
   const [description, setDescription] = useState(originalDescription);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [color, setColor] = useState(originalColor);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [formattedDate, setFormattedDate] = useState(original_expected_end_date)
+  const [formattedDate, setFormattedDate] = useState(
+    original_expected_end_date
+  );
 
-  
   useEffect(() => {
-
     const startingDate = new Date(original_expected_end_date);
     setExpectedEndDate(startingDate);
-
-    
-  }, []);
+  }, [goals]);
 
   const updateGoalState = (updatedGoal: Goal) => {
     setGoals((prevGoals) =>
-    prevGoals.map((goal) =>
-    goal.id === updatedGoal.id ? { ...goal, ...updatedGoal } : goal
+      prevGoals.map((goal) =>
+        goal.id === updatedGoal.id ? { ...goal, ...updatedGoal } : goal
       )
     );
   };
@@ -104,7 +99,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const handleSubmit = async () => {
     // Create an array to track missing fields
     const missingFields: string[] = [];
-  
+
     // Validate mandatory fields
     if (name.trim() === "") {
       missingFields.push("Goal Name");
@@ -112,19 +107,19 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
     if (selectedHabits.length === 0) {
       missingFields.push("Associated Habits");
     }
-    if (description.trim() === "") {
-      missingFields.push("Goal Description");
-    }
     if (!expectedEndDate) {
       missingFields.push("End Date");
     }
-  
+
     // Check for duplicate milestones
-    const milestoneNames = milestones.map((milestone) => milestone.milestone.trim().toLowerCase());
-    const duplicateMilestones = milestoneNames.filter(
-      (milestone, index) => milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    const milestoneNames = milestones.map((milestone) =>
+      milestone.milestone.trim().toLowerCase()
     );
-  
+    const duplicateMilestones = milestoneNames.filter(
+      (milestone, index) =>
+        milestone !== "" && milestoneNames.indexOf(milestone) !== index
+    );
+
     if (duplicateMilestones.length > 0) {
       Alert.alert(
         "Duplicate Milestones",
@@ -135,7 +130,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       );
       return;
     }
-  
+
     // If any mandatory fields are missing, show an alert
     if (missingFields.length > 0) {
       Alert.alert(
@@ -145,50 +140,46 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       );
       return;
     }
-    
-    const today = new Date()
-    if (expectedEndDate < today){
-      Alert.alert(
-        "Invalid Date",
-        `Please select a valid end date.`,
-        [{ text: "OK" }]
-      );
+
+    const today = new Date();
+    if (expectedEndDate < today) {
+      Alert.alert("Invalid Date", `Please select a valid end date.`, [
+        { text: "OK" },
+      ]);
       return;
     }
-  
-    // If all validations pass, proceed with goal update
-    try{
-    const result = await updateGoal(
-      id,
-      user.userId,
-      name,
-      emoji,
-      selectedHabits,
-      description,
-      expectedEndDate,
-      milestones,
-      color,
-      tags
-    );
-    if (result.success == false) {
-      Alert.alert("Error", result.message);
-    } else if (result.data) {
-      const goal = result.data as Goal;
-      updateGoalState(goal)
-    }
-  } catch(error) {
-    Alert.alert("Submission Error", String(error));
-  } finally {
-  
-    
-    showUpdateToast()
-    if(closeModal){
-      closeModal();
 
+    // If all validations pass, proceed with goal update
+    try {
+      
+      const result = await updateGoal(
+        id,
+        user.userId,
+        name,
+        emoji,
+        selectedHabits,
+        description,
+        expectedEndDate,
+        milestones,
+        color,
+        tags
+      );
+      if (result.success == false) {
+        Alert.alert("Error", result.message);
+      } else if (result.data) {
+        const goal = result.data as Goal;
+        updateGoalState(goal);
+        
+      }
+    } catch (error) {
+      Alert.alert("Submission Error", String(error));
+    } finally {
+      showUpdateToast();
+      if (closeModal) {
+        closeModal();
+      }
     }
-  }
-}
-  
+  };
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
@@ -276,53 +267,52 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   };
 
   //Archiving
-  const handleArchive = async (goal_id: string, user_id:string)=>{
-    if (!user.premiumUser){
+  const handleArchive = async (goal_id: string, user_id: string) => {
+    if (!user.premiumUser) {
       Alert.alert(
         "Premium Feature",
         "Unlock Archiving with Premium!",
         [
           {
-            text: 'OK',
-            style: 'default',
+            text: "OK",
+            style: "default",
           },
         ],
         {
           cancelable: false,
         }
       );
-      showArchiveToast()
+      showArchiveToast();
       return;
     }
     Alert.alert(
-      'Archive Goal',
-      'Are you sure you want to Archive? You will not be able to re-activate this goal.',
+      "Archive Goal",
+      "Are you sure you want to Archive? You will not be able to re-activate this goal.",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'Yes, I want to archive',
+          text: "Yes, I want to archive",
           onPress: async () => {
             const result = await archiveGoal(goal_id, user_id);
             if (result.success) {
-              archiveGoalState(goal_id)
-              if(closeModal){
-                closeModal()
+              archiveGoalState(goal_id);
+              if (closeModal) {
+                closeModal();
               }
             } else {
-              console.error('Error Archiving goal:', result.message);
+              console.error("Error Archiving goal:", result.message);
               // Handle deletion error, e.g., show a message to the user
             }
           },
-          style: 'default', // Optional: gives a red color to the button on iOS
+          style: "default", // Optional: gives a red color to the button on iOS
         },
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
-
-  }
+  };
 
   const showArchiveToast = () => {
     Toast.show({
@@ -333,13 +323,12 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
       position: "top",
       autoHide: true,
       props: {
-        onPress: () => {
-        }, // Navigate to your premium page
+        onPress: () => {}, // Navigate to your premium page
       },
     });
   };
 
-const showUpdateToast = () => {
+  const showUpdateToast = () => {
     Toast.show({
       type: "success",
       text1: "Success",
@@ -348,12 +337,10 @@ const showUpdateToast = () => {
       position: "top",
       autoHide: true,
       props: {
-        onPress: () => {
-        }, // Navigate to your premium page
+        onPress: () => {}, // Navigate to your premium page
       },
     });
   };
-
 
   if (!habits) {
     return <View></View>;
@@ -444,7 +431,9 @@ const showUpdateToast = () => {
                   );
                 }}
               >
-                <Text>{habit.emoji} {habit.name}</Text>
+                <Text>
+                  {habit.emoji} {habit.name}
+                </Text>
                 {selectedHabits.some((h) => h.id === habit.id) && (
                   <Text style={styles.checkmark}>✓</Text>
                 )}
@@ -481,7 +470,9 @@ const showUpdateToast = () => {
                   width: "100%",
                 }}
                 value={description}
-                onChangeText={setDescription}
+                onChangeText={(text) =>
+                  setDescription(text.trim() === "" ? "" : text)
+                }
                 placeholder="Any Notes?"
                 placeholderTextColor={"#898989"}
                 textAlignVertical="center"
@@ -523,16 +514,51 @@ const showUpdateToast = () => {
             style={[styles.submitButton, { backgroundColor: color }]}
             onPress={handleSubmit}
           >
-          <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-            <Text style={[styles.submitButtonText, {marginRight:5, flex:1, textAlign:'center'}]}>Update Goal</Text>
-            <SimpleLineIcons name="refresh" size={24} color="white" />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={[
+                  styles.submitButtonText,
+                  { marginRight: 5, flex: 1, textAlign: "center" },
+                ]}
+              >
+                Update Goal
+              </Text>
+              <SimpleLineIcons name="refresh" size={24} color="white" />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{handleArchive(id, user.userId)}}
-          style={[styles.archiveButton, {borderColor: color}]}>
-            <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-              <Text style={[styles.submitButtonText, {color:'black', marginRight:5, flex:1, textAlign:'center'}]}>Archive Goal</Text>
+          <TouchableOpacity
+            onPress={() => {
+              handleArchive(id, user.userId);
+            }}
+            style={[styles.archiveButton, { borderColor: color }]}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={[
+                  styles.submitButtonText,
+                  {
+                    color: "black",
+                    marginRight: 5,
+                    flex: 1,
+                    textAlign: "center",
+                  },
+                ]}
+              >
+                Archive Goal
+              </Text>
               <Octicons name="archive" size={24} color="black" />
             </View>
           </TouchableOpacity>
@@ -645,7 +671,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 150,
     width: "100%",
-    borderWidth:4
+    borderWidth: 4,
   },
   submitButtonText: {
     color: "white",

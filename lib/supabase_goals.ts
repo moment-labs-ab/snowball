@@ -108,13 +108,13 @@ export const updateGoal = async (
     const { data, error } = await client
         .from("goal_objects")
         .update({
-            ...(name && { name }),
-            ...(emoji && { emoji }),
-            ...(description && { description }),
-            ...(expectedEndDate && { expected_end_date: expectedEndDate }),
-            ...(milestones && { milestones }),
-            ...(color && { color }),
-            ...(tags && { tags }),
+            ...(name !== undefined && { name }),
+            ...(emoji !== undefined && { emoji }),
+            ...(description !== undefined && { description }), // <- this now works with empty string
+            ...(expectedEndDate !== undefined && { expected_end_date: expectedEndDate }),
+            ...(milestones !== undefined && { milestones }),
+            ...(color !== undefined && { color }),
+            ...(tags !== undefined && { tags }),
         })
         .eq("id", id)
         .eq("user_id", user_id);
