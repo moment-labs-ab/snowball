@@ -29,6 +29,7 @@
     "d3": "^7.9.0",
     "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "emoji-mart-native": "^0.6.5-beta",
     "eslint-plugin-react-hooks": "^5.1.0",
     "expo": "~52.0.36",
