@@ -92,7 +92,8 @@ const DailyHabitDisplay = ({
                 justifyContent: "flex-start",
                 paddingHorizontal: 15,
                 marginBottom: 8,
-                marginRight:6
+                marginRight:6,
+                marginLeft:4
               }}
             >
               {expandedGroups[item.key] ? (

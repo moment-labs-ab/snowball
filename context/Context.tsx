@@ -45,7 +45,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
                 username: result.username || "",
                 name: result.name || "",
                 userId: result.userId || "",
-                premiumUser: result.premiumUser || true
+                premiumUser: result.premiumUser || false
             });
             setIsLoggedIn(true);
             } else {

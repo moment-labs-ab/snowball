@@ -28,6 +28,7 @@ import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
 import { getTrackingCountDates } from "@/lib/supabase_habits";
+import EmojiModal from "./EmojiModal";
 
 interface EditHabitProps {
   visible: boolean;
@@ -61,7 +62,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const [frequencyRate, setFrequencyRate] = useState("Daily");
   const [reminder, setReminder] = useState(false);
   const [emoji, setEmoji] = useState("");
-  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
 
   const [habit, setHabit] = useState<Habit>({} as Habit);
 
@@ -99,7 +99,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     return `${month} ${day}${ordinal}, ${year}`;
   };
 
-
   const fetchTimeFrameDates = async () => {
     const dates = await getTrackingCountDates(
       habit_id,
@@ -123,8 +122,8 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     setLoading(true);
     const habit = habits.find((habit) => habit.id === habitId);
 
-    const names = habits.map(habit => habit.name);
-    setHabitNames(names)
+    const names = habits.map((habit) => habit.name);
+    setHabitNames(names);
     return habit;
   };
 
@@ -245,7 +244,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
     setHabit({ ...habit, emoji: selectedEmoji });
-    setIsEmojiSelectorVisible(false);
   };
 
   //Archiving
@@ -411,27 +409,17 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           </Text>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-            style={{
-              width: 40,
-              height: 40,
-              justifyContent: "center",
-              alignItems: "center",
-              borderWidth: 1,
-              borderColor: "#ccc",
-              borderRadius: 5,
-              backgroundColor: color,
-              marginRight: 10,
-            }}
-            onPress={() => setIsEmojiSelectorVisible(true)}
-          >
-            <Text style={{ color: "white" }}>{habit.emoji}</Text>
-          </TouchableOpacity>
+          <EmojiModal
+            emoji={habit.emoji}
+            handleEmojiSelect={handleEmojiSelect}
+            height={40}
+            width={40}
+          />
           <View style={{ flex: 1 }}>
             <TextInput
               style={{
                 borderWidth: 1,
-                borderColor: "#ccc",
+                borderColor: "black",
                 padding: 10,
                 borderRadius: 5,
               }}
@@ -442,26 +430,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
               textAlignVertical="center"
             />
           </View>
-          <Modal
-            visible={isEmojiSelectorVisible}
-            transparent={true}
-            animationType="slide"
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setIsEmojiSelectorVisible(false)}
-                >
-                  <Text style={{ color: "white" }}>Close</Text>
-                </TouchableOpacity>
-                <EmojiSelector
-                  onEmojiSelected={handleEmojiSelect}
-                  columns={8}
-                />
-              </View>
-            </View>
-          </Modal>
         </View>
         <TimeIntervalPicker
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}

@@ -22,6 +22,7 @@ import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
+import EmojiModal from "./EmojiModal";
 
 interface NewHabitProps {
   visible: boolean;
@@ -46,7 +47,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const { user } = useGlobalContext();
   const [color, setColor] = useState("#3e4e88")
   const [emoji, setEmoji] = useState("❄️")
-  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [habitCount, setHabitCount] = useState<number>(0)
 
@@ -143,7 +143,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
     setHabit({ ...habit, emoji: selectedEmoji })
-    setIsEmojiSelectorVisible(false);
   };
 
   const showToast = () => {
@@ -210,22 +209,11 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         </View>
 
         <View style={{flexDirection:'row'}}>
-        <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{habit.emoji}</Text>
-            </TouchableOpacity>
+        <EmojiModal emoji={habit.emoji}
+        handleEmojiSelect={handleEmojiSelect}
+        height={50}
+        width={50}
+        emojiSize={30}/>
            <View style={{flex:1}}>
           <TextInput
             style={{
@@ -233,6 +221,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
               borderColor: "#E6F0F",
               padding: 10,
               borderRadius: 5,
+              height:50
             }}
             value={habit.name}
             onChangeText={(e) => setHabit({ ...habit, name: e })}
@@ -242,26 +231,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
             textAlignVertical="center"
           />
           </View>
-          <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                    <Text style={{ color: "white" }}>Close</Text>
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
-              </View>
-            </Modal>
+          
         </View>
         <HabitSelector setHabit={setHabit} />
 
