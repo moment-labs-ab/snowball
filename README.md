@@ -41,7 +41,14 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     ```bash
     eas build --platform ios --profile preview
     ```
+### Build for App Store Connect and submit
+    ```bash
+    eas build --platform ios --message {label}
+    ```
 
+    ```bash
+    eas submit -p ios
+    ```
 
 
 In the output, you'll find options to open the app in a

@@ -67,32 +67,38 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
 
   const { user } = useGlobalContext();
   const { habits, isLoading, setHabits } = useHabitContext();
+  const [habitNames, setHabitNames] = useState<string[]>([]);
   const [tracking, setTrackingCount] = useState<number>(singleDayCount);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
   const formatDate = (input: Date | string) => {
-    const date = typeof input === "string" ? new Date(input + "T00:00:00") : input;
-  
+    const date =
+      typeof input === "string" ? new Date(input + "T00:00:00") : input;
+
     const getOrdinal = (day: number) => {
       if (day > 3 && day < 21) return "th";
       switch (day % 10) {
-        case 1: return "st";
-        case 2: return "nd";
-        case 3: return "rd";
-        default: return "th";
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
       }
     };
-  
+
     const day = date.getDate();
     const ordinal = getOrdinal(day);
     const month = date.toLocaleString("en-US", { month: "short" });
     const year = date.getFullYear();
-  
+
     return `${month} ${day}${ordinal}, ${year}`;
   };
-  
+
 
   const fetchTimeFrameDates = async () => {
     const dates = await getTrackingCountDates(
@@ -116,6 +122,9 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const getHabitById = (habitId: string) => {
     setLoading(true);
     const habit = habits.find((habit) => habit.id === habitId);
+
+    const names = habits.map(habit => habit.name);
+    setHabitNames(names)
     return habit;
   };
 
@@ -142,10 +151,16 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     );
   };
   const submit = async () => {
-    //console.log(tracking); // Ensure this logs the correct, updated number
-
     if (habit.name === "Habit" || habit.frequency === 0) {
       Alert.alert("Error", "Please fill in all the fields");
+      return;
+    }
+    if (habitNames.includes(habit.name) && habit.name != title) {
+      Alert.alert(
+        "Duplicate Habit Name",
+        `You already have a habit called ${habit.name}.`,
+        [{ text: "OK" }]
+      );
       return;
     }
 
@@ -378,9 +393,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
           }}
         >
           <Text style={{ textAlign: "center", fontSize: 16, color: "#333" }}>
-            {startDate === endDate
-              ? startDate
-              : `${startDate} - ${endDate}`}
+            {startDate === endDate ? startDate : `${startDate} - ${endDate}`}
           </Text>
         </View>
 
