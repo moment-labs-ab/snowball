@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 
 type NumberScrollProps = {
@@ -31,7 +31,7 @@ const NumberScroll = ({
   const padding = (visibleItems - 1) / 2 * itemWidth; // Equal padding on both sides
 
   useEffect(() => {
-    if (scrollViewRef.current) {
+    if (scrollViewRef.current) {  
       const initialIndex = numbers.indexOf(initialValue);
       if (initialIndex !== -1) {
         setTimeout(() => {
@@ -91,13 +91,26 @@ const NumberScroll = ({
           {...props}
         >
           {numbers.map((num) => (
-            <View key={num} style={[styles.scrollItem, { width: itemWidth }]}> 
-              <Text 
-                style={[styles.numberText, num === selectedValue && styles.selectedText]}
-              >
-                {num}
-              </Text>
-            </View>
+            <TouchableOpacity
+            key={num}
+            onPress={() => {
+              const index = numbers.indexOf(num);
+              scrollViewRef.current?.scrollTo({
+                x: index * itemWidth,
+                animated: true,
+              });
+              setSelectedValue(num);
+              handleChangeText(num);
+            }}
+            style={[styles.scrollItem, { width: itemWidth }]}
+          >
+            <Text 
+              style={[styles.numberText, num === selectedValue && styles.selectedText]}
+            >
+              {num}
+            </Text>
+          </TouchableOpacity>
+          
           ))}
         </ScrollView>
       </View>
