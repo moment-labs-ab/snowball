@@ -1,7 +1,6 @@
-import { SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY } from '@env'
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { fetchSupabaseSecrets } from './functions/env_functions';
 import { AppState } from 'react-native';
 
 let supabaseClient: SupabaseClient | null = null;
@@ -10,6 +9,8 @@ export const initSupabaseClient = async() => {
     if (supabaseClient) {
         return;
     }
+    const SNOWBALL_DB_URL = process.env.SNOWBALL_DB_URL || '';
+    const SNOWBALL_DB_ANON_KEY = process.env.SNOWBALL_DB_ANON_KEY || '';
 
     supabaseClient = createClient(SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY, {
         auth: {

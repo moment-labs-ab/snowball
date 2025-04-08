@@ -1,7 +1,8 @@
-import { SNOWBALL_DB_URL } from '@env'
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
     try {
+        const SNOWBALL_DB_URL = process.env.SNOWBALL_DB_URL;
+
         const url = `${SNOWBALL_DB_URL}/functions/v1/delete_user`;
 
       const response = await fetch(url,
