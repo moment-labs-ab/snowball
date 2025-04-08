@@ -36,7 +36,9 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   title,
   closeModal,
 }) => {
-  const {setHabits} = useHabitContext();
+  const {setHabits, habits} = useHabitContext();
+  const [habitNames, setHabitNames] = useState<string[]>([]);
+
 
   const [frequency, setFrequency] = useState<number>(1);
   const [time, setTime] = useState<Date>(new Date());
@@ -47,8 +49,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [habitCount, setHabitCount] = useState<number>(0)
-
-
 
   const [habit, setHabit] = useState({
     name: "",
@@ -75,6 +75,14 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     }
     if(habit.emoji === ""){
       missingFields.push("Emoji")
+    }
+    if (habitNames.includes(habit.name)) {
+      Alert.alert(
+        "Duplicate Habit Name",
+        `You already have a habit called ${habit.name}.`,
+        [{ text: "OK" }]
+      );
+      return;
     }
   
     // If any mandatory fields are missing, show an alert
@@ -167,6 +175,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   useEffect(() => {
     setIsPremium(user.premiumUser);
     fetchHabitCount()
+    const names = habits.map(habit => habit.name);
+    setHabitNames(names)
   }, [user.premiumUser]);
 
   return (

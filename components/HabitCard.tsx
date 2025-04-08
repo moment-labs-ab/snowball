@@ -303,7 +303,7 @@ const HabitCard = ({
               <EditHabitModal
                 visible={modalVisible}
                 onClose={handleCloseModal}
-                title={"Edit "}
+                title={name}
                 habit_id={id}
                 selectedDate={date}
                 trackingCount={trackingCount}

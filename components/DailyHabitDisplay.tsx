@@ -18,7 +18,7 @@ const DailyHabitDisplay = ({
   selectedDate,
   editHabitOrder,
 }: dailyHabitDisplayProps) => {
-  const {habits, setHabits, isLoading, setLoading} = useHabitContext()
+  const { habits, setHabits, isLoading, setLoading } = useHabitContext();
   const { user } = useGlobalContext();
   //const [habits, setHabits] = useState<Habit[]>([]);
   //const [loading, setLoading] = useState<boolean>(true);
@@ -44,9 +44,7 @@ const DailyHabitDisplay = ({
     setLoading(false);
   };
 
-  useEffect(() => {
-    
-  }, [user.userId, selectedDate, habits.length]);
+  useEffect(() => {}, [user.userId, selectedDate, habits.length]);
 
   if (!isLoading && habits.length === 0) {
     return <HabitsWelcome />;
@@ -71,9 +69,9 @@ const DailyHabitDisplay = ({
 
   // Order the groups by frequency_rate
   const orderedGroups = [
-    { label: "Daily", key: "Daily" },
-    { label: "Weekly", key: "Weekly" },
-    { label: "Bi-weekly", key: "Bi-weekly" },
+    { label: "Daily Habits", key: "Daily" },
+    { label: "Weekly Habits", key: "Weekly" },
+    { label: "Bi-weekly Habits", key: "Bi-weekly" },
   ];
 
   return (
@@ -91,25 +89,45 @@ const DailyHabitDisplay = ({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: 'flex-start',
-                paddingHorizontal:15,
-                marginBottom:8
+                justifyContent: "flex-start",
+                paddingHorizontal: 15,
+                marginBottom: 8,
+                marginRight:6
               }}
             >
               {expandedGroups[item.key] ? (
-                <Entypo name="chevron-down" size={24} color="black" />
+                <Entypo name="chevron-down" size={16} color="black" />
               ) : (
-                <Entypo name="chevron-right" size={24} color="black" />
+                <Entypo name="chevron-right" size={16} color="black" />
               )}
+              <View
+                style={{
+                  flex: 1,
+                  borderWidth:1,
+                  borderColor: "#8BBDFA",
+                  backgroundColor:'#8BBDFA'
+                }}
+              />
               <Text
                 style={{
                   fontWeight: "600",
                   fontSize: 20,
                   color: "#3e4e88",
+                  marginHorizontal:5,
+                  textAlign:'center'
                 }}
               >
                 {item.label}
               </Text>
+              <View
+                style={{
+                  flex: 1,
+                  borderWidth:1,
+                  borderColor: "#8BBDFA",
+                  backgroundColor:'#8BBDFA',
+                  marginRight: 2
+                }}
+              />
             </TouchableOpacity>
 
             {expandedGroups[item.key] && (
