@@ -196,6 +196,8 @@ const InnerGoalView = ({
     color,
     name,
     expected_end_date,
+    description,
+    emoji
   ]);
 
   return (
@@ -245,7 +247,7 @@ const InnerGoalView = ({
           </Text>
         </View>
         <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>"{description}"</Text>
+          <Text style={styles.description}>{description}</Text>
         </View>
         <View style={styles.dateContainer}>
           <Text style={styles.description}>

@@ -95,9 +95,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
     if (selectedHabits.length === 0) {
       missingFields.push("Associated Habits");
     }
-    if (description.trim() === "") {
-      missingFields.push("Goal Description");
-    }
     if (!expectedEndDate) {
       missingFields.push("End Date");
     }
