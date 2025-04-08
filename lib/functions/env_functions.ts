@@ -1,9 +1,10 @@
-import { SNOWBALL_DB_URL } from '@env'
 
 /**
  * Fetch supabase secrets
  */
 export const fetchSupabaseSecrets = async() => {
+    const SNOWBALL_DB_URL = process.env.SNOWBALL_DB_URL;
+    
     const url = `${SNOWBALL_DB_URL}/functions/v1/get-secrets`;
     const response = await fetch(url, {
         method: "GET",
