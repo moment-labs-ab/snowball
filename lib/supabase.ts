@@ -2,6 +2,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
+import Constants from 'expo-constants';
+
+const { SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY } = Constants.expoConfig?.extra ?? {};
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -9,11 +12,7 @@ export const initSupabaseClient = async() => {
     if (supabaseClient) {
         return;
     }
-    const SNOWBALL_DB_URL = process.env.SNOWBALL_DB_URL || '';
-    const SNOWBALL_DB_ANON_KEY = process.env.SNOWBALL_DB_ANON_KEY || '';
-
-    console.log("Creds", SNOWBALL_DB_URL);
-
+    
     supabaseClient = createClient(SNOWBALL_DB_URL, SNOWBALL_DB_ANON_KEY, {
         auth: {
             storage: AsyncStorage,

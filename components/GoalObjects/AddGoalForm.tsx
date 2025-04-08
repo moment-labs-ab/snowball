@@ -25,6 +25,7 @@ import NewHabitModal from "@/modals/NewHabitModal";
 import GoalSelector from "./GoalSelector";
 import Toast from "react-native-toast-message";
 import { useGoalContext } from "@/context/GoalContext";
+import EmojiModal from "@/modals/EmojiModal";
 
 
 
@@ -59,7 +60,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const [expectedEndDate, seExpectedEndDate] = useState(new Date());
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
-  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
   //const [habits, setHabits] = useState<Habit[]>([]);
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -197,7 +197,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
-    setIsEmojiSelectorVisible(false);
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -300,23 +299,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
               marginBottom: 10,
             }}
           >
-            <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{emoji || "❄️"}</Text>
-            </TouchableOpacity>
-
+            <EmojiModal emoji={emoji} handleEmojiSelect={handleEmojiSelect} color={color} />
             <View style={{ flex: 1 }}>
               <TextInput
                 style={{
@@ -333,26 +316,6 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
               />
             </View>
 
-            <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                              <AntDesign name="close" size={24} color="black" />
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
-              </View>
-            </Modal>
           </View>
           <GoalSelector setName={setName} selectedColor={color} />
 

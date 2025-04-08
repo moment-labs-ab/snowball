@@ -1,64 +1,89 @@
-import { View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native'
-import React, {useState} from 'react'
+import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
+import React, { useState } from "react";
 import EmojiSelector from "react-native-emoji-selector";
-
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
 
 interface EmojiModalProps {
-    color: string;
-    emoji: string;
-    handleEmojiSelect: (selectedEmoji: string)=> void
-  }
+  emoji: string;
+  handleEmojiSelect: (selectedEmoji: string) => void;
+  color?: string;
+  height?: number;
+  width?: number;
+  emojiSize?: number;
+}
 
-const EmojiModal = ({color, emoji, handleEmojiSelect}: EmojiModalProps) => {
-
-const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
+const EmojiModal = ({
+  emoji,
+  handleEmojiSelect,
+  color = "#CDCDE0  ",
+  height = 40,
+  width = 40,
+  emojiSize = 18,
+}: EmojiModalProps) => {
+  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
 
   return (
     <View>
       <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{emoji}</Text>
-            </TouchableOpacity>
-            <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                    <Text style={{ color: "white" }}>Close</Text>
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
-              </View>
-            </Modal>
-    </View>
-  )
-}
+        style={{
+          width: width,
+          height: height,
+          justifyContent: "center",
+          alignItems: "center",
+          borderWidth: 1,
+          borderColor: "black",
+          borderRadius: 5,
+          backgroundColor: color,
+          marginRight: 10,
+          position: "relative", // important for absolute children
+        }}
+        onPress={() => setIsEmojiSelectorVisible(true)}
+      >
+        <Text style={{ color: "white", fontSize: emojiSize }}>{emoji}</Text>
 
-export default EmojiModal
+        {/* Pen icon in bottom-right */}
+        <View
+          style={{
+            position: "absolute",
+            bottom: 5,
+            right: 3,
+          }}
+        >
+          <Feather name="edit-2" size={8} color="black" />
+        </View>
+      </TouchableOpacity>
+      <Modal
+        visible={isEmojiSelectorVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={{ alignContent: "flex-start" }}
+              onPress={() => setIsEmojiSelectorVisible(false)}
+            >
+              <AntDesign name="close" size={24} color="black" />
+            </TouchableOpacity>
+            <EmojiSelector
+              onEmojiSelected={(selectedEmoji) => {
+                handleEmojiSelect(selectedEmoji);
+                setIsEmojiSelectorVisible(false);
+              }}
+              columns={8}
+            />
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+export default EmojiModal;
 
 const styles = StyleSheet.create({
-modalContainer: {
+  modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -76,5 +101,4 @@ modalContainer: {
     backgroundColor: "black",
     borderRadius: 5,
   },
-
-})
+});

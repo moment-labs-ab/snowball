@@ -26,6 +26,7 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { useGoalContext } from "@/context/GoalContext";
+import EmojiModal from "@/modals/EmojiModal";
 
 interface SelectedHabits {
   id: string;
@@ -73,7 +74,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   );
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
-  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
 
   const [description, setDescription] = useState(originalDescription);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -183,7 +183,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
-    setIsEmojiSelectorVisible(false);
   };
 
   //MILESTONES
@@ -362,22 +361,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
               marginBottom: 15,
             }}
           >
-            <TouchableOpacity
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 5,
-                backgroundColor: color,
-                marginRight: 10,
-              }}
-              onPress={() => setIsEmojiSelectorVisible(true)}
-            >
-              <Text style={{ color: "white" }}>{emoji || "❄️"}</Text>
-            </TouchableOpacity>
+          <EmojiModal emoji={emoji} handleEmojiSelect={handleEmojiSelect} color={color}/>
 
             <View style={{ flex: 1 }}>
               <TextInput
@@ -395,26 +379,6 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
               />
             </View>
 
-            <Modal
-              visible={isEmojiSelectorVisible}
-              transparent={true}
-              animationType="slide"
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setIsEmojiSelectorVisible(false)}
-                  >
-                    <Text style={{ color: "white" }}>Close</Text>
-                  </TouchableOpacity>
-                  <EmojiSelector
-                    onEmojiSelected={handleEmojiSelect}
-                    columns={8}
-                  />
-                </View>
-              </View>
-            </Modal>
           </View>
 
           <View style={{ marginBottom: 10 }}>

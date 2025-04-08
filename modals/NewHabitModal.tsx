@@ -47,7 +47,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const { user } = useGlobalContext();
   const [color, setColor] = useState("#3e4e88")
   const [emoji, setEmoji] = useState("❄️")
-  const [isEmojiSelectorVisible, setIsEmojiSelectorVisible] = useState(false);
   const [isPremium, setIsPremium] = useState(user.premiumUser);
   const [habitCount, setHabitCount] = useState<number>(0)
 
@@ -144,7 +143,6 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   const handleEmojiSelect = (selectedEmoji: string) => {
     setEmoji(selectedEmoji);
     setHabit({ ...habit, emoji: selectedEmoji })
-    setIsEmojiSelectorVisible(false);
   };
 
   const showToast = () => {
@@ -211,7 +209,11 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
         </View>
 
         <View style={{flexDirection:'row'}}>
-        <EmojiModal color={color} emoji={habit.emoji} handleEmojiSelect={handleEmojiSelect}/>
+        <EmojiModal emoji={habit.emoji}
+        handleEmojiSelect={handleEmojiSelect}
+        height={50}
+        width={50}
+        emojiSize={30}/>
            <View style={{flex:1}}>
           <TextInput
             style={{
@@ -219,6 +221,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
               borderColor: "#E6F0F",
               padding: 10,
               borderRadius: 5,
+              height:50
             }}
             value={habit.name}
             onChangeText={(e) => setHabit({ ...habit, name: e })}
