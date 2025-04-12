@@ -345,45 +345,46 @@ export const getGridTrackingHistory = async (
     habitId: string,
     startDate: Date,
     endDate: Date
-): Promise<HabitTrackingEntry[] | null> => {
+  ): Promise<HabitTrackingEntry[] | null> => {
     const client = useSupabaseClient();
-
+  
     const { data, error } = await client
-        .from('habit_tracking_history')
-        .select('tracked_habit_date', { count: 'exact' })
-        .eq('habit_id', habitId)
-        .gte('tracked_habit_date', startDate.toISOString())
-        .lte('tracked_habit_date', endDate.toISOString())
-
+      .from('habit_tracking_history')
+      .select('tracked_habit_date')
+      .eq('habit_id', habitId)
+      .gte('tracked_habit_date', startDate.toISOString())
+      .lte('tracked_habit_date', endDate.toISOString());
+  
     if (error) {
-        console.error('Error querying habit tracking history:', error);
-        return null;
+      console.error('Error querying habit tracking history:', error);
+      return null;
     }
-
-
-    // Step 2: Create an array of all dates between startDate and endDate
+  
+    // Step 1: Count how many times each day was tracked
+    const countByDate: Record<string, number> = {};
+    data?.forEach(entry => {
+      const dateStr = new Date(entry.tracked_habit_date).toISOString().split('T')[0];
+      countByDate[dateStr] = (countByDate[dateStr] || 0) + 1;
+    });
+  
+    // Step 2: Generate full date range
     const dateRange = [];
     const currentDate = new Date(startDate);
-
     while (currentDate <= endDate) {
-        dateRange.push(new Date(currentDate)); // Add a copy of the date
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      dateRange.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
     }
-
-    // Step 3: Convert the tracked habit dates from the database to a set for easy lookup
-    const trackedDates = new Set(data?.map((entry: { tracked_habit_date: string }) =>
-        new Date(entry.tracked_habit_date).toISOString().split('T')[0]
-    ));
-
-    // Step 4: Map over the date range and fill in with count 0 for missing dates
-    const result = await Promise.all(dateRange.map(async (date) => {
-        const formattedDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-        return {
-            date: formattedDate,
-            count: trackedDates.has(formattedDate) ? 1 : 0,
-        };
-    }));
-
+  
+    // Step 3: Build result with 0 count fallback
+    const result: HabitTrackingEntry[] = dateRange.map(date => {
+      const formattedDate = date.toISOString().split('T')[0];
+      return {
+        date: formattedDate,
+        count: countByDate[formattedDate] || 0,
+      };
+    });
+  
     return result;
-};
+  };
+  
 

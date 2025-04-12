@@ -638,6 +638,43 @@ export const addTrackingHistory = async (
     }
 };
 
+export const removeMostRecentTrackingHistory = async (
+    habit_id: string,
+    user_id: string,
+    tracking_id: string
+  ) => {
+    const client = useSupabaseClient();
+  
+    const { data, error } = await client
+      .from("habit_tracking_history")
+      .select("id")
+      .eq("habit_id", habit_id)
+      .eq("user_id", user_id)
+      .eq("tracking_id", tracking_id)
+      .order("tracked_at", { ascending: false })
+      .limit(1)
+      .single();
+  
+    if (error) {
+      console.error("Error fetching most recent tracking history:", error);
+      return;
+    }
+  
+    if (data?.id) {
+      const { error: deleteError } = await client
+        .from("habit_tracking_history")
+        .delete()
+        .eq("id", data.id);
+  
+      if (deleteError) {
+        console.error("Error deleting tracking history:", deleteError);
+      } else {
+        // console.log("Most recent tracking history removed.");
+      }
+    }
+  };
+  
+
 export const removeTracking = async (
     user_id: string,
     habit_id: string,
@@ -724,7 +761,15 @@ export const updateTracking = async (
                 //console.error("Error updating tracking data:", updateError);
             } else {
                 //console.log("Habit Tracking Updated.");
-                addTrackingHistory(trackingId, habit_id, selectedDate, user_id);
+                if (updatedValue > 0) {
+                    for (let i = 0; i < updatedValue; i++) {
+                        await addTrackingHistory(trackingId, habit_id, selectedDate, user_id);
+                    }
+                } else if (updatedValue < 0) {
+                    for (let i = 0; i < Math.abs(updatedValue); i++) {
+                        await removeMostRecentTrackingHistory(habit_id, user_id, trackingId);
+                    }
+                }
                 return newTrackingCount;
             }
         }
