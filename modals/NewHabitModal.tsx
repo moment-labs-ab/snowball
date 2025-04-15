@@ -84,6 +84,14 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       );
       return;
     }
+    if (habit.name.length > 18){
+      Alert.alert(
+        "Name too long.",
+        'Habit name must be 18 characters or less.',
+        [{ text: "OK" }]
+      );
+      return;
+    }
   
     // If any mandatory fields are missing, show an alert
     if (missingFields.length > 0) {

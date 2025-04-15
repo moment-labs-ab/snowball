@@ -218,7 +218,7 @@ export const updateHabitIfChanged = async (
     }
 
     // Update the habit if any field has changed
-    const { data, error } = await client
+    const { data: habitData, error } = await client
         .from("habits")
         .update({
             name,
@@ -235,13 +235,26 @@ export const updateHabitIfChanged = async (
     if (error) {
         console.error("Error updating habit:", error);
         return { success: false, message: "Error updating habit", data: error };
-    } else {
+    }
+    else {
+        const {data, error}  = await client
+        .from("goal_habits_reference")
+        .update({
+            habit_name: name,
+        })
+        .eq("habit_id", habit_id);
+        if(error){
+            console.error("Error updating habit:", error);
+            return { success: false, message: "Error updating habit", data: error };
+        }
+        else{
         //console.log('Habit updated successfully:', data);
         return {
             success: true,
             message: "Habit updated successfully",
-            data: data as Habit,
+            data: habitData as Habit,
         };
+    }
     }
 };
 
