@@ -162,6 +162,14 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       );
       return;
     }
+    if (habit.name.length > 18){
+      Alert.alert(
+        "Name too long.",
+        'Habit name must be 18 characters or less.',
+        [{ text: "OK" }]
+      );
+      return;
+    }
 
     setisSubmitting(true);
 
