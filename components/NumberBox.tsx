@@ -8,7 +8,12 @@ interface NumberBoxProps {
   otherStyles?: ViewStyle;
 }
 
-const NumberBox: React.FC<NumberBoxProps> = ({ title, placeholder, handleChangeNumber, otherStyles }) => {
+const NumberBox: React.FC<NumberBoxProps> = ({
+  title,
+  placeholder,
+  handleChangeNumber,
+  otherStyles,
+}) => {
   const [number, setNumber] = useState<number>(placeholder);
 
   const handleIncrease = () => {
@@ -18,7 +23,7 @@ const NumberBox: React.FC<NumberBoxProps> = ({ title, placeholder, handleChangeN
   };
 
   const handleDecrease = () => {
-    const newNumber = number > 0 ? number - 1 : 0;
+    const newNumber = Math.max(number - 1, 0);
     setNumber(newNumber);
     handleChangeNumber(newNumber);
   };
@@ -26,11 +31,13 @@ const NumberBox: React.FC<NumberBoxProps> = ({ title, placeholder, handleChangeN
   return (
     <View style={[styles.container, otherStyles]}>
       <View style={styles.numberBox}>
-        <TouchableOpacity onPress={handleDecrease} style={styles.buttonBorder}>
-          <Text style={styles.buttonText}>-</Text>
+        <TouchableOpacity onPress={handleDecrease} style={styles.circleButton}>
+          <Text style={styles.buttonText}>−</Text>
         </TouchableOpacity>
-        <Text style={styles.number}>{number}</Text>
-        <TouchableOpacity onPress={handleIncrease} style={styles.buttonBorder}>
+
+        <Text style={styles.numberText}>{number}</Text>
+
+        <TouchableOpacity onPress={handleIncrease} style={styles.circleButton}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
@@ -42,36 +49,46 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    alignContent:'center'
+    gap: 8,
   },
   title: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 6,
   },
   numberBox: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+   
+    elevation: 2,
+  },
+  circleButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#fff',
+    borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 8,
-  },
-  buttonBorder:{
-    width:30,
-    height:30,
-    borderRadius:100,
-    borderWidth:1,
-    justifyContent:'center',
-    alignContent:'center',
-    alignItems:'center'
-
-  },
-  
+    justifyContent: 'center',
+    alignItems: 'center',
+    },
   buttonText: {
-    fontSize: 24,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
   },
-  number: {
-    marginHorizontal: 20,
-    fontSize: 24,
+  numberText: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginHorizontal: 24,
+    color: '#333',
+    minWidth: 40,
+    textAlign: 'center',
   },
 });
 
