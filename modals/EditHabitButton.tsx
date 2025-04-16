@@ -8,12 +8,13 @@ import Entypo from '@expo/vector-icons/Entypo';
 
 interface GoalButtonProps {
     label?: string,
+    emoji?: string,
     action?: () => void
     content?: React.ReactNode;
     onClose?: () => void; // Optional callback to handle closing
 }
 
-const EditHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose}) => {
+const EditHabitButton: React.FC<GoalButtonProps> = ({ label, emoji, action, content, onClose}) => {
   const [isVisible, setIsVisible] = useState(false);
 
     const toggleContent = () => {
@@ -102,17 +103,16 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       padding: 16,
       backgroundColor: '#E6F0FA',
-      height:40,
-      marginBottom:10,
-      marginTop:10,
+      marginTop: 5,
+      borderBottomWidth:1,
+      marginHorizontal:15,
+      borderBottomColor:'#8BBDFA'
   },
   backButton: {
       flexDirection: 'row',
-      alignItems: 'center',
       position: 'absolute',
-      left: 16,
       zIndex: 1,
-      marginTop:10
+      marginTop:10,
   },
   backButtonText: {
       marginLeft: 4,
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
   headerText: {
       flex: 1,
       textAlign: 'center',
-      fontSize: 20,
-      fontWeight: '600',
+      fontSize: 24,
+      fontWeight: 'bold',
       color: '#3e4e88',
   },
   contentContainer: {

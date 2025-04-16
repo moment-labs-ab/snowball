@@ -351,6 +351,8 @@ const HabitCard = ({
           </View>
 
           <EditHabitButton
+          label={name}
+          emoji={emoji}
             content={
               <EditHabitModal
                 visible={modalVisible}
