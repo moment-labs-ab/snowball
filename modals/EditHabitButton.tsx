@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal} from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -7,6 +7,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 
 
 interface GoalButtonProps {
+    visible:boolean
     label?: string,
     emoji?: string,
     action?: () => void
@@ -14,8 +15,12 @@ interface GoalButtonProps {
     onClose?: () => void; // Optional callback to handle closing
 }
 
-const EditHabitButton: React.FC<GoalButtonProps> = ({ label, emoji, action, content, onClose}) => {
-  const [isVisible, setIsVisible] = useState(false);
+const EditHabitButton: React.FC<GoalButtonProps> = ({ visible, label, emoji, action, content, onClose}) => {
+  const [isVisible, setIsVisible] = useState(visible);
+
+  useEffect(()=>{
+
+  },[visible])
 
     const toggleContent = () => {
         setIsVisible(!isVisible);
@@ -41,10 +46,11 @@ const EditHabitButton: React.FC<GoalButtonProps> = ({ label, emoji, action, cont
     return (
       <SafeAreaView>
           <View style={styles.container}>
+            {/** 
           <TouchableOpacity onPress={toggleContent} style={{ paddingRight: 5 }}>
             <Entypo name="dots-three-vertical" size={24} color="black" />
         </TouchableOpacity>
-
+*/}
               <Modal
                   visible={isVisible}
                   animationType="slide"

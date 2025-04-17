@@ -256,7 +256,7 @@ import {
                     width: squareSize,
                     height: squareSize,
                     margin: 2,
-                    backgroundColor: color,
+                    backgroundColor: entry.count === 0 ? 'white' : color,
                     borderRadius: 4,
                     justifyContent: "flex-end",
                     padding: 4,
@@ -272,6 +272,7 @@ import {
                   >
                     {date.date()}
                   </Text>
+                  
                 </View>
               );
             })}
