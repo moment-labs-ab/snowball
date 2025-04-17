@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     shadowColor: '#000',
-   
     elevation: 2,
   },
   circleButton: {

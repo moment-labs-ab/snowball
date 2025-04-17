@@ -3,30 +3,34 @@ import {
   Text,
   TouchableOpacity,
   Animated,
-  PanResponder,
-  ActivityIndicator,
-  Alert,
+  Modal,
+  StyleSheet,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
-import { addTracking, getTrackingCount, updateTracking } from "@/lib/supabase_habits";
+import {
+  addTracking,
+  getTrackingCount,
+  updateTracking,
+} from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import { HabitTrackingEntry } from "@/types/types";
 import { useTrackingContext } from "@/context/TrackingContext";
 import EditHabitButton from "@/modals/EditHabitButton";
 import EditHabitModal from "@/modals/EditHabitModal";
 import LoadingSkeleton from "./LoadingSkeloton";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 import {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+} from "react-native-gesture-handler";
 
 type habitCardProps = {
   id: string;
@@ -68,77 +72,70 @@ const HabitCard = ({
   //Animated Tracking Logic
   const translateX = useSharedValue(0);
   const pan = Gesture.Pan()
-  .onUpdate((event) => {
-    // Only track horizontal movement if it's significantly more than vertical
-    if (Math.abs(event.translationX) > Math.abs(event.translationY) * 2) {
-      translateX.value = event.translationX;
-    }
-  })
-  .onEnd(() => {
-    const SWIPE_THRESHOLD = 40;
+    .onUpdate((event) => {
+      // Only track horizontal movement if it's significantly more than vertical
+      if (Math.abs(event.translationX) > Math.abs(event.translationY) * 2) {
+        translateX.value = event.translationX;
+      }
+    })
+    .onEnd(() => {
+      const SWIPE_THRESHOLD = 40;
 
-    if (translateX.value > SWIPE_THRESHOLD) {
-      handlingPress(id, 1);
-    } else if (translateX.value < -SWIPE_THRESHOLD && trackingCount > 0) {
-      handlingPress(id, -1)
-    }
+      if (translateX.value > SWIPE_THRESHOLD) {
+        handlingPress(id, 1);
+      } else if (translateX.value < -SWIPE_THRESHOLD && trackingCount > 0) {
+        handlingPress(id, -1);
+      }
 
-    // Reset after end
-    translateX.value = 0;
-  })
-  .onTouchesDown(() => {
-    translateX.value = 0;
-  })
-  .activeOffsetX([-15, 15])  // Activate after 15px horizontal movement
-  .failOffsetY([-5, 5])      // Fail if vertical movement exceeds 5px first
-  .minDistance(10)
-  .runOnJS(true);
+      // Reset after end
+      translateX.value = 0;
+    })
+    .onTouchesDown(() => {
+      translateX.value = 0;
+    })
+    .activeOffsetX([-15, 15]) // Activate after 15px horizontal movement
+    .failOffsetY([-5, 5]) // Fail if vertical movement exceeds 5px first
+    .minDistance(10)
+    .runOnJS(true);
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   // PanResponder to detect swipe gestures
 
-  const animateIncrement = (count: number)=>{
+  const animateIncrement = (count: number) => {
     Animated.timing(animatedValue, {
       toValue: count / frequency,
       duration: 225,
       useNativeDriver: false,
     }).start();
-
-  }
-
+  };
 
   const getInitialCount = async (
     habitEntries: HabitTrackingEntry[],
     inputedDate: string
   ): Promise<number> => {
-      const matchingEntry = habitEntries.find(
-        (entry) => entry.date === inputedDate
-      );
+    const matchingEntry = habitEntries.find(
+      (entry) => entry.date === inputedDate
+    );
 
-      if (matchingEntry) {
-        if (frequency_rate_int == 1) {
-        setSingleDayCount(matchingEntry.count)
+    if (matchingEntry) {
+      if (frequency_rate_int == 1) {
+        setSingleDayCount(matchingEntry.count);
         const count = matchingEntry.count;
-        animateIncrement(count)
-        return count
-        }
-        else{
-          setSingleDayCount(matchingEntry.count)
-          const count =  await getTrackingCount(id, user.userId, date);
-          animateIncrement(count)
-        return count
-        }
-      }
+        animateIncrement(count);
+        return count;
+      } else {
+        setSingleDayCount(matchingEntry.count);
         const count = await getTrackingCount(id, user.userId, date);
-        animateIncrement(count)
-        return count
-
-
+        animateIncrement(count);
+        return count;
+      }
+    }
+    const count = await getTrackingCount(id, user.userId, date);
+    animateIncrement(count);
+    return count;
 
     // Fetch count from database if not found in entries
   };
-
-
 
   useEffect(() => {
     setFormattedDate(new Date(date.toDateString()).toISOString().split("T")[0]);
@@ -152,10 +149,7 @@ const HabitCard = ({
     };
 
     fetchTrackingCount();
-
   }, [id, formattedDate, tracking]);
-
-
 
   function incrementHabitCount(
     habitData: HabitTrackingData,
@@ -202,36 +196,32 @@ const HabitCard = ({
     return updatedHabitData;
   }
 
-  const handlingPress = async (
-    id: string,
-    increment: number,
-  ) => {
-    if(increment > 0){
-      animateIncrement(trackingCount + 1)
+  const handlingPress = async (id: string, increment: number) => {
+    if (increment > 0) {
+      animateIncrement(trackingCount + 1);
       setTrackingCount(trackingCount + 1);
-    const trackingData = await addTracking(user.userId, id, date);
+      const trackingData = await addTracking(user.userId, id, date);
 
-    setTracking((prevTracking) => {
-      return incrementHabitCount(
-        prevTracking,
+      setTracking((prevTracking) => {
+        return incrementHabitCount(
+          prevTracking,
+          id,
+          formattedDate,
+          "increment",
+          trackingCount + increment
+        );
+      });
+    } else if (increment < 0) {
+      animateIncrement(trackingCount - 1);
+      setTrackingCount(trackingCount - 1);
+      const result = await updateTracking(
+        user.userId,
         id,
-        formattedDate,
-        "increment",
-        trackingCount + increment
+        date,
+        -(trackingCount - (trackingCount - 1))
       );
-    });
-  }else if(increment < 0){
-    animateIncrement(trackingCount - 1)
-    setTrackingCount(trackingCount - 1);
-    const result = await updateTracking(
-      user.userId,
-      id,
-      date,
-      -(trackingCount - (trackingCount - 1))
-    );
-    handleTrackingCountChange(trackingCount - 1)
-
-  }
+      handleTrackingCountChange(trackingCount - 1);
+    }
   };
 
   const handleTrackingCountChange = (newTrackingCount: number) => {
@@ -266,7 +256,7 @@ const HabitCard = ({
 
   const handleCloseModal = () => {
     setModalVisible(false);
-    fetchHabits();
+    //fetchHabits();
   };
   if (isLoadingTracking) {
     return (
@@ -287,73 +277,71 @@ const HabitCard = ({
   }
 
   return (
+    
     <GestureDetector gesture={pan}>
-    <TouchableOpacity
-      onPress={() => {
-        handlingPress(id, 1);
-      }}
-      activeOpacity={0.8}
-      style={{
-        backgroundColor: "#edf5fe",
-        borderRadius: 15,
-        minHeight: 62,
-        justifyContent: "center",
-        borderWidth: 0.9,
-        marginHorizontal: 16,
-        marginBottom: 16,
-        overflow: "hidden",
-        position: "relative",
-        flex: 1,
-      }}
-    >
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width,
-          backgroundColor,
-        }}
-      />
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingHorizontal: 5,
-          flex: 1,
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ fontSize: 24 }}>{emoji}</Text>
-          <View style={{ flex: 1, paddingLeft: 5 }}>
-            <Text
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(!modalVisible)
+          }}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: "#edf5fe",
+            borderRadius: 15,
+            minHeight: 62,
+            justifyContent: "center",
+            borderWidth: 0.9,
+            marginHorizontal: 16,
+            marginBottom: 16,
+            overflow: "hidden",
+            position: "relative",
+            flex: 1,
+          }}
+        >
+          
+            <Animated.View
               style={{
-                color: "black",
-                fontWeight: "600",
-                fontSize: 18,
-                zIndex: 1,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width,
+                backgroundColor,
+              }}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 5,
+                flex: 1,
               }}
             >
-              {name}
-            </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ fontSize: 24 }}>{emoji}</Text>
+                <View style={{ flex: 1, paddingLeft: 5 }}>
+                  <Text
+                    style={{
+                      color: "black",
+                      fontWeight: "600",
+                      fontSize: 18,
+                      zIndex: 1,
+                    }}
+                  >
+                    {name}
+                  </Text>
 
-            <Text
-              style={{
-                color: "#525756",
-                fontSize: 10,
-                fontWeight: "200",
-              }}
-            >
-              {trackingCount}/{frequency}
-            </Text>
-          </View>
-
-          <EditHabitButton
-          label={name}
-          emoji={emoji}
-            content={
+                  <Text
+                    style={{
+                      color: "#525756",
+                      fontSize: 10,
+                      fontWeight: "200",
+                    }}
+                  >
+                    {trackingCount}/{frequency}
+                  </Text>
+                </View>
+              </View>
               <EditHabitModal
                 visible={modalVisible}
                 onClose={handleCloseModal}
@@ -364,13 +352,15 @@ const HabitCard = ({
                 onTrackingCountChange={handleTrackingCountChange}
                 singleDayCount={singleDayCount}
               />
-            }
-          />
-        </View>
-      </View>
-    </TouchableOpacity>
-    </GestureDetector>
+            </View>
+            
+          
+        </TouchableOpacity>
+        </GestureDetector>
+      
+    
   );
 };
 
 export default HabitCard;
+

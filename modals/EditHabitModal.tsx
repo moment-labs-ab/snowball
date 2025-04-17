@@ -31,6 +31,8 @@ import { getTrackingCountDates } from "@/lib/supabase_habits";
 import EmojiModal from "./EmojiModal";
 import moment from "moment";
 import { ScrollView } from "react-native-gesture-handler";
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 interface EditHabitProps {
   visible: boolean;
@@ -80,26 +82,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       typeof input === "string" ? new Date(input + "T00:00:00") : input;
     return moment(input).format("M/DD");
 
-    const getOrdinal = (day: number) => {
-      if (day > 3 && day < 21) return "th";
-      switch (day % 10) {
-        case 1:
-          return "st";
-        case 2:
-          return "nd";
-        case 3:
-          return "rd";
-        default:
-          return "th";
-      }
-    };
-
-    const day = date.getDate();
-    const ordinal = getOrdinal(day);
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
-
-    return `${month} ${day}${ordinal}, ${year}`;
+    
   };
 
   const fetchTimeFrameDates = async () => {
@@ -323,6 +306,16 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     });
   };
 
+  useEffect(()=>{
+
+  }, [visible])
+
+  //Modal Logic
+  const [isVisible, setIsVisible] = useState(visible);
+  const toggleContent = () => {
+    setIsVisible(!isVisible);
+};
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -332,23 +325,37 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{
+      flex: 1,
+      
+    }}>
       <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#E6F0FA",
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 10,
-        }}
+        
       >
+        <Modal
+                  visible={visible}
+                  animationType="slide"
+                  onRequestClose={onClose}
+                  presentationStyle='pageSheet'
+                  
+              >
+                <View style={styles.headerContainer}>
+                          <TouchableOpacity 
+                              style={styles.backButton}
+                              onPress={onClose}
+                          >
+                              <AntDesign name="close" size={24} color="black" />
+                              
+                          </TouchableOpacity>
+                          <Text style={styles.headerText}>{habit.name}</Text>
+                      </View>
         <View
           style={{
             flex: 1,
             paddingHorizontal: 20,
             paddingVertical:20,
-            backgroundColor: "#E6F0FA",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            
+           
           }}
         >
           <View
@@ -356,7 +363,6 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 10,
             }}
           >
            
@@ -580,6 +586,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             </TouchableOpacity>
           </View>
         </View>
+        </Modal>
       </SafeAreaView>
     </ScrollView>
   );
@@ -628,4 +635,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    
+    borderBottomWidth:1,
+    marginHorizontal:15,
+    borderBottomColor:'#8BBDFA'
+},
+backButton: {
+  flexDirection: 'row',
+  position: 'absolute',
+  zIndex: 1,
+  marginTop:10,
+},
+headerText: {
+  flex: 1,
+  textAlign: 'center',
+  fontSize: 24,
+  fontWeight: 'bold',
+  color: '#3e4e88',
+},
 });
