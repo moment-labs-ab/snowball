@@ -123,14 +123,14 @@ const SECTION = [
   {
     header: "Other",
     items: [
-      /**{
+      {
         id: "notifications",
         iconType: "feather",
         icon: "bell",
         label: "Notifications",
         type: "page",
         content: <SingleNotificationPage />,
-      },**/
+      },
       {
         id: "terms",
         iconType: "feather",
@@ -307,16 +307,7 @@ const SettingsHome = () => {
     email: "",
     password: "",
   });
-
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const handleNotificationToggle = () => {
-    registerForPushNotificationsAsync().then(async (token) => {
-      setExpoPushToken(token);
-
-      //updateUserExpoPushToken(user.userId, token)
-    });
-  };
-
+  
   if (isLoading) {
     return (
       <View style={styles.container}>

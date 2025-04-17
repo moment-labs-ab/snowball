@@ -21,47 +21,123 @@ const SingleNotificationPage = () => {
     const [notificationsGranted, setNotificationsGranted] = useState(false);
     const [expoPushToken, setExpoPushToken] = useState("");
     const [notificationTime, setNotificationTime] = useState(new Date());
+    const [originalTime, setOriginalTime] = useState<Date>(new Date(user.notificationTime || ""));
+    const [timeChanged, setTimeChanged] = useState(false);
 
     // Run once on mount and when user changes
     useEffect(() => {
         const fetchNotificationStatus = async () => {
-            const status = await isNotificationsEnabled();
-            const tokenConfirmed = status && user.expoPushToken !== "" || user.expoPushToken !== null;
-            setNotificationsGranted(tokenConfirmed);
+            try {
+                const status = await isNotificationsEnabled();
+                console.log("Notification status:", status);
+                console.log("User expoPushToken:", user.expoPushToken);
+                const tokenConfirmed = status && user.expoPushToken != null && user.expoPushToken !== "";
+                setNotificationsGranted(tokenConfirmed);
+                
+                if (tokenConfirmed) {
+                    setExpoPushToken(user.expoPushToken!);
+                    
+                    // Set notification time from user settings if available
+                    if (user.notificationTime) {
+                        const savedTime = new Date(user.notificationTime);
+                        setNotificationTime(savedTime);
+                        setOriginalTime(savedTime);
+                    } else {
+                        // Default to current time if no time was set before
+                        const now = new Date();
+                        setNotificationTime(now);
+                        setOriginalTime(now);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching notification status:", error);
+            }
         };
+        
         fetchNotificationStatus();
-
     }, [user]);
 
     // Called when user selects a time from the picker
     const handleTimeSelected = (time: Date) => {
         setNotificationTime(time);
+        // Check if time has changed from original
+        setTimeChanged(originalTime && 
+            (time.getHours() !== originalTime.getHours() || 
+             time.getMinutes() !== originalTime.getMinutes()));
         console.log("Time selected:", time);
     };
 
     // Called when user taps "Enable Notifications"
     const handleEnableNotification = async () => {
-        const token = await registerForPushNotificationsAsync();
-        await updateUserExpoPushToken(user.userId, token);
-
-        setUser((prevUser)=> ({
-            ...prevUser,
-            expoPushToken: token
-        }))
-
-        showToast("enabled");
+        try {
+            const token = await registerForPushNotificationsAsync();
+            if (!token) {
+                showToast("disabled");
+                return;
+            }
+            
+            // Save token and notification time
+            await updateUserExpoPushToken(user.userId, token);
+            await saveNotifications(user.userId, token, notificationTime);
+            
+            // Update local user state
+            setUser((prevUser) => ({
+                ...prevUser,
+                expoPushToken: token,
+                notificationTime: notificationTime.toISOString()
+            }));
+            
+            setExpoPushToken(token);
+            setOriginalTime(notificationTime);
+            setTimeChanged(false);
+            setNotificationsGranted(true);
+            showToast("enabled");
+        } catch (error) {
+            console.error("Error enabling notifications:", error);
+            showToast("disabled");
+        }
     };
 
-    // Called when user taps "Update Time"
+    // Called when user taps "Disable Notifications"
     const handleDisableNotification = async () => {
-        //await saveNotifications(user.userId, expoPushToken);
-        showToast("success");
+        try {
+            // Clear the token in database
+            await updateUserExpoPushToken(user.userId, "");
+            
+            // Update local user state
+            setUser((prevUser) => ({
+                ...prevUser,
+                notificationTime: "",
+                expoPushToken: ""
+            }));
+            
+            setExpoPushToken("");
+            setNotificationsGranted(false);
+            showToast("disabled");
+        } catch (error) {
+            console.error("Error disabling notifications:", error);
+            showToast("disabled");
+        }
     };
 
     // Called when user taps "Update Time"
     const handleUpdateNotification = async () => {
-        await saveNotifications(user.userId, expoPushToken, notificationTime);
-        showToast("success");
+        try {
+            await saveNotifications(user.userId, expoPushToken, notificationTime);
+            
+            // Update local user state
+            setUser((prevUser) => ({
+                ...prevUser,
+                notificationTime: notificationTime.toISOString()
+            }));
+            
+            setOriginalTime(notificationTime);
+            setTimeChanged(false);
+            showToast("success");
+        } catch (error) {
+            console.error("Error updating notification time:", error);
+            showToast("disabled"); //Update
+        }
     };
 
     // Show various toast messages
@@ -75,7 +151,7 @@ const SingleNotificationPage = () => {
                     : type === "disabled"
                         ? "Notifications turned off."
                         : "Something went wrong.",
-            visibilityTime: 3200,
+            visibilityTime: 1500,
             position: "top" as const,
             autoHide: true,
             props: {
@@ -102,11 +178,13 @@ const SingleNotificationPage = () => {
                         onTimeSelected={handleTimeSelected}
                     />
 
-                    <TouchableOpacity style={styles.enableButton} onPress={handleUpdateNotification}>
-                        <Text style={styles.buttonText}>Update Notification Time</Text>
-                    </TouchableOpacity>
+                    {timeChanged && (
+                        <TouchableOpacity style={styles.enableButton} onPress={handleUpdateNotification}>
+                            <Text style={styles.buttonText}>Update Notification Time</Text>
+                        </TouchableOpacity>
+                    )}
 
-                    <TouchableOpacity style={styles.disableButton} onPress={handleUpdateNotification}>
+                    <TouchableOpacity style={styles.disableButton} onPress={handleDisableNotification}>
                         <Text style={styles.buttonText}>Disable Notifications</Text>
                     </TouchableOpacity>
                 </>
@@ -126,25 +204,6 @@ const SingleNotificationPage = () => {
             )}
 
             <Toast />
-
-            {/* Debug buttons */}
-            {/* 
-      {expoPushToken !== "" && (
-        <Button
-          title="Send Test Notification"
-          onPress={async () => {
-            sendPushNotification(expoPushToken);
-          }}
-        />
-      )}
-      <Button
-        title="Force Update Check"
-        onPress={async () => {
-          const nowUtc = new Date().toISOString();
-          checkUpdate(nowUtc);
-        }}
-      />
-      */}
         </View>
     );
 };
