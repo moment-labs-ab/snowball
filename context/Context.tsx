@@ -12,7 +12,7 @@ interface GlobalContextInterface {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const defaultUser: User = { username: "", name: "", email: "", userId: "", premiumUser:false };
+const defaultUser: User = { username: "", name: "", email: "", userId: "", premiumUser:false, expoPushToken: "", notificationTime: "" };
 
 const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 
@@ -45,7 +45,9 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
                 username: result.username || "",
                 name: result.name || "",
                 userId: result.userId || "",
-                premiumUser: result.premiumUser || false
+                premiumUser: result.premiumUser || false,
+                expoPushToken: result.expoPushToken || "",
+                notificationTime: result.notificationTime || "",
             });
             setIsLoggedIn(true);
             } else {

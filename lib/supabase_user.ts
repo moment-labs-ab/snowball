@@ -134,62 +134,35 @@ export const signInWithEmail = async function signInWithEmail(email: string, pas
     return user
 }
 
-//**
-/* Getter method to get user's username base on their userId.
-* @param userId 
-* @returns 
-*/
-export const getUsername = async (userId: string) => {
+/**
+ * Combined getter method to fetch multiple user profile fields based on userId.
+ * @param userId User's ID
+ * @param fields Optional array of specific fields to return (returns all fields if not specified)
+ * @returns Object containing requested user profile fields or undefined if error occurs
+ */
+export const getUserProfile = async (userId: string, fields?: string[]) => {
     const client = useSupabaseClient();
-
+    
+    // Define default fields to fetch if not specified
+    const fieldsToFetch = fields || ['username', 'premium_user', 'full_name', 'expo_push_token', 'notification_time'];
+    
     try {
         const { data, error } = await client
             .from('profiles')
-            .select(`username`)
+            .select(fieldsToFetch.join(','))
             .eq('id', userId)
-        if (data) {
-            return (data[0].username)
+            .select();
+            
+        if (error) {
+            console.error("Error fetching user profile:", error);
+            return undefined;
         }
-
+        
+        console.log("User profile data:", data[0]);
+        return data[0];
     } catch (error) {
-        return (undefined)
-
-    }
-}
-
-export const getPremiumStatus = async (userId: string) => {
-    const client = useSupabaseClient();
-
-    try {
-        const { data, error } = await client
-            .from('profiles')
-            .select(`premium_user`)
-            .eq('id', userId)
-        if (data) {
-            return (data[0].premium_user)
-        }
-
-    } catch (error) {
-        //console.log("There was an error trying to query users' premium user status")
-        return(undefined)
-    }
-}
-
-export const getName = async (userId: string) => {
-    const client = useSupabaseClient();
-
-    try {
-        const { data, error } = await client
-            .from('profiles')
-            .select(`full_name`)
-            .eq('id', userId)
-        if (data) {
-            return (data[0].full_name)
-        }
-
-    } catch (error) {
-        //console.log("There was an error trying to query user's name")
-        return(undefined)
+        console.error("Exception when fetching user profile:", error);
+        return undefined;
     }
 }
 
@@ -210,24 +183,24 @@ export const getCurrentUser = async (): Promise<User> => {
                 username: "",
                 name: "",
                 email: "",
-                premiumUser: false
+                premiumUser: false,
+                expoPushToken: "",
+                notificationTime: ""
             } as User;
 
             return defaultUser;
         } else {
 
-            // TODO: This needs to be refactored into one call.
-            const userId = data.user?.id || "";
-            const username = await getUsername(userId);
-            const premiumUser = await getPremiumStatus(userId);
-            const name = await getName(userId);
+            const profile = await getUserProfile(data.user?.id || "");
 
             let currentUser = {
-                userId: userId,
-                username: username,
+                userId: data.user?.id || "",
+                username: profile.username || "",
                 email: data.user?.email || "",
-                premiumUser: premiumUser,
-                name: name
+                premiumUser: profile.premium_user || false,
+                name: profile.full_name || "",
+                expoPushToken: profile.expo_push_token || "",
+                notificationTime: profile.notification_time || ""
             } as User;
 
             return currentUser;

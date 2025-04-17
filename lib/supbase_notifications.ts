@@ -1,4 +1,4 @@
-import { AppState } from 'react-native'
+import { Alert, AppState, Linking } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import { NotificationItem } from '@/types/types'
 import * as Notifications from "expo-notifications";
@@ -28,51 +28,36 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
     }
 }
 
-export const saveNotifications = async (userId: string, pushToken: string) => {
+export const saveNotifications = async (userId: string, pushToken: string, notificationTime: Date) => {
     const client = useSupabaseClient();
 
+    const notificationTimeString = notificationTime.toISOString();
     try {
         // Check if the user already exists in the table
-        const { data, error: fetchError } = await client
-            .from("user_notifications")
-            .select("user_id")
-            .eq("user_id", userId)
-            .single(); // Expecting only one record
+        const { error } = await client
+            .from("profiles")
+            .update({ notification_time: notificationTimeString})
+            .eq("id", userId);
 
-        if (fetchError && fetchError.code !== "PGRST116") {
-            // Ignore "PGRST116" (no rows found), but handle other errors
-            console.error("Error checking existing notifications:", fetchError);
-            return;
+        if (error) {
+            console.error("Error updating notification time:", error.message);
+            return error.message;
         }
-
-        if (data) {
-            // User already exists, no need to insert
-            return;
-        }
-
-        // Insert new record
-        const { error: insertError } = await client.from("user_notifications").insert({
-            user_id: userId,
-            expo_push_token: pushToken,
-        });
-
-        if (insertError) {
-            console.error("Error saving notifications:", insertError);
-        }
+        return true;
     } catch (error) {
         console.error("Unexpected error saving notifications:", error);
     }
 };
 
 
-export const updateUserExpoPushToken = async (userId: string, pushToken: string) => {
+export const updateUserExpoPushToken = async (userId: string, pushToken: string | null) => {
     const client = useSupabaseClient();
 
     try {
         const { error } = await client
-            .from("user_notifications")
-            .insert({ expo_push_token: pushToken })
-            .eq('user_id', userId)
+            .from("profiles")
+            .update({ expo_push_token: pushToken })
+            .eq('id', userId)
 
     } catch (error) {
         console.error("Error inserting Expo Push Token", error)
@@ -152,7 +137,7 @@ function handleRegistrationError(errorMessage: string) {
 export async function registerForPushNotificationsAsync() {
     let token
     if (Platform.OS === 'android') {
-        Notifications.setNotificationChannelAsync('default', {
+        await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
@@ -167,18 +152,68 @@ export async function registerForPushNotificationsAsync() {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
-        if (finalStatus !== "granted") {
-            alert("Failed to get push token for push notification!");
-            return "";
-        }
         token = await Notifications.getExpoPushTokenAsync({
             projectId: Constants?.expoConfig?.extra?.eas.projectId,
         });
-        //console.log(token);
+        console.log(token);
+
     } else {
         alert("Must use physical device for Push Notifications");
     }
 
     return token?.data ?? "";
+}
+
+export async function unregisterForPushNotificationsAsync() {
+    if (Platform.OS === 'android') {
+        await Notifications.deleteNotificationChannelAsync('default');
+    }
+
+    if (Device.isDevice) {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        const status = await Notifications.getPermissionsAsync();
+
+    } else {
+        alert("Must use physical device for Push Notifications");
+    }
+}
+
+export const showPermissionRequiredAlert = () => {
+    Alert.alert(
+      "Notifications Permission Required",
+      "To receive notifications, you need to enable them in your device settings.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Open Settings", 
+          onPress: openSettings
+        }
+      ]
+    );
+  };
+
+const openSettings = async () => {
+    try {
+      if (Platform.OS === 'ios') {
+        await Linking.openURL('app-settings:');
+      } else {
+        await Linking.openSettings();
+      }
+    } catch (error) {
+      console.error('Failed to open settings:', error);
+    }
+  };
+
+/**
+ * This function is only optimized for mobile devices
+ * @returns 
+ */
+export async function isNotificationsEnabled() {
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        return existingStatus === "granted";
+    } else {
+        return false;
+    }
 }
 
