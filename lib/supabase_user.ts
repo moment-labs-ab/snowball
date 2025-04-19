@@ -3,6 +3,7 @@ import 'react-native-url-polyfill/auto'
 import { nanoid } from 'nanoid';
 import { User } from '@/types/types'
 import { useSupabaseClient } from './supabase';
+import { getDateISOStringFromUtcTimeString } from './utils/dateTimeUtils';
 
 // Function to generate a unique ID
 function generateUniqueId(): string {
@@ -200,7 +201,7 @@ export const getCurrentUser = async (): Promise<User> => {
                 premiumUser: profile.premium_user || false,
                 name: profile.full_name || "",
                 expoPushToken: profile.expo_push_token || "",
-                notificationTime: profile.notification_time || ""
+                notificationTime: profile.notification_time ? getDateISOStringFromUtcTimeString(profile.notification_time) : "",
             } as User;
 
             return currentUser;
