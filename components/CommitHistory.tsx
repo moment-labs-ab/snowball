@@ -8,9 +8,11 @@ export interface HabitTrackingEntry {
 
 interface CommitHistoryProps {
   data: HabitTrackingEntry[];
+  startDate: Date;
+  endDate: Date
 }
 
-const CommitHistory: React.FC<CommitHistoryProps> = ({ data }) => {
+const CommitHistory: React.FC<CommitHistoryProps> = ({ data, startDate, endDate }) => {
   const earliestDate = data.reduce((earliest, entry) => 
   entry.date < earliest ? entry.date : earliest, data[0].date);
   const earliestDateFomatted = new Date(earliestDate).toDateString()

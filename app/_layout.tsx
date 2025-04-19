@@ -7,7 +7,7 @@ import HabitProvider from "@/context/HabitContext";
 import GoalProvider from "@/context/GoalContext";
 import TrackingProvider from "@/context/TrackingContext";
 
-import { GestureDetector } from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast, {
   BaseToast,
   ErrorToast,
@@ -53,6 +53,8 @@ export default function RootLayout() {
 
   if (!fontsLoaded && !error) return null;
   return (
+    <GestureHandlerRootView>
+
     <GlobalProvider>
       <GoalProvider>
       <HabitProvider>
@@ -67,5 +69,6 @@ export default function RootLayout() {
       </HabitProvider>
       </GoalProvider>
     </GlobalProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -12,9 +12,7 @@ import { useGlobalContext } from "@/context/Context";
 import { Goal } from "@/types/types";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
-import {
-  updateUserMilestones,
-} from "@/lib/supabase_goals";
+import { updateUserMilestones } from "@/lib/supabase_goals";
 import LoadingSkeleton from "../LoadingSkeloton";
 
 interface SelectedHabits {
@@ -59,7 +57,7 @@ const GoalObject = ({
   archived,
   accomplished_at,
   archived_at,
-  refreshGoals
+  refreshGoals,
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
@@ -85,8 +83,13 @@ const GoalObject = ({
     setHabitIdsList(habitIdsArray);
   }, [habit_ids, name, color, emoji]);
 
-  const handleMilestoneSave = async (milestones_updated:boolean,user_id:string, id:string, milestones: Milestones[]) => {
-    if(milestones_updated){
+  const handleMilestoneSave = async (
+    milestones_updated: boolean,
+    user_id: string,
+    id: string,
+    milestones: Milestones[]
+  ) => {
+    if (milestones_updated) {
       try {
         await updateUserMilestones(user.userId, id, milestones);
         // Optional: Additional success handling
@@ -94,12 +97,8 @@ const GoalObject = ({
         console.error("Failed to update milestones:", error);
         // Optional: Handle error or revert changes
       }
-
     }
-    
-  }
-
-  
+  };
 
   const toggleContent = async () => {
     if (isVisible) {
@@ -111,19 +110,23 @@ const GoalObject = ({
       setIsVisible(true);
     }
   };
-  if(isLoading){
-    return <LoadingSkeleton style={{
-      // Remove the border and add shadow properties
-    borderRadius: 8,
-    width: "100%",
-    aspectRatio: 1,
-    shadowColor: "#000", // Shadow color
-    shadowOffset: { width: 0, height: 4 }, // Shadow position
-    shadowOpacity: 0.3, // Shadow transparency
-    shadowRadius: 6, // Shadow spread
-    elevation: 5,
-    backgroundColor:color
-    }}/>
+  if (isLoading) {
+    return (
+      <LoadingSkeleton
+        style={{
+          // Remove the border and add shadow properties
+          borderRadius: 8,
+          width: "100%",
+          aspectRatio: 1,
+          shadowColor: "#000", // Shadow color
+          shadowOffset: { width: 0, height: 4 }, // Shadow position
+          shadowOpacity: 0.3, // Shadow transparency
+          shadowRadius: 6, // Shadow spread
+          elevation: 5,
+          backgroundColor: color,
+        }}
+      />
+    );
   }
   return (
     <View style={styles.wrapper}>
@@ -142,7 +145,6 @@ const GoalObject = ({
         presentationStyle="fullScreen"
       >
         <SafeAreaView style={styles.modalContainer}>
-          
           <InnerGoalView
             id={id}
             created_at={created_at}

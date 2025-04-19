@@ -4,6 +4,8 @@ export type User = {
     email: string;
     userId: string;
     premiumUser: boolean;
+    expoPushToken?: string;
+    notificationTime?: string;
 };
 
 export interface Habit {

@@ -55,7 +55,7 @@ const HeatMapStats = ({ data }: HeatMapStatsProps) => {
   const metrics = calculateMetrics(data);
 
   return (
-    <View>
+    <View >
       {metrics ? (
         <View style={styles.statsContainer}>
           <View style={styles.metricContainer}>
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     flexDirection: "row",
+    gap:15
   },
   metricContainer: {
     alignItems: "center",
