@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     height: 60,
     borderRadius: 5,
-    borderWidth: 1,
     borderColor: "#E6F0FF",
     marginTop: 5,
     position: 'relative',
