@@ -31,6 +31,7 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
+import { SimpleTooltip } from "@/modals/SimpleToolTip";
 
 type habitCardProps = {
   id: string;
@@ -70,11 +71,13 @@ const HabitCard = ({
   type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
 
   //Animated Tracking Logic
+  const isSwipingRef = useRef(false);
   const translateX = useSharedValue(0);
   const pan = Gesture.Pan()
     .onUpdate((event) => {
       // Only track horizontal movement if it's significantly more than vertical
       if (Math.abs(event.translationX) > Math.abs(event.translationY) * 2) {
+        isSwipingRef.current = true;
         translateX.value = event.translationX;
       }
     })
@@ -89,6 +92,9 @@ const HabitCard = ({
 
       // Reset after end
       translateX.value = 0;
+      setTimeout(() => {
+        isSwipingRef.current = false;
+      }, 20);
     })
     .onTouchesDown(() => {
       translateX.value = 0;
@@ -281,7 +287,9 @@ const HabitCard = ({
     <GestureDetector gesture={pan}>
         <TouchableOpacity
           onPress={() => {
-            setModalVisible(!modalVisible)
+            if (!isSwipingRef.current) {
+              setModalVisible(true);
+            }
           }}
           activeOpacity={0.8}
           style={{
@@ -354,7 +362,6 @@ const HabitCard = ({
               />
             </View>
             
-          
         </TouchableOpacity>
         </GestureDetector>
       

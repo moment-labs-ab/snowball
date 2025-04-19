@@ -3,14 +3,10 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Alert,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useGlobalContext } from "@/context/Context";
 import DatePicker from "@/components/DatePicker";
 
@@ -23,6 +19,7 @@ import { getUserLoginCount } from "@/lib/supabase_profile";
 import { useHabitContext } from "@/context/HabitContext";
 import FeedbackButton from "@/modals/FeedbackButton";
 import Feedback from "@/components/Profile/SettingsFeedback";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
@@ -83,11 +80,32 @@ const Habits = () => {
     fetchUserLogins();
   }, [user.name]); // Only fetch once when the component mounts
 
+  const [tutorialVisible, setTutorialVisible] = useState(true);
+  const prevHabitsLength = useRef(habits.length);
+
+  useEffect(() => {
+    const checkFirstHabit = async () => {
+      const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
+      console.log(hasSeenWelcome)
+      
+      if (habits.length >0 && hasSeenWelcome !== 'true') {
+        setOpenWelcome(true);
+        // Mark that user has seen welcome
+        await AsyncStorage.setItem('hasSeenWelcome', 'true');
+      }
+      
+      prevHabitsLength.current = habits.length;
+    };
+    
+    checkFirstHabit();
+  }, [habits]);
+
   if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color="#3e4e88" />
     </View>;
   }
+  const [testVisible, setTestVisible] = useState(false);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#edf5fe", height: "100%" }}>
@@ -135,7 +153,7 @@ const Habits = () => {
           }}
         />
 
-        <View>{userLogins === 1 && <WelcomeModal isOpen={openWelcome} />}</View>
+        <WelcomeModal isOpen={openWelcome} setIsOpen={setOpenWelcome} />
       </View>
 
       <View style={{ flex: 1 }}>
