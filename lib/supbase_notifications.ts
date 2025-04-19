@@ -6,6 +6,7 @@ import * as Device from "expo-device";
 import Constants from 'expo-constants';
 import { Platform } from "react-native";
 import { useSupabaseClient } from './supabase';
+import { getUtcTimeString } from './utils/dateTimeUtils';
 
 export const getNotifications = async (userId: string): Promise<NotificationItem[]> => {
     const client = useSupabaseClient();
@@ -31,7 +32,7 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
 export const saveNotifications = async (userId: string, pushToken: string, notificationTime: Date) => {
     const client = useSupabaseClient();
 
-    const notificationTimeString = notificationTime.toISOString();
+    const notificationTimeString = getUtcTimeString(notificationTime)
     try {
         // Check if the user already exists in the table
         const { error } = await client
