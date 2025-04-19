@@ -20,7 +20,7 @@ export const fetchSupabaseSecrets = async() => {
     }
 
     const data = await response.json();
-    console.log("Fetched Supabase secrets:", JSON.stringify(data));
+    //console.log("Fetched Supabase secrets:", JSON.stringify(data));
 
     return {
         supabaseUrl: data.url,

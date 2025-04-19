@@ -159,7 +159,6 @@ export const getUserProfile = async (userId: string, fields?: string[]) => {
             return undefined;
         }
         
-        console.log("User profile data:", data[0]);
         return data[0];
     } catch (error) {
         console.error("Exception when fetching user profile:", error);
@@ -207,7 +206,7 @@ export const getCurrentUser = async (): Promise<User> => {
             return currentUser;
         }
     } catch (error) {
-        console.log("Error fetching current user info:", error);
+        //console.log("Error fetching current user info:", error);
         Alert.alert("Issue fetching current user info.");
         let defaultUser = {
             userId: "",
