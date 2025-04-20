@@ -13,7 +13,7 @@ type NumberScrollProps = {
   otherProps?: Object;
 };
 
-const NumberScroll = ({ 
+const NumberInput = ({ 
   title, 
   placeholder, 
   handleChangeText, 
@@ -118,7 +118,7 @@ const NumberScroll = ({
   );
 };
 
-export default NumberScroll;
+export default NumberInput;
 
 const styles = StyleSheet.create({
   container: {

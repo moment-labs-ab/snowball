@@ -8,9 +8,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState, useRef } from "react";
 import { useGlobalContext } from "@/context/Context";
-import DatePicker from "@/components/DatePicker";
+import DatePicker from "@/components/HabitObjects/DatePicker";
 
-import DailyHabitDisplay from "@/components/DailyHabitDisplay";
+import DailyHabitDisplay from "@/components/HabitObjects/DailyHabitDisplay";
 import NewHabitButton from "@/modals/NewHabitButton";
 import NewHabitModal from "@/modals/NewHabitModal";
 import WelcomeModal from "@/components/HabitObjects/WelcomeModal";

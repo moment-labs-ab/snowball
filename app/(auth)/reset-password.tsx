@@ -10,8 +10,8 @@ import {
   import React, { useEffect, useState } from "react";
   import images from "../../constants/images";
   import { Link, router, useLocalSearchParams } from "expo-router";
-  import FormField from "../../components/FormField";
-  import CustomButton from "@/components/CustomButtom";
+  import FormField from "@/components/shared/FormField";
+  import CustomButton from "@/components/shared/CustomButtom";
   
   import { resetPassword } from "@/lib/supabase_user";
   import { useGlobalContext } from "@/context/Context";

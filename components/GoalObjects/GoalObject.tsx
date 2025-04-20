@@ -13,7 +13,7 @@ import { Goal } from "@/types/types";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
 import { updateUserMilestones } from "@/lib/supabase_goals";
-import LoadingSkeleton from "../LoadingSkeloton";
+import LoadingSkeleton from "../HabitObjects/LoadingSkeloton";
 
 interface SelectedHabits {
   id: string;

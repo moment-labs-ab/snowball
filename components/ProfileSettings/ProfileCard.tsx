@@ -1,7 +1,7 @@
 import icons from "@/constants/icons";
 import React, {useEffect} from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import SettingsButton from "@/components/SettingsButton";
+import SettingsButton from "./SettingsButton";
 import Settings from "@/components/Profile/SettingsHome";
 import MiniHabitContainer from "./MiniHabitContainer";
 import MiniGoalsContainer from "./MiniGoalsContainer";

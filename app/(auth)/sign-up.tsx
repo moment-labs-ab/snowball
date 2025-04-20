@@ -2,9 +2,9 @@ import { View, Text, SafeAreaView, ScrollView, Image, Alert,StyleSheet } from 'r
 import React, { useState } from 'react'
 import images from '../../constants/images';
 import { Link, router } from 'expo-router'
-import FormField from '../../components/FormField';
+import FormField from "@/components/shared/FormField";
 
-import CustomButton from '@/components/CustomButtom';
+import CustomButton from "@/components/shared/CustomButtom";
 
 import { useGlobalContext } from '@/context/Context';
 import { signUpWithEmail } from '@/lib/supabase_user';

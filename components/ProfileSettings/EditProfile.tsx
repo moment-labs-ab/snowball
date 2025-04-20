@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, SafeAreaView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getCurrentUser, handleUserDeletion } from '@/lib/supabase_user'
-import CustomButton from '../CustomButtom'
+import CustomButton from "@/components/shared/CustomButtom";
 import { useGlobalContext } from '@/context/Context'
 import { router } from 'expo-router'
 
