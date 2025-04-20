@@ -4,7 +4,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useFocusEffect } from '@react-navigation/native';
 import { ProgressData } from '@/types/types';
 import { listenToTrackingHistory, getFullProgressData } from '@/lib/supabase_progress';
-import LoadingScreen from './LoadingScreen';
+import LoadingScreen from '../shared/LoadingScreen';
 
 type HabitProgressBarProps = {
   timeFrame: string;

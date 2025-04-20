@@ -8,8 +8,7 @@ import HabitCard from "./HabitCard";
 import { FlashList } from "@shopify/flash-list";
 import HabitsWelcome from "./HabitsWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
-import { SimpleTooltip } from "@/modals/SimpleToolTip";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 type dailyHabitDisplayProps = {
