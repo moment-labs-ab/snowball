@@ -82,6 +82,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
             onChange={handleTimeChange}
             textColor="#000000" // Make sure text is visible
             style={styles.picker}
+            minuteInterval={30}
           />
         </View>
       </View>
@@ -114,6 +115,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
             onChange={handleTimeChange}
             style={styles.picker}
             textColor="#000000" // Ensure visibility on Android
+            minuteInterval={30}
           />
         </View>
       )}

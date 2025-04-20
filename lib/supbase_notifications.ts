@@ -29,10 +29,10 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
     }
 }
 
-export const saveNotifications = async (userId: string, pushToken: string, notificationTime: Date) => {
+export const saveNotifications = async (userId: string, pushToken: string, notificationTime: Date | null) => {
     const client = useSupabaseClient();
 
-    const notificationTimeString = getUtcTimeString(notificationTime)
+    const notificationTimeString = notificationTime ? getUtcTimeString(notificationTime) : notificationTime;
     try {
         // Check if the user already exists in the table
         const { error } = await client
@@ -156,7 +156,7 @@ export async function registerForPushNotificationsAsync() {
         token = await Notifications.getExpoPushTokenAsync({
             projectId: Constants?.expoConfig?.extra?.eas.projectId,
         });
-        console.log(token);
+        //console.log(token);
 
     } else {
         alert("Must use physical device for Push Notifications");

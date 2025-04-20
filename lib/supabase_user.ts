@@ -3,7 +3,7 @@ import 'react-native-url-polyfill/auto'
 import { nanoid } from 'nanoid';
 import { User } from '@/types/types'
 import { useSupabaseClient } from './supabase';
-import { getDateISOStringFromUtcTimeString } from './utils/dateTimeUtils';
+import { getDateISOStringFromUtcTimeString, getMidnightISOString } from './utils/dateTimeUtils';
 
 // Function to generate a unique ID
 function generateUniqueId(): string {
@@ -157,8 +157,7 @@ export const getUserProfile = async (userId: string, fields?: string[]) => {
         if (error) {
             return undefined;
         }
-        
-        console.log("User profile data:", data[0]);
+
         return data[0];
     } catch (error) {
         console.error("Exception when fetching user profile:", error);
@@ -200,13 +199,15 @@ export const getCurrentUser = async (): Promise<User> => {
                 premiumUser: profile.premium_user || false,
                 name: profile.full_name || "",
                 expoPushToken: profile.expo_push_token || "",
-                notificationTime: profile.notification_time ? getDateISOStringFromUtcTimeString(profile.notification_time) : "",
+                notificationTime: profile.notification_time ? getDateISOStringFromUtcTimeString(profile.notification_time) : null
             } as User;
 
             return currentUser;
         }
     } catch (error) {
-        console.log("Error fetching current user info:", error);
+        //console.log("Error fetching current user info:", error);
+        Alert.alert("Issue fetching current user info.");
+
         let defaultUser = {
             userId: "",
             username: "",

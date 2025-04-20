@@ -29,8 +29,6 @@ const SingleNotificationPage = () => {
         const fetchNotificationStatus = async () => {
             try {
                 const status = await isNotificationsEnabled();
-                console.log("Notification status:", status);
-                console.log("User expoPushToken:", user.expoPushToken);
                 const tokenConfirmed = status && user.expoPushToken != null && user.expoPushToken !== "";
                 setNotificationsGranted(tokenConfirmed);
                 
@@ -40,13 +38,12 @@ const SingleNotificationPage = () => {
                     // Set notification time from user settings if available
                     if (user.notificationTime) {
                         const savedTime = new Date(user.notificationTime);
+
+                        console.log("Notification time from user:", savedTime.toISOString());
                         setNotificationTime(savedTime);
                         setOriginalTime(savedTime);
                     } else {
-                        // Default to current time if no time was set before
-                        const now = new Date();
-                        setNotificationTime(now);
-                        setOriginalTime(now);
+                        setDefaultNotificationTime(); 
                     }
                 }
             } catch (error) {
@@ -57,6 +54,23 @@ const SingleNotificationPage = () => {
         fetchNotificationStatus();
     }, [user]);
 
+    const setDefaultNotificationTime = () => {
+        const date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+
+        setNotificationTime(date);
+        setOriginalTime(date);
+    }
+
+    // Helper function to set time to the top of the hour
+    const setToTopOfHour = (date: Date ) => {
+        const newDate = new Date(date);
+        newDate.setMinutes(0);
+        newDate.setSeconds(0);
+        newDate.setMilliseconds(0);
+        return newDate;
+    };
+    
     // Called when user selects a time from the picker
     const handleTimeSelected = (time: Date) => {
         setNotificationTime(time);
@@ -64,7 +78,6 @@ const SingleNotificationPage = () => {
         setTimeChanged(originalTime && 
             (time.getHours() !== originalTime.getHours() || 
              time.getMinutes() !== originalTime.getMinutes()));
-        console.log("Time selected:", time);
     };
 
     // Called when user taps "Enable Notifications"
@@ -103,6 +116,9 @@ const SingleNotificationPage = () => {
         try {
             // Clear the token in database
             await updateUserExpoPushToken(user.userId, "");
+            await saveNotifications(user.userId, "", null);
+            
+            setDefaultNotificationTime(); // Reset to default time
             
             // Update local user state
             setUser((prevUser) => ({
@@ -141,16 +157,29 @@ const SingleNotificationPage = () => {
     };
 
     // Show various toast messages
-    const showToast = (type: "success" | "disabled" | "enabled") => {
+    const showToast = (type: "success" | "disabled" | "enabled" | "error") => {        
+        let message;
+        switch (type) {
+            case "success":
+                message = "Notifications updated successfully.";
+                break;
+            case "disabled":
+                message = "Notifications disabled successfully.";
+                break;
+            case "enabled":
+                message = "Notifications enabled successfully.";
+                break;
+            case "error":
+                message = "An error occurred while processing your request.";
+                break;
+            default:
+                message = "Unknown action.";
+        }
+        
         let toastOptions = {
-            type: type === "enabled" ? "error" : "success",
-            text1: type === "success" ? "Success!" : "Error!",
-            text2:
-                type === "success"
-                    ? "Notifications updated."
-                    : type === "disabled"
-                        ? "Notifications turned off."
-                        : "Something went wrong.",
+            type: type === "error" ? "error" : "success",
+            text1: type === "error" ? "Error!" : "Success!",
+            text2: message,
             visibilityTime: 1500,
             position: "top" as const,
             autoHide: true,
