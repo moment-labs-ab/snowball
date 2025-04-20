@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import moment from "moment";
-import MonthPickerModal from "react-native-month-year-picker"; // Make sure this is installed!
 import MonthYearModal from "@/modals/MonthYearModal";
+import { useGlobalContext } from "@/context/Context";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 interface MonthPickerProps {
   onMonthChange?: (date: Date) => void;
@@ -21,6 +22,8 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
   onMonthChange,
   initialDate,
 }) => {
+
+  const {user} = useGlobalContext();
   const [currentDate, setCurrentDate] = useState(initialDate || new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,8 +34,21 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
     }
   }, [initialDate]);
 
+  const checkDate = (dateToCheck: Date, isPremiumUser: boolean): boolean => {
+    if (isPremiumUser) return true;
+  
+    const oneMonthAgo = moment().startOf("month").subtract(1, "month");
+    return moment(dateToCheck).isSameOrAfter(oneMonthAgo);
+  };
+
   const changeMonth = (direction: number) => {
     const newDate = moment(currentDate).add(direction, "months").toDate();
+  
+    if (!checkDate(newDate, user.premiumUser)) {
+      showToast();
+      return;
+    }
+  
     setCurrentDate(newDate);
     onMonthChange?.(newDate);
   };
@@ -46,6 +62,21 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
   };
 
   const today = new Date();
+
+  const showToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "Premium Feature",
+      text2: "Unlock past Month selection with Premium!",
+      visibilityTime: 3200,
+      position: "top",
+      autoHide: true,
+      props: {
+        onPress: () => {
+        }, // Navigate to your premium page
+      },
+    });
+  };
 
   return (
     <View style={{borderWidth:1, padding:2, borderRadius:5, backgroundColor:'#dcdde0', flexDirection:'row'}}>
@@ -82,9 +113,14 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
         selectedDate={currentDate}
         onClose={() => setIsModalVisible(false)}
         onSelect={(date) => {
-            setCurrentDate(date)
+          if (!checkDate(date, user.premiumUser)) {
+            showToast();
+            return;
+          }
+        
+          setCurrentDate(date);
           setIsModalVisible(false);
-          onMonthChange?.(date)
+          onMonthChange?.(date);
         }}
       />
     </View>
