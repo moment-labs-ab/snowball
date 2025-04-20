@@ -7,9 +7,9 @@ import {
   StyleSheet,
   Alert,
   Platform,
-  Switch,
+  Keyboard,
   SafeAreaView,
-  Modal,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView
 } from "react-native";
 import CustomButton from "@/components/shared/CustomButtom";
@@ -187,6 +187,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
   }, [user.premiumUser]);
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -313,6 +314,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       </View>
     </SafeAreaView>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

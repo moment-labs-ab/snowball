@@ -73,7 +73,10 @@ const InnerGoalView = ({
   const { user, isLoading } = useGlobalContext();
   const {setGoals} = useGoalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [formattedDate, setFormattedDate] = useState<Date>();
+  const [formattedEndDate, setFormattedEndDate] = useState<Date>();
+  const [formattedStartDate, setFormattedStartDate] = useState<Date>();
+  const [daysToGo, setDaysToGo] = useState<number>();
+
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -183,12 +186,20 @@ const InnerGoalView = ({
       },
     });
   };
+  const getDaysBetweenDates = (startDate: Date, endDate: Date): number => {
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / oneDayMs);
+  };
 
   useEffect(() => {
     fetchSingleGoal();
 
-    const startingDate = new Date(expected_end_date);
-    setFormattedDate(startingDate);
+    const endingDate = new Date(expected_end_date);
+    setFormattedEndDate(endingDate);
+    const startedDate = new Date(created_at)
+    setFormattedStartDate(startedDate)
+    setDaysToGo(getDaysBetweenDates(new Date(), endingDate))
+    
 
   }, [
     contentToggled,
@@ -252,8 +263,12 @@ const InnerGoalView = ({
         </View>
         <View style={styles.dateContainer}>
           <Text style={styles.description}>
-            by {moment(formattedDate).format("MMMM D, YYYY")}
+          Started: <Text style={{fontWeight:'500'}}>{moment(formattedStartDate).format("MMMM D, YYYY")} </Text>
           </Text>
+          <Text style={styles.description}>
+            Expected End: <Text style={{fontWeight:'500'}}>{moment(formattedEndDate).format("MMMM D, YYYY")}</Text>
+          </Text>
+          <Text style={styles.description} >Days Left: <Text style={{fontWeight:'500'}}>{daysToGo}</Text> </Text>
         </View>
         <View
           style={{
@@ -361,6 +376,9 @@ const styles = StyleSheet.create({
   dateContainer: {
     marginTop: 5,
     marginBottom: 20,
+    flexDirection: 'column',
+    justifyContent:'center'
+
   },
   description: {
     textAlign: "center",
