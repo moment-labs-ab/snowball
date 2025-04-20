@@ -12,17 +12,10 @@ import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
 import { FlashList } from "@shopify/flash-list";
-import HabitHeatMap from "./HabitHeatMap";
-import CalendarButton from "../CalendarButton";
-import HabitYearView from "../HabitYearView";
 import TrackingWelcome from "./TrackingWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useHabitContext } from "@/context/HabitContext";
 import { useTrackingContext } from "@/context/TrackingContext";
-import MonthPicker from "./MonthPicker";
-import { getGridTrackingHistory } from "@/lib/supabase_progress";
-import { HabitTrackingEntry } from "@/types/types";
-import moment from "moment";
 import MonthlyTracking from "./MonthlyTracking";
 
 const HeatMapDisplay = () => {

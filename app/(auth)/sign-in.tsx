@@ -2,8 +2,8 @@ import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import images from "../../constants/images";
 import { Link, router } from "expo-router";
-import FormField from "../../components/FormField";
-import CustomButton from "@/components/CustomButtom";
+import FormField from "@/components/shared/FormField";
+import CustomButton from "@/components/shared/CustomButtom";
 
 import { signInWithEmail, getCurrentUser } from "@/lib/supabase_user";
 import { useGlobalContext } from "@/context/Context";

@@ -11,8 +11,8 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import NumberInput from "@/components/NumberInput";
-import TimeIntervalPicker from "@/components/TimeIntervalPicker";
+import NumberInput from "./NumberInput";
+import TimeIntervalPicker from "./TimeIntervalPicker";
 import {
   deleteHabit,
   updateHabitIfChanged,
@@ -21,9 +21,8 @@ import {
 } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import NumberBox from "@/components/NumberBox";
+import NumberBox from "./NumberBox";
 import Octicons from "@expo/vector-icons/Octicons";
-import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
@@ -439,7 +438,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             <NumberInput
               title="Frequency"
               placeholder=" "
-              handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
+              handleChangeText={(e: number) => setHabit({ ...habit, frequency: e })}
               initialValue={habit.frequency}
               otherStyles="mt-10"
             />
