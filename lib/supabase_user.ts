@@ -206,7 +206,6 @@ export const getCurrentUser = async (): Promise<User> => {
         }
     } catch (error) {
         //console.log("Error fetching current user info:", error);
-        Alert.alert("Issue fetching current user info.");
 
         let defaultUser = {
             userId: "",

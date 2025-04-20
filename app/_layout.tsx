@@ -1,5 +1,5 @@
 import { SplashScreen, Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Platform, KeyboardAvoidingView } from "react-native";
 import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/Context";
@@ -59,6 +59,7 @@ export default function RootLayout() {
       <GoalProvider>
       <HabitProvider>
         <TrackingProvider>
+
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />

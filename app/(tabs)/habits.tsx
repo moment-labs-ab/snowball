@@ -2,7 +2,6 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -86,7 +85,6 @@ const Habits = () => {
   useEffect(() => {
     const checkFirstHabit = async () => {
       const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
-      console.log(hasSeenWelcome)
       
       if (habits.length >0 && hasSeenWelcome !== 'true') {
         setOpenWelcome(true);
