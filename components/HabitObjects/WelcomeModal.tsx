@@ -4,6 +4,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import HabitCardExample from "./HabitCardExample";
 import ProgressExample from "./ProgressExample";
 import Feather from '@expo/vector-icons/Feather';
+import EnableNotificationButton from "../ProfileSettings/EnableNotification";
 
 type ModalProps = {
   isOpen: boolean;
@@ -43,7 +44,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
       </Text>
       <ProgressExample />
     </View>,
-    <View key="slide4" style={[styles.bodyContainer, {alignItems:'center'}]}>
+    <View key="slide4" style={[styles.bodyContainer, {alignItems:'center', height:'80%'}]}>
     <View style={styles.iconWrapper}>
       <Feather name="bell" size={24} color="#3e4e88" />
     </View>
@@ -53,6 +54,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
     <Text style={styles.subText}>
       Adjust the time you receive your notification in settings.
     </Text>
+    <EnableNotificationButton />
   </View>
   ,
     <View key="slide5" style={styles.bodyContainer}>
@@ -60,8 +62,13 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
         Our <Text style={styles.highlight}>commitment</Text> is to keep
         improving this app, empowering you to become your best self.
       </Text>
-      <TouchableOpacity onPress={() => setIsOpen(false)} style={{borderWidth:1, alignItems:'center', borderRadius:10}}>
-      <Text style={[styles.body]}>Let's Get Started! 🎉</Text>
+      <TouchableOpacity onPress={() => setIsOpen(false)} style={{backgroundColor: '#3e4e88',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    marginTop:20}}>
+      <Text style={{color:'white', fontWeight:'600', fontSize:16}}>Let's Get Started! 🎉</Text>
       </TouchableOpacity>
     </View>,
   ];

@@ -69,22 +69,22 @@ const Habits = () => {
   useEffect(() => {
     const checkFirstHabit = async () => {
       const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
-      /**if(habits.length == 0 && hasSeenWelcome !== 'true'){
+      if(habits.length == 0 && hasSeenWelcome !== 'true'){
+       setOpenWelcome(true);
+        // Mark that user has seen welcome
+        await AsyncStorage.setItem('hasSeenWelcome', 'true');
 
       }else if(hasSeenWelcome !== 'true'){
-
-      }*/
-      if (habits.length == 0) {
         setOpenWelcome(true);
         // Mark that user has seen welcome
         await AsyncStorage.setItem('hasSeenWelcome', 'true');
+
       }
-      
       prevHabitsLength.current = habits.length;
     };
     
     checkFirstHabit();
-  }, [habits]);
+  }, []);
 
   if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
