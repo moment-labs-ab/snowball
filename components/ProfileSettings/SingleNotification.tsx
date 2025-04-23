@@ -14,6 +14,7 @@ import {
     updateUserExpoPushToken,
 } from "@/lib/supbase_notifications";
 import TimePicker from "../shared/TimePicker";
+import { getDefaultDateUtcTime } from "@/lib/utils/dateTimeUtils";
 
 const SingleNotificationPage = () => {
     const { user, setUser } = useGlobalContext();
@@ -85,29 +86,32 @@ const SingleNotificationPage = () => {
         try {
             const token = await registerForPushNotificationsAsync();
             if (!token) {
-                showToast("disabled");
+                showToast("error");
                 return;
             }
             
+            const defaultDate = getDefaultDateUtcTime();
+            
             // Save token and notification time
             await updateUserExpoPushToken(user.userId, token);
-            await saveNotifications(user.userId, token, notificationTime);
+            await saveNotifications(user.userId, token, defaultDate);
             
             // Update local user state
             setUser((prevUser) => ({
                 ...prevUser,
                 expoPushToken: token,
-                notificationTime: notificationTime.toISOString()
+                notificationTime: defaultDate.toISOString()
             }));
             
             setExpoPushToken(token);
-            setOriginalTime(notificationTime);
+            setOriginalTime(defaultDate);
+            setNotificationTime(defaultDate);
             setTimeChanged(false);
             setNotificationsGranted(true);
             showToast("enabled");
         } catch (error) {
             console.error("Error enabling notifications:", error);
-            showToast("disabled");
+            showToast("error");
         }
     };
 
