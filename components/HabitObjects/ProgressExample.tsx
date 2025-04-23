@@ -45,13 +45,13 @@ const ProgressExample = () => {
       <View style={styles.tabsContainer}>
         <TabIcon
           icon={icons.mountain}
-          color="#8BBDFA"
+          color="#3e4e88"
           name="Goals"
           focused={true}
         />
         <TabIcon
           icon={icons.progress}
-          color="#8BBDFA"
+          color="#3e4e88"
           name="Progress"
           focused={false}
         />

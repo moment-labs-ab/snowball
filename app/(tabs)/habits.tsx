@@ -63,30 +63,18 @@ const Habits = () => {
     setModalVisible(false);
   };
 
-  const fetchUserLogins = async () => {
-    setLoading(true);
-    const logins = await getUserLoginCount(user.userId);
-    if (logins) {
-      setUserLogins(logins);
-      if (logins === 1 || logins === 0) {
-        setOpenWelcome(true);
-      }
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchUserLogins();
-  }, [user.name]); // Only fetch once when the component mounts
-
   const [tutorialVisible, setTutorialVisible] = useState(true);
   const prevHabitsLength = useRef(habits.length);
 
   useEffect(() => {
     const checkFirstHabit = async () => {
       const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
-      
-      if (habits.length >0 && hasSeenWelcome !== 'true') {
+      /**if(habits.length == 0 && hasSeenWelcome !== 'true'){
+
+      }else if(hasSeenWelcome !== 'true'){
+
+      }*/
+      if (habits.length == 0) {
         setOpenWelcome(true);
         // Mark that user has seen welcome
         await AsyncStorage.setItem('hasSeenWelcome', 'true');
