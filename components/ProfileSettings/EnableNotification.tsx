@@ -1,87 +1,88 @@
 import { useGlobalContext } from '@/context/Context';
 import { registerForPushNotificationsAsync, saveNotifications, updateUserExpoPushToken } from '@/lib/supbase_notifications';
 import { getDefaultDateUtcTime } from '@/lib/utils/dateTimeUtils';
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import Toast from "react-native-toast-message";
+import { Feather } from '@expo/vector-icons'; // for checkmark icon
 
-/**
- * A reusable notification button component for React Native
- */
-const EnableNotificationButton = ({ }) => {
+const EnableNotificationButton = () => {
     const { user, setUser } = useGlobalContext();
+    const [enabled, setEnabled] = useState(false);
 
     const handleEnableNotification = async () => {
         try {
             const token = await registerForPushNotificationsAsync();
 
-            // Save token and notification time
             await updateUserExpoPushToken(user.userId, token);
 
             const defaultTime = getDefaultDateUtcTime();
             await saveNotifications(user.userId, token, defaultTime);
 
-            // Update local user state
             setUser((prevUser) => ({
                 ...prevUser,
                 expoPushToken: token,
                 notificationTime: defaultTime.toISOString()
             }));
 
+            setEnabled(true); // mark as enabled
             showToast("enabled");
         } catch (error) {
             console.error("Error enabling notifications:", error);
-            showToast("disabled");
+            showToast("error");
         }
     };
 
-    // This could probably be moved to a separate utility file if needed in multiple places
-        const showToast = (type: "success" | "disabled" | "enabled" | "error") => {        
-            let message;
-            switch (type) {
-                case "success":
-                    message = "Notifications updated successfully.";
-                    break;
-                case "disabled":
-                    message = "Notifications disabled successfully.";
-                    break;
-                case "enabled":
-                    message = "Notifications enabled successfully.";
-                    break;
-                case "error":
-                    message = "An error occurred while processing your request.";
-                    break;
-                default:
-                    message = "Unknown action.";
-            }
-            
-            let toastOptions = {
-                type: type === "error" ? "error" : "success",
-                text1: type === "error" ? "Error!" : "Success!",
-                text2: message,
-                visibilityTime: 1500,
-                position: "top" as const,
-                autoHide: true,
-                props: {
-                    onPress: () => {
-                        // Optional: navigate somewhere
-                    },
-                },
-            };
-    
-            Toast.show(toastOptions);
-        };
+    const showToast = (type: "success" | "disabled" | "enabled" | "error") => {
+        let message;
+        switch (type) {
+            case "success":
+                message = "Notifications updated successfully.";
+                break;
+            case "disabled":
+                message = "Notifications disabled successfully.";
+                break;
+            case "enabled":
+                message = "Notifications enabled successfully.";
+                break;
+            case "error":
+                message = "An error occurred while processing your request.";
+                break;
+            default:
+                message = "Unknown action.";
+        }
+
+        Toast.show({
+            type: type === "error" ? "error" : "success",
+            text1: type === "error" ? "Error!" : "Success!",
+            text2: message,
+            visibilityTime: 1500,
+            position: "top",
+            autoHide: true,
+        });
+    };
 
     return (
         <>
             <TouchableOpacity
-                style={[styles.enableButton]}
+                style={[
+                    styles.enableButton,
+                    enabled && styles.enabledStyle
+                ]}
                 onPress={handleEnableNotification}
+                disabled={enabled}
             >
-                <Text style={[styles.buttonText]}> Enable Notifications </Text>
+                <View style={styles.buttonContent}>
+                    <Text style={[styles.buttonText, enabled && styles.enabledText]}>
+                        {enabled ? "Notifications Enabled" : "Enable Notifications"}
+                    </Text>
+                    {enabled && (
+                        <Feather name="check" size={20} color="green" style={styles.checkIcon} />
+                    )}
+                </View>
             </TouchableOpacity>
 
-            <Toast/>
+            <Toast />
         </>
     );
 };
@@ -95,10 +96,26 @@ const styles = StyleSheet.create({
         marginTop: 15,
         width: "100%",
     },
+    enabledStyle: {
+        backgroundColor: "#ffffff",
+        borderColor: "#3e4e88",
+        borderWidth: 1,
+    },
     buttonText: {
         color: "white",
         fontSize: 16,
         fontWeight: "bold",
+    },
+    enabledText: {
+        color: "grey",
+    },
+    buttonContent: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    checkIcon: {
+        marginLeft: 8,
     },
 });
 

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import HabitCardExample from "./HabitCardExample";
 import ProgressExample from "./ProgressExample";
+import Feather from '@expo/vector-icons/Feather';
+import EnableNotificationButton from "../ProfileSettings/EnableNotification";
 
 type ModalProps = {
   isOpen: boolean;
@@ -18,8 +20,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
   const slides = [
     <View key="slide1" style={styles.bodyContainer}>
       <Text style={styles.body}>
-        Welcome to <Text style={styles.highlight}>Snowball</Text> & congrats on
-        making your first habit!
+        Welcome to <Text style={styles.highlight}>Snowball.</Text> We're glad you're here.
       </Text>
       <Text>
 
@@ -31,7 +32,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
       Our goal is to make tracking your habits & goals{" "}
       <Text style={styles.highlight}>simple</Text>.
     </Text>
-    <Text style={{marginBottom:20, textAlign:'center'}}>
+    <Text style={{marginBottom:20, textAlign:'center', fontWeight: 300}}>
       You can track your habits by swiping right (or left to delete a tracking).
     </Text>
     <HabitCardExample />
@@ -43,12 +44,32 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
       </Text>
       <ProgressExample />
     </View>,
-    <View key="slide4" style={styles.bodyContainer}>
+    <View key="slide4" style={[styles.bodyContainer, {alignItems:'center', height:'80%'}]}>
+    <View style={styles.iconWrapper}>
+      <Feather name="bell" size={24} color="#3e4e88" />
+    </View>
+    <Text style={styles.body}>
+      You can also enable notifications to help stay on track.
+    </Text>
+    <Text style={styles.subText}>
+      Adjust the time you receive your notification in settings.
+    </Text>
+    <EnableNotificationButton />
+  </View>
+  ,
+    <View key="slide5" style={styles.bodyContainer}>
       <Text style={styles.body}>
         Our <Text style={styles.highlight}>commitment</Text> is to keep
         improving this app, empowering you to become your best self.
       </Text>
-      <Text style={[styles.body, { marginTop: 20 }]}>Let's Get Started! 🎉</Text>
+      <TouchableOpacity onPress={() => setIsOpen(false)} style={{backgroundColor: '#3e4e88',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    marginTop:20}}>
+      <Text style={{color:'white', fontWeight:'600', fontSize:16}}>Let's Get Started! 🎉</Text>
+      </TouchableOpacity>
     </View>,
   ];
 
@@ -158,5 +179,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#3e4e88",
     marginHorizontal: 6,
+  },
+  iconWrapper: {
+    width: 48,
+    height: 48,
+    marginBottom: 24, // space below the icon
+    alignItems: "center", // center icon horizontally
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderRadius:50,
+    backgroundColor: "#F5F7FF",
+  },
+  subText: {
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: "300",
   },
 });
