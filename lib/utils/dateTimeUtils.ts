@@ -16,8 +16,16 @@ export const getDateISOStringFromUtcTimeString = (timeString: string): string =>
     return date.toISOString();
 }
 
-export const getMidnightISOString = (): string => {
+export const getDefaultDateISOStringFromUtcTimeString = (): string => {
     const date = new Date();
-    date.setUTCHours(0, 0, 0, 0); // Set to midnight UTC
+    date.setUTCHours(0, 0, 0, 0);
+    
     return date.toISOString();
+}
+
+export const getDefaultDateUtcTime = (): Date => {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    
+    return date;
 }
