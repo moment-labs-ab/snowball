@@ -212,6 +212,18 @@ const InnerGoalView = ({
     emoji
   ]);
 
+  const getContrastingTextColor = (bgColor: string) => {
+    const hex = bgColor.replace("#", "");
+  
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+  
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+    return luminance > 0.6 ? "#000" : "#fff"; // light bg -> black text, dark bg -> white text
+  };
+
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -339,10 +351,11 @@ const InnerGoalView = ({
               style={[
                 styles.submitButtonText,
                 {
-                  color: "black",
+                  color:getContrastingTextColor(color),
                   marginRight: 5,
                   flex: 1,
                   textAlign: "center",
+                  fontWeight:'600'
                 },
               ]}
             >

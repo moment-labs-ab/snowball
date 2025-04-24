@@ -1,6 +1,6 @@
 import { SplashScreen, Stack } from "expo-router";
-import { Platform, KeyboardAvoidingView } from "react-native";
-import React, { useEffect } from "react";
+import { AppState, AppStateStatus } from "react-native";
+import React, { useEffect, useState, useRef  } from "react";
 import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/Context";
 import HabitProvider from "@/context/HabitContext";
@@ -15,6 +15,41 @@ import Toast, {
 } from "react-native-toast-message";
 
 export default function RootLayout() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+const appState = useRef(AppState.currentState);
+
+// Function to check and update the current date
+const checkAndUpdateDate = () => {
+  const now = new Date();
+  if (now.toDateString() !== currentDate.toDateString()) {
+    setCurrentDate(now); // this triggers a re-render of the layout
+  }
+};
+
+useEffect(() => {
+  // Check every minute
+  const interval = setInterval(() => {
+    checkAndUpdateDate();
+  }, 60000);
+
+  return () => clearInterval(interval);
+}, [currentDate]);
+
+useEffect(() => {
+  // Also check when app comes back into foreground
+  const sub = AppState.addEventListener("change", (nextAppState: AppStateStatus) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      checkAndUpdateDate();
+    }
+    appState.current = nextAppState;
+  });
+
+  return () => sub.remove();
+}, []);
+
   const toastConfig: ToastConfig = {
     error: (props) => (
       <ErrorToast

@@ -110,6 +110,18 @@ const GoalObject = ({
       setIsVisible(true);
     }
   };
+
+  const getContrastingTextColor = (bgColor: string) => {
+    const hex = bgColor.replace("#", "");
+  
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+  
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+    return luminance > 0.6 ? "#000" : "#fff"; // light bg -> black text, dark bg -> white text
+  };
   if (isLoading) {
     return (
       <LoadingSkeleton
@@ -134,7 +146,7 @@ const GoalObject = ({
         <View style={[styles.goalContainer, { backgroundColor: color }]}>
           <View style={styles.contentContainer}>
             <Text style={styles.emoji}>{emoji}</Text>
-            <Text style={styles.name}>{name}</Text>
+            <Text style={[styles.name, { color: getContrastingTextColor(color) }]}>{name}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -200,7 +212,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textAlign: "center",
     padding: 2,
-  },
+    },
   date: {
     fontSize: 14,
     color: "#666",
