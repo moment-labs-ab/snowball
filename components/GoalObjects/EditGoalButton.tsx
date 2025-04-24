@@ -116,7 +116,7 @@ const EditGoalButton: React.FC<GoalButtonProps> = ({
                 <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
               <Text style={[styles.headerText, {color:color}]}>
-                {label} {" "}
+                {goalName} {" "}
               </Text>
               <TouchableOpacity onPress={()=>{handleDelete(goalId, user.userId)}}
           style={styles.deleteButton}>
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1, // Allows the text to expand and take up remaining space
     textAlign: "center", // Centers the text within its allocated space
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "500",
     color: "#3e4e88",
   },
   contentContainer: {
