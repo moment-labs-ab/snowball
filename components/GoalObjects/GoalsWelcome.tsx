@@ -14,7 +14,7 @@ const GoalsWelcome = () => {
           No Goals
         </Text>
         <View style={styles.subtitleContainer}>
-          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Journey</Text> here </Text> 
+          <Text style={styles.subtitleText}>Start your Journey Here:</Text> 
         </View>
         <AddGoalButton label='Create a New Goal' content={<AddGoalForm />} style={{width:60, height:60}}/>
 

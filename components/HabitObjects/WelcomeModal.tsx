@@ -5,6 +5,7 @@ import HabitCardExample from "./HabitCardExample";
 import ProgressExample from "./ProgressExample";
 import Feather from '@expo/vector-icons/Feather';
 import EnableNotificationButton from "../ProfileSettings/EnableNotification";
+import WelcomeIntroSlide from "./WelcomeIntroSlide";
 
 type ModalProps = {
   isOpen: boolean;
@@ -18,21 +19,14 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const slides = [
-    <View key="slide1" style={styles.bodyContainer}>
-      <Text style={styles.body}>
-        Welcome to <Text style={styles.highlight}>Snowball.</Text> We're glad you're here.
-      </Text>
-      <Text>
-
-      </Text>
-    </View>,
+    <WelcomeIntroSlide />,
     <View key="slide2" style={[styles.bodyContainer, {marginTop: 10}]}>
     
     <Text style={styles.body}>
       Our goal is to make tracking your habits & goals{" "}
       <Text style={styles.highlight}>simple</Text>.
     </Text>
-    <Text style={{marginBottom:20, textAlign:'center', fontWeight: 300}}>
+    <Text style={styles.subText}>
       You can track your habits by swiping right (or left to delete a tracking).
     </Text>
     <HabitCardExample />
@@ -49,7 +43,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
       <Feather name="bell" size={24} color="#3e4e88" />
     </View>
     <Text style={styles.body}>
-      You can also enable notifications to help stay on track.
+      You can also <Text style={styles.highlight}>enable</Text> notifications to help stay on track.
     </Text>
     <Text style={styles.subText}>
       Adjust the time you receive your notification in settings.
@@ -198,5 +192,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: "300",
+    fontSize:14
   },
 });
