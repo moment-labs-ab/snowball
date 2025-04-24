@@ -69,6 +69,10 @@ const Habits = () => {
   useEffect(() => {
     const checkFirstHabit = async () => {
       const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
+      if(habits.length == 0){
+        setOpenWelcome(true);
+        return;
+      }
       if(habits.length == 0 && hasSeenWelcome !== 'true'){
        setOpenWelcome(true);
         // Mark that user has seen welcome

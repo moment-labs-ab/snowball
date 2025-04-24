@@ -40,7 +40,6 @@ const SingleNotificationPage = () => {
                     if (user.notificationTime) {
                         const savedTime = new Date(user.notificationTime);
 
-                        console.log("Notification time from user:", savedTime.toISOString());
                         setNotificationTime(savedTime);
                         setOriginalTime(savedTime);
                     } else {

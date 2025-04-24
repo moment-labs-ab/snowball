@@ -74,7 +74,7 @@ const EnableNotificationButton = () => {
             >
                 <View style={styles.buttonContent}>
                     <Text style={[styles.buttonText, enabled && styles.enabledText]}>
-                        {enabled ? "Notifications Enabled" : "Enable Notifications"}
+                        {enabled ? "Notifications Enabled" : "Click to Enable Notifications"}
                     </Text>
                     {enabled && (
                         <Feather name="check" size={20} color="green" style={styles.checkIcon} />

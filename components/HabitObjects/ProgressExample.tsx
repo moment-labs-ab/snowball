@@ -64,11 +64,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical:12
     
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "300",
     color: "#333333",
     textAlign: "center",
