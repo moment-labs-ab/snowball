@@ -38,7 +38,7 @@ const ProgressExample = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>
-        You can do this by creating Goals & Tracking Your Progress in the Profile Tab.
+        You can do this by creating Goals & Tracking Your Progress in the Profile Tab
       </Text>
       
       

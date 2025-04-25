@@ -46,11 +46,11 @@ const EmojiModal = ({
         <View
           style={{
             position: "absolute",
-            top: 4,
-            right: 3,
+            top: 1,
+            right: 1,
           }}
         >
-          <Feather name="edit-2" size={9} color="black" />
+          <Feather name="edit-2" size={8} color="black" />
         </View>
       </TouchableOpacity>
       <Modal

@@ -74,7 +74,7 @@ const HabitCardExample = () => {
             <Text style={{ fontSize: 24 }}>❄️</Text>
             <View style={{ paddingLeft: 5 }}>
               <Text style={styles.title}>Learn Snowball</Text>
-              <Text style={styles.subtitle}>{count}/1</Text>
+              
             </View>
           </View>
         </View>

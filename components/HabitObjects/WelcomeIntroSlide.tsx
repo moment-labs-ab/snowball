@@ -1,7 +1,7 @@
-import { View, Text,Animated, Easing, StyleSheet  } from 'react-native'
+import { View, Text,Animated, Easing, StyleSheet, Image  } from 'react-native'
 import { useEffect, useRef } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import images from '@/constants/images';
 
 const WelcomeIntroSlide = () => {
 
@@ -27,9 +27,12 @@ const WelcomeIntroSlide = () => {
       }, []);
   return (
     <View key="slide1" style={[styles.bodyContainer, { position: 'relative' }]}>
+      <Image source={images.snowballlogo} style={{ width: 70, height: 70, alignSelf:'center', marginBottom:10}}
+      resizeMode="contain" />
   <Text style={styles.body}>
-    Welcome to <Text style={styles.highlight}>Snowball.</Text> We're glad you're here.
+    Welcome to <Text style={styles.highlight}>Snowball</Text> 
   </Text>
+  
 
   {/* Swipe Indicator */}
   <Animated.View
@@ -70,7 +73,7 @@ bodyContainer: {
     height: "90%",
   },
   body: {
-    fontSize: 20,
+    fontSize: 22,
     textAlign: "center",
     marginBottom: 10,
     fontWeight: "300",
