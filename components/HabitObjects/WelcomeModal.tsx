@@ -1,9 +1,21 @@
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Dimensions, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import {
+  View,
+  Text,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  useWindowDimensions,
+  SafeAreaView,
+} from "react-native";
 import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import HabitCardExample from "./HabitCardExample";
 import ProgressExample from "./ProgressExample";
-import Feather from '@expo/vector-icons/Feather';
+import Feather from "@expo/vector-icons/Feather";
+
 import EnableNotificationButton from "../ProfileSettings/EnableNotification";
 import WelcomeIntroSlide from "./WelcomeIntroSlide";
 
@@ -12,57 +24,65 @@ type ModalProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const { width } = Dimensions.get("window");
-const modalWidth = width * 0.9;
-
 const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
   const [currentPage, setCurrentPage] = useState(0);
+  const { width, height } = useWindowDimensions();
+  const modalWidth = width * 0.9;
+  const modalHeight = height * 0.5; // More adaptive height
 
   const slides = [
-    <WelcomeIntroSlide />,
-    <View key="slide2" style={[styles.bodyContainer, {marginTop: 10}]}>
-    
-    <Text style={styles.body}>
-      Our goal is to make tracking your habits & goals{" "}
-      <Text style={styles.highlight}>simple</Text>.
-    </Text>
-    <Text style={styles.subText}>
-      You can track your habits by swiping right (or left to delete a tracking).
-    </Text>
-    <HabitCardExample />
-  </View>,
+    <WelcomeIntroSlide key="slide1" />,
+    <View key="slide2" style={[styles.bodyContainer, { marginTop: 10 }]}>
+      <Text style={styles.body}>
+        Our goal is to make tracking your habits & goals{" "}
+        <Text style={styles.highlight}>simple</Text>
+      </Text>
+      <Text style={styles.subText}>
+        Track your habits by swiping right or left
+      </Text>
+      <HabitCardExample />
+    </View>,
     <View key="slide3" style={styles.bodyContainer}>
       <Text style={styles.body}>
         The key is to be <Text style={styles.highlight}>consistent</Text> and
-        stay the course one day at a time.
+        stay the course one day at a time
       </Text>
       <ProgressExample />
     </View>,
-    <View key="slide4" style={[styles.bodyContainer, {alignItems:'center', height:'80%'}]}>
-    <View style={styles.iconWrapper}>
-      <Feather name="bell" size={24} color="#3e4e88" />
-    </View>
-    <Text style={styles.body}>
-      You can also <Text style={styles.highlight}>enable</Text> notifications to help stay on track.
-    </Text>
-    <Text style={styles.subText}>
-      Adjust the time you receive your notification in settings.
-    </Text>
-    <EnableNotificationButton />
-  </View>
-  ,
-    <View key="slide5" style={styles.bodyContainer}>
+    <View
+      key="slide4"
+      style={[styles.bodyContainer, { alignItems: "center", height: "80%" }]}
+    >
+      <View style={styles.iconWrapper}>
+        <Feather name="bell" size={24} color="#3e4e88" />
+      </View>
       <Text style={styles.body}>
-        Our <Text style={styles.highlight}>commitment</Text> is to keep
-        improving this app, empowering you to become your best self.
+        <Text style={styles.highlight}>Enable</Text> notifications to stay on
+        track
       </Text>
-      <TouchableOpacity onPress={() => setIsOpen(false)} style={{backgroundColor: '#3e4e88',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-    marginTop:20}}>
-      <Text style={{color:'white', fontWeight:'600', fontSize:16}}>Let's Get Started! 🎉</Text>
+      <Text style={styles.subText}>
+        Adjust the time a notification is sent in settings
+      </Text>
+      <EnableNotificationButton />
+    </View>,
+    <View
+      key="slide5"
+      style={[styles.bodyContainer, { alignItems: "center", height: "80%" }]}
+    >
+      <View style={styles.iconWrapper}>
+        <AntDesign name="hearto" size={24} color="#3e4e88" />
+      </View>
+      <Text style={styles.body}>
+        We're in this together
+      </Text>
+      <Text style={styles.body}>
+        Your <Text style={styles.highlight}>growth</Text> is our goal
+      </Text>
+      <TouchableOpacity
+        onPress={() => setIsOpen(false)}
+        style={styles.ctaButton}
+      >
+        <Text style={styles.ctaText}>Let's Get Started! 🎉</Text>
       </TouchableOpacity>
     </View>,
   ];
@@ -73,38 +93,49 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
   };
 
   return (
-    <Modal visible={isOpen} transparent animationType="fade" statusBarTranslucent>
+    <Modal
+      visible={isOpen}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+    >
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.headerContainer}>
-            <TouchableOpacity onPress={() => setIsOpen(false)}>
-              <AntDesign name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <Text style={styles.title}>Hi There! 👋</Text>
-          </View>
-
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
+        <View style={styles.modalWrapper}>
+          <View
+            style={[
+              styles.modalContainer,
+              { width: modalWidth, height: modalHeight },
+            ]}
           >
-            {slides.map((slide, index) => (
-              <View key={index} style={{ width: modalWidth }}>{slide}</View>
-            ))}
-          </ScrollView>
+            <View style={styles.headerContainer}>
+              <Text style={styles.title}>Hi There! 👋</Text>
+            </View>
 
-          <View style={styles.paginationWrapper}>
-            {slides.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.paginationDot,
-                  { opacity: currentPage === index ? 1 : 0.2 },
-                ]}
-              />
-            ))}
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+            >
+              {slides.map((slide, index) => (
+                <View key={index} style={{ width: modalWidth }}>
+                  {slide}
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.paginationWrapper}>
+              {slides.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.paginationDot,
+                    { opacity: currentPage === index ? 1 : 0.2 },
+                  ]}
+                />
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -121,9 +152,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  modalWrapper: {
+    paddingHorizontal: 20, // you can adjust this value for more/less space
+    width: "100%",
+    alignItems: "center",
+  },
   modalContainer: {
-    width: "90%",
-    height: "45%",
     backgroundColor: "white",
     borderRadius: 10,
     overflow: "hidden",
@@ -145,7 +179,7 @@ const styles = StyleSheet.create({
   bodyContainer: {
     paddingHorizontal: 20,
     justifyContent: "center",
-    alignContent:'center',
+    alignContent: "center",
     height: "100%",
   },
   body: {
@@ -157,6 +191,12 @@ const styles = StyleSheet.create({
   highlight: {
     color: "#8BBDFA",
     fontWeight: "600",
+  },
+  subText: {
+    marginBottom: 20,
+    textAlign: "center",
+    fontWeight: "300",
+    fontSize: 14,
   },
   paginationWrapper: {
     position: "absolute",
@@ -177,21 +217,33 @@ const styles = StyleSheet.create({
   iconWrapper: {
     width: 48,
     height: 48,
-    marginBottom: 24, // space below the icon
-    alignItems: "center", // center icon horizontally
+    marginBottom: 24,
+    alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    borderRadius:50,
+    borderRadius: 50,
     backgroundColor: "#F5F7FF",
   },
-  subText: {
-    marginBottom: 20,
-    textAlign: 'center',
-    fontWeight: "300",
-    fontSize:14
+  ctaButton: {
+    backgroundColor: "#3e4e88",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: "center",
+    marginTop: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  ctaText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
   },
 });
