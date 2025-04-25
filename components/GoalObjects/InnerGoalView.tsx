@@ -136,9 +136,6 @@ const InnerGoalView = ({
   //Archiving
   const handleAccomplish = async (goal_id: string, user_id: string) => {
     if (!user.premiumUser) {
-      if (closeModal) {
-        closeModal();
-      }
       showToast();
       return;
     }
