@@ -18,7 +18,7 @@ import { useTrackingContext } from "@/context/TrackingContext";
 import EditHabitButton from "@/modals/EditHabitButton";
 import EditHabitModal from "@/modals/EditHabitModal";
 import LoadingSkeleton from "./LoadingSkeloton";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import CheckmarkCircle from "../shared/CheckmarkCircle";
 
 import {
   useAnimatedStyle,
@@ -283,91 +283,98 @@ const HabitCard = ({
   }
 
   return (
-    
     <GestureDetector gesture={pan}>
-        <TouchableOpacity
-          onPress={() => {
-            if (!isSwipingRef.current) {
-              setModalVisible(true);
-            }
-          }}
-          activeOpacity={0.8}
+      <TouchableOpacity
+        onPress={() => {
+          if (!isSwipingRef.current) {
+            setModalVisible(true);
+          }
+        }}
+        activeOpacity={0.8}
+        style={{
+          backgroundColor: "#edf5fe",
+          borderRadius: 15,
+          minHeight: 62,
+          justifyContent: "center",
+          borderWidth: 0.9,
+          marginHorizontal: 16,
+          marginBottom: 16,
+          overflow: "hidden",
+          position: "relative",
+          flex: 1,
+        }}
+      >
+        <Animated.View
           style={{
-            backgroundColor: "#edf5fe",
-            borderRadius: 15,
-            minHeight: 62,
-            justifyContent: "center",
-            borderWidth: 0.9,
-            marginHorizontal: 16,
-            marginBottom: 16,
-            overflow: "hidden",
-            position: "relative",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width,
+            backgroundColor,
+          }}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 5,
             flex: 1,
           }}
         >
-          
-            <Animated.View
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                bottom: 0,
-                width,
-                backgroundColor,
-              }}
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 5,
-                flex: 1,
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ fontSize: 24 }}>{emoji}</Text>
-                <View style={{ flex: 1, paddingLeft: 5 }}>
-                  <Text
-                    style={{
-                      color: "black",
-                      fontWeight: "600",
-                      fontSize: 18,
-                      zIndex: 1,
-                    }}
-                  >
-                    {name}
-                  </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ fontSize: 24 }}>{emoji}</Text>
+            <View style={{ flex: 1, paddingLeft: 5 }}>
+              <Text
+                style={{
+                  color: "black",
+                  fontWeight: "600",
+                  fontSize: 18,
+                  zIndex: 1,
+                }}
+              >
+                {name}
+              </Text>
 
-                  <Text
-                    style={{
-                      color: "#525756",
-                      fontSize: 10,
-                      fontWeight: "200",
-                    }}
-                  >
-                    {trackingCount}/{frequency}
-                  </Text>
-                </View>
-              </View>
-              <EditHabitModal
-                visible={modalVisible}
-                onClose={handleCloseModal}
-                title={name}
-                habit_id={id}
-                selectedDate={date}
-                trackingCount={trackingCount}
-                onTrackingCountChange={handleTrackingCountChange}
-                singleDayCount={singleDayCount}
-              />
+              <Text
+                style={{
+                  color: "#525756",
+                  fontSize: 10,
+                  fontWeight: "200",
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    textDecorationLine:
+                      singleDayCount > 0 ? "underline" : "none",
+                  }}
+                >
+                  {trackingCount}
+                </Text>
+                /{frequency}
+              </Text>
             </View>
-            
-        </TouchableOpacity>
-        </GestureDetector>
-      
-    
+            <View>
+              {trackingCount >= frequency && <CheckmarkCircle size={18} />}
+            </View>
+          </View>
+
+          <EditHabitModal
+            visible={modalVisible}
+            onClose={handleCloseModal}
+            title={name}
+            habit_id={id}
+            selectedDate={date}
+            trackingCount={trackingCount}
+            onTrackingCountChange={handleTrackingCountChange}
+            singleDayCount={singleDayCount}
+          />
+        </View>
+      </TouchableOpacity>
+    </GestureDetector>
   );
 };
 
 export default HabitCard;
-
