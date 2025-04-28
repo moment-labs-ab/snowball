@@ -239,12 +239,24 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   //Archiving
   const handleArchive = async (habit_id: string, user_id: string) => {
     if (!user.premiumUser) {
-      if (closeModal) {
-        closeModal();
-      }
-      showToast();
-      return;
-    }
+      Alert.alert(
+        "Premium Feature!",
+        "Upgrade to Premium to Archive Habits.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Ok.",
+            style: "default", // Optional: gives a red color to the button on iOS
+          },
+        ],
+        { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+      );
+    }else{
+
+    
     Alert.alert(
       "Archive Habit",
       "Are you sure you want to Archive? You will not be able to re-activate this habit.",
@@ -270,6 +282,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+    }
   };
 
   const showToast = () => {

@@ -18,7 +18,6 @@ import TimeIntervalPicker from "./TimeIntervalPicker";
 import { insertHabit, getHabitCount } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import HabitSelector from "./HabitSelector";
-import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
@@ -186,6 +185,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     setHabitNames(names)
   }, [user.premiumUser]);
 
+
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
@@ -249,6 +250,8 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
           initialValue="Daily"
         />
+        
+
         <NumberInput
           title="Frequency"
           placeholder=" "

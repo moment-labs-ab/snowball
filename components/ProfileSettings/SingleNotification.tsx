@@ -15,6 +15,8 @@ import {
 } from "@/lib/supbase_notifications";
 import TimePicker from "../shared/TimePicker";
 import { getDefaultDateUtcTime } from "@/lib/utils/dateTimeUtils";
+import Feather from "@expo/vector-icons/Feather";
+
 
 const SingleNotificationPage = () => {
     const { user, setUser } = useGlobalContext();
@@ -222,9 +224,9 @@ const SingleNotificationPage = () => {
                 </>
             ) : (
                 <>
-                    <Text style={styles.notificationsText}>
-                        Notifications are a great way to stay on track.
-                    </Text>
+                <View style={styles.iconWrapper}>
+        <Feather name="bell" size={24} color="#3e4e88" />
+      </View>
                     <Text style={styles.notificationsText}>
                         Enable notifications to receive a reminder once a day.
                     </Text>
@@ -274,4 +276,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+    iconWrapper: {
+        width: 48,
+        height: 48,
+        marginBottom: 24,
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        borderRadius: 50,
+        backgroundColor: "#F5F7FF",
+        alignSelf:'center'
+      },
 });
