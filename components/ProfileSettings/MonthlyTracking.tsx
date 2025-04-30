@@ -2,11 +2,10 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useTrackingContext } from "@/context/TrackingContext";
 import { HabitTrackingEntry } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
@@ -24,6 +23,9 @@ interface MonthlyTrackingProps {
   habit_id: string;
 }
 
+// Layout mode types for better type safety
+type LayoutMode = "iPadLandscape" | "iPadPortrait" | "iPhonePortrait";
+
 const MonthlyTracking = ({
   habit_name,
   habit_emoji,
@@ -36,13 +38,41 @@ const MonthlyTracking = ({
   const [endDateWeek, setEndDateWeek] = useState<Date>(new Date());
   const [startDate, setStartDate] = useState<Date>(new Date());
   const { width, height } = useWindowDimensions();
-  const [layoutMode, setLayoutMode] = useState("");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("iPhonePortrait");
   const [loading, setLoading] = useState(false);
-  //Week View.
   const [isWeekView, setIsWeekView] = useState(true);
   const [defaultValue, setDefaultValue] = useState(1);
+  const [squareSize, setSquareSize] = useState<number>(0);
 
-  const [squareSize, setSquareSize] = useState<number>();
+  // Calculate layout dimensions based on screen size
+  const calculateLayout = (width: number, height: number) => {
+    const isLandscape = width > height;
+    const isTablet = Math.min(width, height) >= 768;
+    
+    let newLayoutMode: LayoutMode;
+    let newSquareSize: number;
+
+    if (isLandscape && isTablet) {
+      newLayoutMode = "iPadLandscape";
+      newSquareSize = width / 10; // Landscape iPad
+    } else if (!isLandscape && isTablet) {
+      newLayoutMode = "iPadPortrait";
+      // Make square sizes smaller for iPad portrait mode
+      newSquareSize = ((width ) / 7.5); // Reduced multiplier and increased divisor
+    } else {
+      newLayoutMode = "iPhonePortrait";
+      newSquareSize = width / 8;
+    }
+
+    return { mode: newLayoutMode, size: newSquareSize };
+  };
+
+  // Use useLayoutEffect to ensure measurements happen before first render
+  useLayoutEffect(() => {
+    const { mode, size } = calculateLayout(width, height);
+    setLayoutMode(mode);
+    setSquareSize(size);
+  }, [width, height]);
 
   const handleMonthSelection = (selectedDate: Date) => {
     const startOfMonth = new Date(
@@ -54,7 +84,7 @@ const MonthlyTracking = ({
       selectedDate.getFullYear(),
       selectedDate.getMonth() + 1,
       0
-    ); // 0 gives the last day of the previous month
+    );
 
     setStartDate(startOfMonth);
     setEndDateMonth(endOfMonth);
@@ -120,13 +150,12 @@ const MonthlyTracking = ({
 
   useEffect(() => {
     // This runs once on mount to set the initial month range
-
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     setStartDate(startOfMonth);
     setEndDateMonth(endOfMonth);
-  }, []);
+  }, [isWeekView]);
 
   useEffect(() => {
     // This refetches when date range changes
@@ -150,49 +179,23 @@ const MonthlyTracking = ({
     }
   }, [tracking, isLoadingTracking, habit_id, startDate, endDateMonth]);
 
-  useEffect(() => {
-    //console.log("Updated tracking for", habit_name, habitTracking);
-    const layoutMode = getLayoutMode(width, height);
-    setLayoutMode(layoutMode);
-  }, [width, height]);
-
-  //Calendar Grid
-  const getLayoutMode = (width: number, height: number) => {
-    const isLandscape = width > height;
-    const isTablet = Math.min(width, height) >= 768; // General rule: 768+ min width/height is iPad
-
-    if (isLandscape) {
-      console.log("Landscape");
-      setSquareSize(width / 10);
-      return "iPadLandscape";
-    }
-    if (!isLandscape && isTablet) {
-      console.log("Port");
-      setSquareSize(((width - 20) / 6) * 1.1);
-      return "iPadPortrait";
-    }
-
-    setSquareSize(width / 8);
-    return "iPhonePortrait";
-  };
-
-  const handleLayout = (event: any) => {
-    //const { width, height } = event.nativeEvent.layout;
-    const isLandscape = width > height;
-    const isTablet = Math.min(width, height) >= 768;
-
-    if (isLandscape) {
-      console.log("Landscape");
-      setSquareSize(width / 10);
-      setLayoutMode("iPadLandscape");
-    } else if (!isLandscape && isTablet) {
-      console.log("Portrait");
-      setSquareSize(((width - 20) / 6) * 1.1);
-      setLayoutMode("iPadPortrait");
+  const toggleViewMode = () => {
+    const today = new Date();
+    if (isWeekView) {
+      // Switch back to month view
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      setStartDate(startOfMonth);
+      setEndDateMonth(endOfMonth);
+      setDefaultValue(0);
     } else {
-      setSquareSize(width / 8);
-      setLayoutMode("iPhonePortrait");
+      // Switch to week view: 6 days before today -> today
+      const weekStart = subDays(today, 6);
+      setStartDate(weekStart);
+      setEndDateWeek(today);
+      setDefaultValue(1);
     }
+    setIsWeekView(!isWeekView);
   };
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -208,30 +211,14 @@ const MonthlyTracking = ({
     ...habitTracking,
   ];
 
-  const toggleViewMode = () => {
-    const today = new Date();
-    if (isWeekView) {
-      // Switch back to month view
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      setStartDate(startOfMonth);
-      setEndDateMonth(endOfMonth);
-      setDefaultValue(0);
-    } else {
-      // Switch to week view: 6 days before today -> today
-      const weekStart = subDays(today, 6); // <-- CHANGED
-      setStartDate(weekStart);
-      setEndDateWeek(today);
-      setDefaultValue(1);
-    }
-    setIsWeekView(!isWeekView);
-  };
-
-  const displayedDays = isWeekView
+  
+  
+ 
+    const displayedDays = isWeekView
     ? (() => {
         const days = eachDayOfInterval({
-          start: subDays(endDateWeek, 6), // <-- 6 days ago
-          end: endDateWeek, // <-- today
+          start: subDays(endDateWeek, 6),
+          end: endDateWeek,
         }).map((date) => {
           const dateString = moment(date).format("YYYY-MM-DD");
           const entry = habitTracking.find((d) => d.date === dateString);
@@ -241,6 +228,16 @@ const MonthlyTracking = ({
       })()
     : paddedDays;
 
+    useEffect(() => {
+      if (isWeekView) {
+        const today = new Date();
+        setEndDateWeek(today);
+      }
+    }, [isWeekView]);
+
+  
+  
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -249,11 +246,7 @@ const MonthlyTracking = ({
           {habit_emoji} {habit_name}
         </Text>
         {isWeekView ? (
-          <View
-            style={{
-              alignSelf: "flex-end",
-            }}
-          >
+          <View style={{ alignSelf: "flex-end" }}>
             <CustomToggle
               options={["M", "W"]}
               onChange={toggleViewMode}
@@ -267,9 +260,8 @@ const MonthlyTracking = ({
           <MonthPicker onMonthChange={handleMonthSelection} />
         )}
       </View>
-      {isWeekView ? (
-        <></>
-      ) : (
+      
+      {!isWeekView && (
         <View
           style={{
             alignSelf: "flex-end",
@@ -289,9 +281,7 @@ const MonthlyTracking = ({
       )}
 
       {/* Weekday labels */}
-      {isWeekView ? (
-        <></>
-      ) : (
+      {!isWeekView && (
         <View
           style={[
             styles.weekdayRow,
@@ -314,19 +304,47 @@ const MonthlyTracking = ({
         </View>
       )}
 
+{isWeekView && (
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "center",
+      marginBottom: 4,
+    }}
+  >
+    {displayedDays.map((entry, index) => {
+      const dayLabel = moment(entry.date).format("ddd"); // "Mon", "Tue", etc.
+
+      return (
+        <Text
+          key={index}
+          style={{
+            width: squareSize,
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: 10,
+            marginHorizontal: 2,
+          }}
+        >
+          {dayLabel}
+        </Text>
+      );
+    })}
+  </View>
+)}
+
       {/* Main content container to push stats to bottom */}
       <View style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {/* Calendar grid */}
         <View
-          onLayout={handleLayout}
           style={{
             flexDirection: "row",
-            flexWrap: isWeekView ? "nowrap" : "wrap", // <-- if week, no wrapping
+            flexWrap: isWeekView ? "nowrap" : "wrap",
             marginTop: 4,
             justifyContent: isWeekView ? "center" : "flex-start",
           }}
         >
-          {displayedDays.map((entry, index) => {
+          {squareSize > 0 && displayedDays.map((entry, index) => {
             if (!entry) {
               return (
                 <View
@@ -375,7 +393,7 @@ const MonthlyTracking = ({
 
         {/* bottom stats */}
         <View style={{ marginTop: 15, alignItems: "center", marginBottom: 15 }}>
-          {isWeekView ? <></> : <HeatMapStats data={habitTracking} />}
+          {!isWeekView && <HeatMapStats data={habitTracking} />}
         </View>
       </View>
     </View>
