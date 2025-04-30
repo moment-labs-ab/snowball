@@ -210,6 +210,15 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
   const addMilestone = () => {
     if (milestones.length < 5) {
       setMilestones([...milestones, { milestone: "", checked: false }]);
+    }else if(!user.premiumUser && milestones.length == 5){
+      Alert.alert(
+        "Premium Feature!",
+        "Upgrade to Premium for More Milestones.",
+        [{ text: "OK" }]
+      );
+
+    }else if(user.premiumUser){
+      setMilestones([...milestones, { milestone: "", checked: false }]);
     }
   };
 
@@ -248,7 +257,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
           </TouchableOpacity>
         </View>
       ))}
-      {milestones.length < 5 && (
+      
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity
             style={[styles.addButton, { backgroundColor: "#CDCDE0" }]}
@@ -259,7 +268,7 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
             </Text>
           </TouchableOpacity>
         </View>
-      )}
+      
     </View>
   );
 

@@ -155,7 +155,7 @@ const HabitCard = ({
     };
 
     fetchTrackingCount();
-  }, [id, formattedDate, tracking]);
+  }, [id, formattedDate, tracking, frequency]);
 
   function incrementHabitCount(
     habitData: HabitTrackingData,
