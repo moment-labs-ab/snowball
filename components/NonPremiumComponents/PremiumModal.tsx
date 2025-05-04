@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import React, { useState } from "react";
 import icons from "@/constants/icons";
 import Entypo from '@expo/vector-icons/Entypo';
+import { PremiumVsBasicView } from "./PremiumVsBasic";
 
 
 const PremiumModal = () => {
@@ -14,22 +15,36 @@ const PremiumModal = () => {
       console.log("No option selected");
     }
   };
+  const premiumFeatures = [
+    "Unlimited Habits",
+    'Unlimited Goals',
+    "Unlimited Tracking",
+  'Unlimted Progress Tracking',
+'Accomplish Goals',
+'Archive Goals & Habits',
+'Early access to new features'
+]
+
+  const freeFeatures = [
+    "6 Habits",
+    "6 Goals",
+    "Limited Tracking",
+    "Limited Progress Tracking",
+    "Unable to Accomplish Goals",
+    "Unable to Archive Goal & Habits"
+  ]
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <View style={styles.topics}>
-        <Text style={styles.headerTopicText}>Unlock Your Potential With</Text>
       </View>
       <View style={styles.headerContainer}>
-        <Text style={[styles.headerText, { color: "#8BBDFA" }]}>Snowball </Text>
+        <Text style={styles.headerText}>Snowball </Text>
         <Text style={styles.premiumText}>Premium</Text>
       </View>
       
-      <View style={styles.featureList}>
-        <FeatureItem icon={icons.snowflake} text="Unlimited Habits." />
-        <FeatureItem icon={icons.mountain} text="Unlimited Goals." />
-        <FeatureItem icon={icons.progress} text="Unlimited Growth." />
-      </View>
+      <PremiumVsBasicView freeFeatures={freeFeatures} premiumFeatures={premiumFeatures} />
       
       <View style={styles.optionsContainer}>
         <SubscriptionOption
@@ -40,7 +55,7 @@ const PremiumModal = () => {
         />
         <SubscriptionOption
           title="Buy for Life"
-          price="$39.99"
+          price="$49.99"
           selected={selectedOption === "lifetime"}
           onPress={() => setSelectedOption("lifetime")}
         />
@@ -50,6 +65,7 @@ const PremiumModal = () => {
         <Text style={styles.purchaseButtonText}>Purchase</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
 
@@ -76,6 +92,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     alignItems: "center",
+    paddingHorizontal:12
   },
   topics: {
     flexDirection: "row",
@@ -94,11 +111,12 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   headerText: {
-    fontSize: 42,
+    fontSize: 38,
     fontWeight: "700",
+    color:'#8BBDFA'
   },
   premiumText: {
-    fontSize: 42,
+    fontSize: 38,
     fontWeight: "700",
     color: "#FAC88B",
     textDecorationLine: "underline",
