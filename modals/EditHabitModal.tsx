@@ -445,7 +445,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
             </View>
             <TimeIntervalPicker
               onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-              initialValue="Daily"
+              initialValue={habit.frequency_rate}
               otherStyles="mt-5"
             />
             <NumberInput
