@@ -17,7 +17,7 @@ const HeatMapStats = ({ data }: HeatMapStatsProps) => {
     .map((entry) => `${entry.date}:${entry.count}`)
     .join("|");
 
-  useEffect(() => {}, [entriesKey]);
+  useEffect(() => {}, [entriesKey, data]);
   function calculateMetrics(data: HabitTrackingEntry[]) {
     let totalTracked = 0;
     let longestStreak = 0;
