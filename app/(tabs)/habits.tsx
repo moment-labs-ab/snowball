@@ -28,6 +28,8 @@ const Habits = () => {
   const [openWelcome, setOpenWelcome] = useState(false);
   const [userLogins, setUserLogins] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false)
+
 
   const getCurrentTime = () => {
     let time_of_day: string;
@@ -151,24 +153,27 @@ const Habits = () => {
         />
 
         {/* Overlay container for FeedbackButton */}
-        <View
-          style={{
-            position: "absolute",
-            bottom: 20,
-            right: 0,
-            backgroundColor: "transparent", // transparent background
-            zIndex: 10, // make sure it's above other components
-          }}
-        >
-          <FeedbackButton
-            label="Feedback"
-            content={<Feedback />}
-            style={{
-              width: 48,
-              height: 48, // if FeedbackButton supports this
-            }}
-          />
-        </View>
+        {feedbackVisible && (
+            <View
+              style={{
+                position: "absolute",
+                alignContent: "flex-end",
+                bottom: 20,
+                right: 0,
+                backgroundColor: "transparent",
+                zIndex: 10,
+              }}
+            >
+              <FeedbackButton
+                label="Feedback"
+                content={<Feedback />}
+                style={{
+                  width: 48,
+                  height: 48,
+                }}
+              />
+            </View>
+          )}
       </View>
     </SafeAreaView>
   );
