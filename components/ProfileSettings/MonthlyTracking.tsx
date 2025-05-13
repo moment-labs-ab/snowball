@@ -43,7 +43,9 @@ const MonthlyTracking = ({
   const [isWeekView, setIsWeekView] = useState(true);
   const [defaultValue, setDefaultValue] = useState(1);
   const [squareSize, setSquareSize] = useState<number>(0);
-
+  const [colorScale, setColorScale] = useState(() =>
+  d3.scaleSequential(["white", "#3e4e88"]).domain([0, 1])
+);
   const [displayedDays, setDisplayedDays] = useState<HabitTrackingEntry[]>([]);
 
   // Calculate layout dimensions based on screen size
@@ -197,6 +199,16 @@ const MonthlyTracking = ({
           ...Array(firstDayOfMonth).fill({ date: null, count: null }), // Empty boxes before the first of the month
           ...monthData,
         ];
+
+        const maxCount = Math.max(
+          ...(monthData.length > 0 ? monthData.map((d) => d.count) : [0])
+        );
+      
+        const newScale = d3
+          .scaleSequential(["white", "#3e4e88"])
+          .domain([0, maxCount > 0 ? maxCount : 1]);
+      
+        setColorScale(() => newScale);
         setDisplayedDays(paddedMonthDays);
       }
     };
@@ -219,6 +231,16 @@ const MonthlyTracking = ({
           weekStart,
           endDateWeek
         );
+        const maxCount = Math.max(
+          ...(weekData.length > 0 ? weekData.map((d) => d.count) : [0])
+        );
+        
+        const newScale = d3
+          .scaleSequential(["white", "#3e4e88"])
+          .domain([0, maxCount > 0 ? maxCount : 1]);
+        
+        setColorScale(() => newScale);
+        
         
         // Set week data directly (no padding needed)
         setDisplayedDays(weekData);
@@ -255,12 +277,6 @@ const MonthlyTracking = ({
   };
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const maxCount = Math.max(...(habitTracking.length > 0 ? habitTracking.map((d) => d.count) : [0]));
-  const colorScale = d3
-    .scaleSequential(["white", "#3e4e88"])
-    .domain([0, maxCount > 0 ? maxCount : 1]);
-
 
 
   return (
