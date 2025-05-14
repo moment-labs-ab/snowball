@@ -9,6 +9,7 @@ import {
 import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import PremiumModal from "./PremiumModal";
 
 interface PremiumButtonProps {
   label: string;
@@ -64,10 +65,10 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
                 style={styles.backButton}
                 onPress={toggleContent}
               >
-                <AntDesign name="close" size={24} color="white" />
+                <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <View style={styles.contentContainer}>{content}</View>
+            <View style={styles.contentContainer}><PremiumModal toggleContent={toggleContent}/></View>
           </SafeAreaView>
         </Modal>
       </View>
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   premiumButton: {
     width: 120,
     height: 35,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 10,
     justifyContent: "center",
     alignContent: "space-between",
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "space-between",
     borderColor: "#8BBDFA",
-    borderWidth: 2,
+    borderWidth: 0.5,
     flexDirection: "row",
   },
   buttonText: {
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#aaa6b0",
+    backgroundColor: "#FFFFFF",
   },
   headerContainer: {
     flexDirection: "row",
