@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   },
   container: {
     borderTopColor: "black",
+    backgroundColor:'#edf5fe'
   },
   button: {
     backgroundColor: "#bedafc",
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     height: 60,
-    marginBottom: 10,
+    backgroundColor:'#edf5fe'
   },
   backButton: {
     flexDirection: "row",

@@ -10,23 +10,23 @@ interface PremiumModalProps{
   toggleContent: ()=>void
 }
 const PremiumModal = ({toggleContent}: PremiumModalProps) => {
-  const {user, setUser} = useGlobalContext();
+  const {user, setUser, setIsLoading} = useGlobalContext();
   const [selectedOption, setSelectedOption] = useState<"monthly" | "lifetime" | null>(null);
 
   const handlePurchase = async () => {
     //ADD PURCHASE LOGIC
     if (selectedOption) {
-      console.log(`Purchasing: ${selectedOption}`);
       const result = await upgradeUserToPremium(user.userId, selectedOption)
       if (result.success == false) {
         Alert.alert("Error", result.message);
       } else if (result.success && result.user) {
-        console.log("Success!")
-        setUser(result.user)
+        setUser((prevUser)=> ({
+          ...prevUser,
+          premiumUser: true
+        }))
+        setIsLoading(false)
       }
-    } else {
-      console.log("No option selected");
-    }
+    } 
 
 
     toggleContent()
@@ -34,11 +34,16 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
 
   const handleDowngrade = async () => {
     const result = await downgradeUserFromPremium(user.userId, "Downgrade")
-      if (result.success == false) {
-        Alert.alert("Error", result.message);
-      } else if (result.success) {
-        console.log("Success!")
-      }
+    if (result.success == false) {
+      Alert.alert("Error", result.message);
+    } else if (result.success) {
+      setUser((prevUser)=> ({
+        ...prevUser,
+        premiumUser: false
+      }))
+      setIsLoading(false)
+    }
+    toggleContent()
 
   }; 
 
@@ -59,7 +64,7 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
     "Unable to Accomplish Goals",
     "Unable to Archive Goals & Habits"
   ];
-
+  if (! user.premiumUser) {
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
@@ -90,7 +95,7 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
             onPress={() => setSelectedOption("lifetime")}
           >
             <View>
-              <Text style={styles.planTitle}>Lifetime</Text>
+              <Text style={styles.planTitle}>Lifetime Membership</Text>
               <Text style={styles.planPrice}>$49.99</Text>
               <Text style={styles.bestValue}>Best value</Text>
             </View>
@@ -109,13 +114,13 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
         </TouchableOpacity>
         
         <View style={styles.comparePlanContainer}>
-          <Text style={styles.comparePlansTitle}>Free vs Premium</Text>
+          <Text style={styles.comparePlansTitle}>Premium vs. Free</Text>
           
           <View style={styles.planComparisonTable}>
             <View style={styles.tableHeader}>
               <Text style={styles.featureLabel}>Features</Text>
-              <Text style={styles.planLabel}>Free</Text>
               <Text style={styles.planLabel}>Premium</Text>
+              <Text style={styles.planLabel}>Free</Text>
             </View>
             
             {premiumFeatures.map((feature, index) => {
@@ -123,11 +128,11 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
               return (
                 <View key={index} style={[styles.tableRow, index % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
                   <Text style={styles.featureText}>{feature}</Text>
-                  <View style={styles.freePlanCell}>
-                  <Ionicons name="close" size={20} color="#D32F2F" />
-                  </View>
                   <View style={styles.premiumPlanCell}>
                     <Ionicons name="checkmark" size={20} color="#4CAF50" />
+                  </View>
+                  <View style={styles.freePlanCell}>
+                  <Ionicons name="close" size={20} color="#D32F2F" />
                   </View>
                 </View>
               );
@@ -136,7 +141,30 @@ const PremiumModal = ({toggleContent}: PremiumModalProps) => {
         </View>
       </View>
     </ScrollView>
-  );
+  )}
+  else{
+    return(
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity
+        style={[styles.purchaseButton, { backgroundColor: "#E57373", paddingHorizontal: 24 }]}
+        onPress={() =>
+          Alert.alert(
+            "Cancel Membership",
+            "Are you sure you want to cancel your membership?",
+            [
+              { text: "No", style: "cancel" },
+              { text: "Yes, Cancel", style: "destructive", onPress: handleDowngrade },
+            ]
+          )
+        }
+      >
+        <Text style={styles.purchaseButtonText}>Cancel Membership</Text>
+      </TouchableOpacity>
+    </View>
+
+    )
+
+  }
 };
 
 const styles = StyleSheet.create({
@@ -146,11 +174,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#edf5fe',
   },
   headerContainer: {
     alignItems: 'center',
     marginBottom: 32,
+    backgroundColor:'#edf5fe'
   },
   headerText: {
     fontSize: 28,
@@ -210,6 +239,7 @@ const styles = StyleSheet.create({
     color: '#3e4e88',
     fontWeight: '600',
     marginTop: 4,
+    fontStyle:'italic'
   },
   checkCircle: {
     width: 24,

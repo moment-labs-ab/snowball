@@ -8,7 +8,6 @@ export const upgradeUserToPremium = async (
   userId: string,
   plan: string
 ): Promise<{ success: boolean; message: string; user?: User }> => {
-  console.log("User upgrading to premium: ", plan);
   const client = useSupabaseClient();
 
   const { data, error } = await client
@@ -40,7 +39,6 @@ export const downgradeUserFromPremium = async(
     userId: string,
     plan: string,
 ): Promise<{ success: boolean; message: string; }> => {
-    console.log("User upgrading to premium: ", plan)
     const client = useSupabaseClient();
     const { data, error } = await client
             .from("profiles")

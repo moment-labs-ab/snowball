@@ -78,7 +78,7 @@ const HeatMapDisplay = () => {
 
   useEffect(() => {
     handleMonthSelection(startDate);
-  }, [user.userId, habits.length, habits, tracking, isLoadingTracking]);
+  }, [user.userId, habits.length, habits, tracking, isLoadingTracking, user.premiumUser]);
 
   // Group the habits by frequency_rate
   const groupedHabits = habits.reduce((acc, habit) => {
