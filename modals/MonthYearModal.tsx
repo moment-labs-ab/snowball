@@ -31,7 +31,7 @@ const MonthYearModal: React.FC<Props> = ({ visible, selectedDate, onClose, onSel
     setSelectedYear(selectedDate.getFullYear())
     setSelectedMonth(selectedDate.getMonth())
 
-  },[])
+  },[visible])
 
   const handleMonthSelect = (monthIndex: number) => {
     if (

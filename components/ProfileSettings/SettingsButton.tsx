@@ -57,12 +57,10 @@ const SettingsButton: React.FC<SettingButtonProps> = ({label, action, content, u
 
 const styles = StyleSheet.create({
   container: {
-      padding: 2,
       borderTopColor: 'black',
   },
   button: {
       backgroundColor: '#bedafc',
-      padding: 15,
       marginVertical: 6,
       borderRadius: 8,
       alignItems: 'flex-start',

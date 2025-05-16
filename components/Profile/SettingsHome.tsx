@@ -78,7 +78,7 @@ const SECTION = [
       },
     ],
   },
-  /** {
+  {
     header:'Premium',
     items:[
       {
@@ -87,10 +87,10 @@ const SECTION = [
         icon:'crown',
         label:'Premium',
         type:'page',
-        content: <PremiumModal />
+        content: <PremiumModal toggleContent={()=>{}}/>
       }
     ]
-  },*/
+  },
   {
     header: "Snowball",
     items: [

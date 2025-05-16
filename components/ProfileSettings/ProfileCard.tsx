@@ -1,4 +1,4 @@
-import icons from "@/constants/icons";
+import { useGlobalContext } from "@/context/Context";
 import React, {useEffect} from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import SettingsButton from "./SettingsButton";
@@ -23,9 +23,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   description,
   onProfilePicturePress,
 }) => {
+  const {user} = useGlobalContext();
+
   useEffect(()=>{
 
-  }, [name])
+  }, [name, user.premiumUser])
   return (
 <View style={styles.container}>
 
@@ -38,6 +40,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     <Text style={styles.name}>{name}</Text>
   </View>
   <View style={styles.settingsContainer}>
+    {user.premiumUser ?  <></>: <PremiumButton label={""}/>}
   
   <SettingsButton
       label="Settings"
@@ -74,8 +77,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Ensures left and right spacing
   },
   settingsContainer: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    alignContent:'center',
+    flexDirection:'row'
   },
   profileImage: {
     backgroundColor: "lightblue",
