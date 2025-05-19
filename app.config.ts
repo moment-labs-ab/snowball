@@ -37,7 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     platforms: ["ios", "android"],
     splash: {
       image: "./assets/app_icons/splash-icon-light.png", // Change hard coded path
-      imageWidth: 200,
+      imageWidth: 150,
       resizeMode: "contain",
       backgroundColor: "#ffffff",
     },
