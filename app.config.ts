@@ -87,6 +87,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       "expo-router",
       "expo-font",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.momentlabs.snowball",
+          "enableGooglePay": false
+        }
+      ],
       /*[
         "expo-splash-screen",
         {

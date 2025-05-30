@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { User } from '@/types/types'
 import { useSupabaseClient } from './supabase';
 import { getDateISOStringFromUtcTimeString, getDefaultDateISOStringFromUtcTimeString } from './utils/dateTimeUtils';
+import * as Linking from 'expo-linking';
 
 // Function to generate a unique ID
 function generateUniqueId(): string {
@@ -60,7 +61,7 @@ export const sendResetPasswordEmail = async (email: string) => {
     const client = useSupabaseClient();
 
     const { data, error } = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: 'com.momentlabs.snowball://reset-password' //exp://10.0.0.201:8081/--/reset-password
+        redirectTo: 'com.momentlabs.snowball://reset-password'//Linking.createURL("/reset-password") //exp://10.0.0.201:8081/--/reset-password
     });
 
     if (error) Alert.alert(error.message);
