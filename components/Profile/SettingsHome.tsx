@@ -110,6 +110,7 @@ const SECTION = [
         type: "page",
         content: <SettingsGoals toggleContent={()=>{}}/>,
       },
+      /** 
       {
         id: "profile-stats",
         iconType: "feather",
@@ -118,6 +119,7 @@ const SECTION = [
         type: "page",
         content: <ProfileStats />,
       },
+      */
     ],
   },
   {
