@@ -21,6 +21,8 @@ const Profile = () => {
   const { user } = useGlobalContext();
   const [userData, setUserData] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false)
+
 
   const getUserData = async () => {
     try {
@@ -73,24 +75,27 @@ const Profile = () => {
         </View>
         <View style={{ flex: 1 }}>
           <HeatMapDisplay />
-          <View
-            style={{
-              position: "absolute",
-              bottom: 20,
-              right: 0,
-              backgroundColor: "transparent", // transparent background
-              zIndex: 10, // make sure it's above other components
-            }}
-          >
-            <FeedbackButton
-              label="Feedback"
-              content={<Feedback />}
+          {feedbackVisible && (
+            <View
               style={{
-                width: 48,
-                height: 48, // if FeedbackButton supports this
+                position: "absolute",
+                alignContent: "flex-end",
+                bottom: 20,
+                right: 0,
+                backgroundColor: "transparent",
+                zIndex: 10,
               }}
-            />
-          </View>
+            >
+              <FeedbackButton
+                label="Feedback"
+                content={<Feedback />}
+                style={{
+                  width: 48,
+                  height: 48,
+                }}
+              />
+            </View>
+          )}
         </View>
 
         <View style={styles.divider} />

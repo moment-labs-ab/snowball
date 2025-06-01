@@ -18,7 +18,7 @@ const MilestonesList: React.FC<MilestonesListProps> = ({ data, onCheckMilestone,
   // Ensure always 5 milestones, filling extras with empty milestones
   const filledData = [
     ...data,
-    ...Array(5 - data.length).fill({ checked: false, milestone: '' })
+    ...Array(data.length).fill({ checked: false, milestone: '' })
   ].slice(0, data.length);
 
   useEffect(()=>{

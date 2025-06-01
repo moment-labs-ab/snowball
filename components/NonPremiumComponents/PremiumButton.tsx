@@ -9,6 +9,7 @@ import {
 import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import PremiumModal from "./PremiumModal";
 
 interface PremiumButtonProps {
   label: string;
@@ -48,7 +49,7 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
         <TouchableOpacity onPress={toggleContent} style={styles.iconButton}>
           <View style={styles.premiumButton}>
             <Text style={styles.premiumText}>Premium</Text>
-            <MaterialCommunityIcons name="crown" size={30} color="#8BBDFA" />
+            <MaterialCommunityIcons name="crown" size={24} color="#8BBDFA" />
           </View>
         </TouchableOpacity>
 
@@ -64,10 +65,10 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
                 style={styles.backButton}
                 onPress={toggleContent}
               >
-                <AntDesign name="close" size={24} color="white" />
+                <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <View style={styles.contentContainer}>{content}</View>
+            <View style={styles.contentContainer}><PremiumModal toggleContent={toggleContent}/></View>
           </SafeAreaView>
         </Modal>
       </View>
@@ -77,24 +78,29 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
 
 const styles = StyleSheet.create({
   premiumButton: {
-    width: 135,
-    height: 40,
-    borderWidth: 3,
+    width: 120,
+    height: 35,
+    borderWidth: 2,
     borderRadius: 10,
     justifyContent: "center",
     alignContent: "space-between",
     alignItems: "center",
-    marginTop: 14,
     flexDirection: "row",
     borderColor: "#FAC88B",
+    backgroundColor:"rgba(250, 200, 139, 0.2)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 10,
   },
   premiumText: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "700",
   },
   container: {
-    padding: 2,
     borderTopColor: "black",
+    backgroundColor:'#edf5fe'
   },
   button: {
     backgroundColor: "#bedafc",
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "space-between",
     borderColor: "#8BBDFA",
-    borderWidth: 2,
+    borderWidth: 0.5,
     flexDirection: "row",
   },
   buttonText: {
@@ -114,14 +120,14 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#45424A",
+    backgroundColor: "#FFFFFF",
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     height: 60,
-    marginBottom: 10,
+    backgroundColor:'#edf5fe'
   },
   backButton: {
     flexDirection: "row",
@@ -129,6 +135,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 16,
     zIndex: 1,
+    
   },
   backButtonText: {
     marginLeft: 4,

@@ -23,7 +23,7 @@ const HabitsWelcome = () => {
           No Habits
         </Text>
         <View style={styles.subtitleContainer}>
-          <Text style={styles.subtitleText}>Start your <Text style={styles.underlineText}>Snowball</Text> here </Text> 
+          <Text style={styles.subtitleText}>Start Your Snowball Here: </Text> 
           
         </View>
         <NewHabitButton

@@ -9,6 +9,8 @@ import { FlashList } from "@shopify/flash-list";
 import HabitsWelcome from "./HabitsWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 
+
+
 type dailyHabitDisplayProps = {
   selectedDate: Date;
   editHabitOrder: boolean;
@@ -73,7 +75,6 @@ const DailyHabitDisplay = ({
     { label: "Weekly Habits", key: "Weekly" },
     { label: "Bi-weekly Habits", key: "Bi-weekly" },
   ];
-
   return (
     <FlashList
       data={orderedGroups}
@@ -147,6 +148,7 @@ const DailyHabitDisplay = ({
                       emoji={habit.emoji}
                       fetchHabits={fetchHabits}
                     />
+                    
                   </View>
                 ))}
               </View>

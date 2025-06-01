@@ -2,19 +2,14 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Alert,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useGlobalContext } from "@/context/Context";
-import DatePicker from "@/components/DatePicker";
+import DatePicker from "@/components/HabitObjects/DatePicker";
 
-import DailyHabitDisplay from "@/components/DailyHabitDisplay";
+import DailyHabitDisplay from "@/components/HabitObjects/DailyHabitDisplay";
 import NewHabitButton from "@/modals/NewHabitButton";
 import NewHabitModal from "@/modals/NewHabitModal";
 import WelcomeModal from "@/components/HabitObjects/WelcomeModal";
@@ -23,6 +18,7 @@ import { getUserLoginCount } from "@/lib/supabase_profile";
 import { useHabitContext } from "@/context/HabitContext";
 import FeedbackButton from "@/modals/FeedbackButton";
 import Feedback from "@/components/Profile/SettingsFeedback";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Habits = () => {
   const { user, isLoading } = useGlobalContext();
@@ -32,6 +28,8 @@ const Habits = () => {
   const [openWelcome, setOpenWelcome] = useState(false);
   const [userLogins, setUserLogins] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false)
+
 
   const getCurrentTime = () => {
     let time_of_day: string;
@@ -67,27 +65,37 @@ const Habits = () => {
     setModalVisible(false);
   };
 
-  const fetchUserLogins = async () => {
-    setLoading(true);
-    const logins = await getUserLoginCount(user.userId);
-    if (logins) {
-      setUserLogins(logins);
-      if (logins === 1 || logins === 0) {
-        setOpenWelcome(true);
-      }
-    }
-    setLoading(false);
-  };
+  const [tutorialVisible, setTutorialVisible] = useState(true);
+  const prevHabitsLength = useRef(habits.length);
 
   useEffect(() => {
-    fetchUserLogins();
-  }, [user.name]); // Only fetch once when the component mounts
+    const checkFirstHabit = async () => {
+      const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
+      if(habits.length == 0 && hasSeenWelcome !== 'true'){
+       setOpenWelcome(true);
+        // Mark that user has seen welcome
+        await AsyncStorage.setItem('hasSeenWelcome', 'true');
+
+      }
+      //FOR TESTERS ONLY
+      else if(hasSeenWelcome !== 'true'){
+        setOpenWelcome(true);
+        // Mark that user has seen welcome
+        await AsyncStorage.setItem('hasSeenWelcome', 'true');
+
+      }
+      prevHabitsLength.current = habits.length;
+    };
+    
+    checkFirstHabit();
+  }, []);
 
   if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color="#3e4e88" />
     </View>;
   }
+  const [testVisible, setTestVisible] = useState(false);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#edf5fe", height: "100%" }}>
@@ -135,7 +143,7 @@ const Habits = () => {
           }}
         />
 
-        <View>{userLogins === 1 && <WelcomeModal isOpen={openWelcome} />}</View>
+        <WelcomeModal isOpen={openWelcome} setIsOpen={setOpenWelcome} />
       </View>
 
       <View style={{ flex: 1 }}>
@@ -145,24 +153,27 @@ const Habits = () => {
         />
 
         {/* Overlay container for FeedbackButton */}
-        <View
-          style={{
-            position: "absolute",
-            bottom: 20,
-            right: 0,
-            backgroundColor: "transparent", // transparent background
-            zIndex: 10, // make sure it's above other components
-          }}
-        >
-          <FeedbackButton
-            label="Feedback"
-            content={<Feedback />}
-            style={{
-              width: 48,
-              height: 48, // if FeedbackButton supports this
-            }}
-          />
-        </View>
+        {feedbackVisible && (
+            <View
+              style={{
+                position: "absolute",
+                alignContent: "flex-end",
+                bottom: 20,
+                right: 0,
+                backgroundColor: "transparent",
+                zIndex: 10,
+              }}
+            >
+              <FeedbackButton
+                label="Feedback"
+                content={<Feedback />}
+                style={{
+                  width: 48,
+                  height: 48,
+                }}
+              />
+            </View>
+          )}
       </View>
     </SafeAreaView>
   );

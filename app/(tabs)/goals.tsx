@@ -13,6 +13,7 @@ const goals = () => {
   const { user } = useGlobalContext();
   const { goals } = useGoalContext();
   const [loading, setLoading] = useState<boolean>(true);
+  const [feedbackVisible, setFeedbackVisible] = useState(false)
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -36,25 +37,27 @@ const goals = () => {
         <View style={styles.divider} />
         <View style={{ flex: 1 }}>
           <AllGoalsView />
-          <View
-            style={{
-              position: 'absolute',
-              alignContent:'flex-end',
-              bottom: 20,
-              right:0,
-              backgroundColor: "transparent", // transparent background
-              zIndex: 10, // make sure it's above other components
-            }}
-          >
-            <FeedbackButton
-              label="Feedback"
-              content={<Feedback />}
+          {feedbackVisible && (
+            <View
               style={{
-                width: 48,
-                height: 48, // if FeedbackButton supports this
+                position: "absolute",
+                alignContent: "flex-end",
+                bottom: 20,
+                right: 0,
+                backgroundColor: "transparent",
+                zIndex: 10,
               }}
-            />
-          </View>
+            >
+              <FeedbackButton
+                label="Feedback"
+                content={<Feedback />}
+                style={{
+                  width: 48,
+                  height: 48,
+                }}
+              />
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>

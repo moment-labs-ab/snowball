@@ -23,6 +23,7 @@ import { useGoalContext } from "@/context/GoalContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Toast from "react-native-toast-message";
 import moment from "moment";
+import { useHabitContext } from "@/context/HabitContext";
 
 interface SelectedHabits {
   id: string;
@@ -70,9 +71,11 @@ const InnerGoalView = ({
   onBeforeClose,
 }: InnerGoalViewProps) => {
   const { user, isLoading } = useGlobalContext();
-  const {setGoals} = useGoalContext();
+  const { setGoals } = useGoalContext();
   const [isPremium, setIsPremium] = useState(user.premiumUser);
-  const [formattedDate, setFormattedDate] = useState<Date>();
+  const [formattedEndDate, setFormattedEndDate] = useState<Date>();
+  const [formattedStartDate, setFormattedStartDate] = useState<Date>();
+  const [daysToGo, setDaysToGo] = useState<number>(0);
 
   const [goalData, setGoalData] = useState<Goal>({
     id,
@@ -132,9 +135,6 @@ const InnerGoalView = ({
   //Archiving
   const handleAccomplish = async (goal_id: string, user_id: string) => {
     if (!user.premiumUser) {
-      if (closeModal) {
-        closeModal();
-      }
       showToast();
       return;
     }
@@ -151,11 +151,10 @@ const InnerGoalView = ({
           onPress: async () => {
             const result = await accomplishGoal(goal_id, user_id);
             if (result.success) {
-              accomplishGoalState(goal_id)
-              if(closeModal){
-                closeModal()
+              accomplishGoalState(goal_id);
+              if (closeModal) {
+                closeModal();
               }
-
             } else {
               console.error("Error accomplishing goal:", result.message);
               // Handle deletion error, e.g., show a message to the user
@@ -177,18 +176,26 @@ const InnerGoalView = ({
       position: "top",
       autoHide: true,
       props: {
-        onPress: () => {
-        }, // Navigate to your premium page
+        onPress: () => {}, // Navigate to your premium page
       },
     });
+  };
+  const getDaysBetweenDates = (startDate: Date, endDate: Date): number => {
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const days = Math.round(
+      (endDate.getTime() - startDate.getTime()) / oneDayMs
+    );
+    return days;
   };
 
   useEffect(() => {
     fetchSingleGoal();
 
-    const startingDate = new Date(expected_end_date);
-    setFormattedDate(startingDate);
-
+    const endingDate = new Date(expected_end_date);
+    setFormattedEndDate(endingDate);
+    const startedDate = new Date(created_at);
+    setFormattedStartDate(startedDate);
+    setDaysToGo(getDaysBetweenDates(new Date(), endingDate));
   }, [
     contentToggled,
     habit_ids.length,
@@ -197,8 +204,20 @@ const InnerGoalView = ({
     name,
     expected_end_date,
     description,
-    emoji
+    emoji,
   ]);
+
+  const getContrastingTextColor = (bgColor: string) => {
+    const hex = bgColor.replace("#", "");
+
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+    return luminance > 0.6 ? "#000" : "#fff"; // light bg -> black text, dark bg -> white text
+  };
 
   return (
     <SafeAreaView style={{ padding: 20, flex: 1 }}>
@@ -251,8 +270,35 @@ const InnerGoalView = ({
         </View>
         <View style={styles.dateContainer}>
           <Text style={styles.description}>
-            by {moment(formattedDate).format("MMMM D, YYYY")}
+            Started:{" "}
+            <Text style={{ fontWeight: "500" }}>
+              {moment(formattedStartDate).format("MMMM D, YYYY")}{" "}
+            </Text>
           </Text>
+          <Text style={styles.description}>
+            Expected End:{" "}
+            <Text style={{ fontWeight: "500" }}>
+              {moment(formattedEndDate).format("MMMM D, YYYY")}
+            </Text>
+          </Text>
+          {daysToGo > 0 ? (
+            <Text style={styles.description}>
+              Days Left: <Text style={{ fontWeight: "500" }}>{daysToGo}</Text>{" "}
+            </Text>
+          ) : (
+            <Text style={styles.description}>
+              <Text style={{ fontWeight: "500" }}>{Math.abs(daysToGo)}</Text>
+              <Text
+                style={[
+                  styles.description,
+                  { color: "red", fontWeight: "500" },
+                ]}
+              >
+                {" "}
+                Days Overdue
+              </Text>
+            </Text>
+          )}
         </View>
         <View
           style={{
@@ -323,10 +369,11 @@ const InnerGoalView = ({
               style={[
                 styles.submitButtonText,
                 {
-                  color: "black",
+                  color: getContrastingTextColor(color),
                   marginRight: 5,
                   flex: 1,
                   textAlign: "center",
+                  fontWeight: "600",
                 },
               ]}
             >
@@ -335,7 +382,7 @@ const InnerGoalView = ({
           </View>
         </TouchableOpacity>
       </View>
-      <Toast/>
+      <Toast />
     </SafeAreaView>
   );
 };
@@ -360,6 +407,8 @@ const styles = StyleSheet.create({
   dateContainer: {
     marginTop: 5,
     marginBottom: 20,
+    flexDirection: "column",
+    justifyContent: "center",
   },
   description: {
     textAlign: "center",

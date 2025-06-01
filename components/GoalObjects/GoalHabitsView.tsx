@@ -1,118 +1,117 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getHabitTrackingCount } from '@/lib/supabase_progress';
 import { FlashList } from '@shopify/flash-list';
 import ProgressRaceBar from './ProgressRaceBar';
-
+import { useHabitContext } from '@/context/HabitContext';
 
 type GoalHabitsViewProps = {
-    habit_ids: { [key: string]: any };
-    created_at: Date;
-    expected_end_date: Date;
-    color: string;
+  habit_ids: { id: string }[]; // assumes SelectedHabits[]
+  created_at: Date;
+  expected_end_date: Date;
+  color: string;
 };
-
-interface Habit {
-    id: string;
-    name: string;
-}
 
 const GoalHabitsView = ({ habit_ids, created_at, expected_end_date, color }: GoalHabitsViewProps) => {
-    const [habitsTracking, setHabitsTracking] = useState<{ [key: string]: number }>({});
-    const [isLoading, setIsLoading] = useState(true);
+  const { habits } = useHabitContext();
+  const [habitsTracking, setHabitsTracking] = useState<{ [key: string]: number }>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-    const goalStartDate = new Date(created_at);
-    const goalEndDate = new Date(expected_end_date);
-    const today = new Date();
+  const goalStartDate = new Date(created_at);
+  const goalEndDate = new Date(expected_end_date);
+  const today = new Date();
 
-    const getDaysBetweenDates = (startDate: Date, endDate: Date): number => {
-        const oneDayMs = 24 * 60 * 60 * 1000;
-        return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / oneDayMs);
+  const getDaysBetweenDates = (startDate: Date, endDate: Date): number => {
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / oneDayMs);
+  };
+
+  const daysBetween = getDaysBetweenDates(goalStartDate, today);
+  const totalExpectedDays = getDaysBetweenDates(goalStartDate, goalEndDate);
+  const totalDaysLeft = getDaysBetweenDates(today, goalEndDate);
+
+  useEffect(() => {
+    const fetchHabitTracking = async () => {
+      setIsLoading(true);
+      try {
+        const trackingData = await Promise.all(
+          habit_ids.map(async ({ id }) => {
+            const count = await getHabitTrackingCount(
+              id,
+              goalStartDate.toDateString(),
+              goalEndDate.toDateString()
+            );
+
+            const habitNameFromContext = habits.find(h => h.id === id)?.name ?? 'Unknown Habit';
+            return { name: habitNameFromContext, count };
+          })
+        );
+
+        const trackingObject = trackingData.reduce((acc, { name, count }) => {
+            if (count != null){
+                acc[name] = count;
+            }
+          return acc;
+        }, {} as { [key: string]: number });
+
+        setHabitsTracking(trackingObject);
+      } catch (error) {
+        console.error('Error fetching habit tracking data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const daysBetween = getDaysBetweenDates(goalStartDate, today);
-    const totalExpectedDays = getDaysBetweenDates(goalStartDate, goalEndDate);
-    const totalDaysLeft = getDaysBetweenDates(today, goalEndDate);
+    fetchHabitTracking();
+  }, [habit_ids.length, color, habits]);
 
-    useEffect(() => {
-        const fetchHabitTracking = async () => {
-            setIsLoading(true);
-            try {
-                const trackingData = await Promise.all(
-                    habit_ids.map(async (habit: Habit) => {
-                        const count = await getHabitTrackingCount(
-                            habit.id,
-                            goalStartDate.toDateString(),
-                            goalEndDate.toDateString()
-                        );
-                        return { name: habit.name, count };
-                    })
-                );
+  const trackingData = Object.entries(habitsTracking);
 
-                const trackingObject = trackingData.reduce((acc, { name, count }) => {
-                    acc[name] = count;
-                    return acc;
-                }, {} as { [key: string]: number });
+  const ITEM_HEIGHT = 65;
+  const MIN_HEIGHT = 75;
+  const MAX_ROWS = 2.6;
+  const calculatedHeight = Math.min(trackingData.length, MAX_ROWS) * ITEM_HEIGHT;
+  const containerHeight = Math.max(calculatedHeight, MIN_HEIGHT);
 
-                setHabitsTracking(trackingObject);
-            } catch (error) {
-                console.error('Error fetching habit tracking data:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchHabitTracking();
-    }, [habit_ids.length, color]);
-
-    const trackingData = Object.entries(habitsTracking);
-
-    const ITEM_HEIGHT = 65; // Approximate height of one row
-    const MIN_HEIGHT = 75; // Minimum height of container
-    const MAX_ROWS = 2.6; // Max rows to display without scroll
-    const calculatedHeight = Math.min(trackingData.length, MAX_ROWS) * ITEM_HEIGHT;
-    const containerHeight = Math.max(calculatedHeight, MIN_HEIGHT);
-
-    if (isLoading) {
-        return (
-            <View style={[styles.container, { height: containerHeight }]}>
-                <Text style={styles.loadingText}>Loading habits...</Text>
-            </View>
-        );
-    }
-
+  if (isLoading) {
     return (
-        <View>
-        <View style={[styles.container, { height: containerHeight }]}>
-            <FlashList
-                data={trackingData}
-                keyExtractor={([habitName]) => habitName}
-                renderItem={({ item: [habitName, count] }) => (
-                    <View style={styles.item}>
-                        <Text style={styles.habitName}>{habitName}</Text>
-                        <ProgressRaceBar
-                            actual={count}
-                            expectedNow={daysBetween}
-                            total={totalExpectedDays}
-                            totalDaysLeft={totalDaysLeft}
-                            color={color}
-                        />
-                    </View>
-                )}
-                estimatedItemSize={ITEM_HEIGHT}
-                numColumns={2}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={true}
-                indicatorStyle='black'
-            />
-            </View>
-        
-        </View>
+      <View style={[styles.container, { height: containerHeight }]}>
+        <Text style={styles.loadingText}>Loading habits...</Text>
+      </View>
     );
+  }
+
+  return (
+    <View>
+      <View style={[styles.container, { height: containerHeight }]}>
+        <FlashList
+          data={trackingData}
+          keyExtractor={([habitName]) => habitName}
+          renderItem={({ item: [habitName, count] }) => (
+            <View style={styles.item}>
+              <Text style={styles.habitName}>{habitName}</Text>
+              <ProgressRaceBar
+                actual={count}
+                expectedNow={daysBetween}
+                total={totalExpectedDays}
+                totalDaysLeft={totalDaysLeft}
+                color={color}
+              />
+            </View>
+          )}
+          estimatedItemSize={ITEM_HEIGHT}
+          numColumns={2}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={true}
+          indicatorStyle="black"
+        />
+      </View>
+    </View>
+  );
 };
 
-
 export default GoalHabitsView;
+
 
 const styles = StyleSheet.create({
     container: {

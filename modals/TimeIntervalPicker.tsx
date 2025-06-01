@@ -57,8 +57,7 @@ const TimeIntervalPicker: React.FC<TimeIntervalPickerProps> = ({ onSave, otherSt
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,  // border-2
-    borderColor: '#E6F0FA',  // border-black-200 (using a gray shade since it's likely meant to be subtle)
+  // border-black-200 (using a gray shade since it's likely meant to be subtle)
     marginTop: 5// mt-5 equals 20
   },
   label: {
@@ -97,27 +96,33 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
-    padding: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black', // Change text color for iOS
+    borderColor: 'black', // light gray
+    borderRadius: 5,
+    color: 'black',
     marginBottom: 3,
+    
   },
   inputAndroid: {
     fontSize: 16,
-    padding: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'blue', // Change text color for Android
-  },
-  viewContainer: {
-    // Optional: style for the container
+    borderColor: 'black',
+    borderRadius: 5,
+    color: 'black',
+    marginBottom: 3,
   },
   placeholder: {
-    color: 'gray', // Change placeholder text color
+    color: '#9ca3af', // softer gray
+  },
+  iconContainer: {
+    top: 2,
+    right: 12,
   },
 });
+
 
 export default TimeIntervalPicker;

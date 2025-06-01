@@ -1,32 +1,17 @@
-import Constants from 'expo-constants';
-
-const { SNOWBALL_DB_URL } = Constants.expoConfig?.extra ?? {};
+import { useSupabaseClient } from '../supabase';
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
-    try {
-        const url = `${SNOWBALL_DB_URL}/functions/v1/delete_user`;
+    const client = useSupabaseClient();
 
-      const response = await fetch(url,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            //Authorization: `Bearer ${SUPABASE_ANON_KEY}`, // Use anon key or user session token
-          },
-          body: JSON.stringify({ user_id: userId })
-        }
-      );
-      //console.log("Function Response:", response.body);
+    const { data, error } = await client.functions.invoke("delete_user", {
+        body: { user_id: userId },
+        method: "DELETE"
+    });
 
-        if (response.ok) {
-            //console.log("User deleted successfully");
-            return true;
-        } else {
-            console.error("Error deleting user:", response.body);
-            return false;
-        }
-    } catch (error) {
-      console.error("Error calling function:", error);
-      return false;
+    if (error) {
+        console.error("Error creating payment intent:", error);
+        return false;
     }
-  };
+
+    return true;
+}

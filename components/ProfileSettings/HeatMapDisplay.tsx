@@ -6,43 +6,53 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  useWindowDimensions
+  useWindowDimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Habit } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
 import { FlashList } from "@shopify/flash-list";
-import HabitHeatMap from "./HabitHeatMap";
-import CalendarButton from "../CalendarButton";
-import HabitYearView from "../HabitYearView";
 import TrackingWelcome from "./TrackingWelcome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useHabitContext } from "@/context/HabitContext";
 import { useTrackingContext } from "@/context/TrackingContext";
-import { ScreenHeight } from "@rneui/themed/dist/config";
-import HeatMapStats from "./HeatMapStats";
+import MonthlyTracking from "./MonthlyTracking";
 
 const HeatMapDisplay = () => {
   const { user, isLoading } = useGlobalContext();
   const { habits } = useHabitContext();
-  const {tracking, setTracking, isLoadingTracking} = useTrackingContext();
+  const { tracking, setTracking, isLoadingTracking } = useTrackingContext();
   const [lastHabit, setLastHabit] = useState("");
   const [habitsLength, setHabitsLength] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [startDate, setStartDate] = useState<Date>(new Date());
-  
+
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= 768; // Adjust threshold as needed
+
+  const handleMonthSelection = (selectedDate: Date) => {
+    const startOfMonth = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      1
+    );
+    const endOfMonth = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      0
+    ); // 0 gives the last day of the previous month
+
+    setStartDate(startOfMonth);
+    setEndDate(endOfMonth);
+  };
 
   const habitContainerStyle = {
     height: isLargeScreen
       ? Dimensions.get("window").height / 2
-      : Dimensions.get("window").height/2.5,
+      : Dimensions.get("window").height / 1.9,
   };
 
-  
-  
   // Add state for expanded/collapsed groups
   const [expandedGroups, setExpandedGroups] = useState<{
     [key: string]: boolean;
@@ -66,13 +76,9 @@ const HeatMapDisplay = () => {
     }));
   };
 
-  
-
   useEffect(() => {
-    
-  }, [user.userId, habits.length, habits, tracking, isLoadingTracking]);
-
-
+    handleMonthSelection(startDate);
+  }, [user.userId, habits.length, habits, tracking, isLoadingTracking, user.premiumUser]);
 
   // Group the habits by frequency_rate
   const groupedHabits = habits.reduce((acc, habit) => {
@@ -97,11 +103,8 @@ const HeatMapDisplay = () => {
         <TrackingWelcome />
       </View>
     );
-  }
-  else if (isLoadingTracking || isLoading){
-    return (
-      <ActivityIndicator size="large" color="#3e4e88" />
-    )
+  } else if (isLoadingTracking || isLoading) {
+    return <ActivityIndicator size="large" color="#3e4e88" />;
   }
 
   return (
@@ -131,74 +134,49 @@ const HeatMapDisplay = () => {
                   <Entypo name="chevron-right" size={16} color="black" />
                 )}
                 <View
-                style={{
-                  flex: 1,
-                  borderWidth:1,
-                  borderColor: "#8BBDFA",
-                  backgroundColor:'#8BBDFA'
-                }}
-              />
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 20,
-                  color: "#3e4e88",
-                  marginHorizontal:5,
-                  textAlign:'center'
-                }}
-              >
-                {item.label}
-              </Text>
-              <View
-                style={{
-                  flex: 1,
-                  borderWidth:1,
-                  borderColor: "#8BBDFA",
-                  backgroundColor:'#8BBDFA',
-                  marginRight: 2
-                }}
-              />
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: "#8BBDFA",
+                    backgroundColor: "#8BBDFA",
+                  }}
+                />
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 20,
+                    color: "#3e4e88",
+                    marginHorizontal: 5,
+                    textAlign: "center",
+                  }}
+                >
+                  {item.label}
+                </Text>
+                <View
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: "#8BBDFA",
+                    backgroundColor: "#8BBDFA",
+                    marginRight: 2,
+                  }}
+                />
               </TouchableOpacity>
 
               {expandedGroups[item.key] && (
                 <View>
                   {groupHabits.map((habit) => {
-                    const habitData = tracking[habit.id];
                     return (
                       <View
                         key={habit.id}
                         style={{ marginBottom: 20, padding: 8 }}
                       >
-                        {habitData ? (
-                          <View>
-                          <View style={[styles.habitContainer, habitContainerStyle]}>
-                            <View
-                              style={{
-                                width: "100%",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                padding: 8,
-                              }}
-                            >
-                              <View
-                                style={{ flex: 1, flexDirection: "column" }}
-                              >
-                                <Text style={styles.habitName}>
-                                  {habit.name} {habit.emoji}
-                                </Text>
-                                <Text>
-                                  {habit.frequency}x {habit.frequency_rate}
-                                </Text>
-                              </View>
-                              <CalendarButton
-                                label={habit.name + " Year In Review"}
-                                content={<HabitYearView id={habit.id} />}
-                              />
-                            </View>
-                            <HabitHeatMap data={habitData} />
-                            <HeatMapStats data={habitData} />
-                          </View>
-                          </View>
+                        {habit ? (
+                          <MonthlyTracking
+                            habit_name={habit.name}
+                            habit_emoji={habit.emoji}
+                            habit_id={habit.id}
+                          />
                         ) : (
                           <View style={styles.container}>
                             <ActivityIndicator size="large" color="#3e4e88" />
@@ -237,6 +215,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   habitContainer: {
+    flex: 1,
     borderWidth: 0.5,
     borderColor: "gray",
     borderRadius: 5,

@@ -189,6 +189,15 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
   const addMilestone = () => {
     if (milestones.length < 5) {
       setMilestones([...milestones, { milestone: "", checked: false }]);
+    }else if(!user.premiumUser && milestones.length == 5){
+      Alert.alert(
+        "Premium Feature!",
+        "Upgrade to Premium for More Milestones.",
+        [{ text: "OK" }]
+      );
+
+    }else if(user.premiumUser){
+      setMilestones([...milestones, { milestone: "", checked: false }]);
     }
   };
 
@@ -231,7 +240,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
           </TouchableOpacity>
         </View>
       ))}
-      {milestones.length < 5 && (
+      
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity
             style={[styles.addButton, { backgroundColor: "#CDCDE0" }]}
@@ -242,7 +251,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
             </Text>
           </TouchableOpacity>
         </View>
-      )}
+      
     </View>
   );
 
@@ -381,6 +390,30 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
 
           </View>
 
+          <View style={{ marginBottom: 5, marginTop: 5 }}>
+            <Text style={styles.label}>Description</Text>
+          </View>
+          <View style={styles.descriptionRow}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  padding: 10,
+                  borderRadius: 5,
+                  width: "100%",
+                }}
+                value={description}
+                onChangeText={(text) =>
+                  setDescription(text.trim() === "" ? "" : text)
+                }
+                placeholder="Any Notes?"
+                placeholderTextColor={"#898989"}
+                textAlignVertical="center"
+              />
+            </TouchableWithoutFeedback>
+          </View>
+
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.label}>Associate Habits:</Text>
             {habits.map((habit) => (
@@ -420,29 +453,7 @@ const EditGoalForm: React.FC<EditGoalFormProps> = ({
             </View>
           </View>
 
-          <View style={{ marginBottom: 5, marginTop: 5 }}>
-            <Text style={styles.label}>Add a Description for your Goal</Text>
-          </View>
-          <View style={styles.descriptionRow}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <TextInput
-                style={{
-                  borderWidth: 1,
-                  borderColor: "#ccc",
-                  padding: 10,
-                  borderRadius: 5,
-                  width: "100%",
-                }}
-                value={description}
-                onChangeText={(text) =>
-                  setDescription(text.trim() === "" ? "" : text)
-                }
-                placeholder="Any Notes?"
-                placeholderTextColor={"#898989"}
-                textAlignVertical="center"
-              />
-            </TouchableWithoutFeedback>
-          </View>
+
 
           {renderMilestones()}
 

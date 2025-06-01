@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal} from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -7,14 +7,20 @@ import Entypo from '@expo/vector-icons/Entypo';
 
 
 interface GoalButtonProps {
+    visible:boolean
     label?: string,
+    emoji?: string,
     action?: () => void
     content?: React.ReactNode;
     onClose?: () => void; // Optional callback to handle closing
 }
 
-const EditHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, onClose}) => {
-  const [isVisible, setIsVisible] = useState(false);
+const EditHabitButton: React.FC<GoalButtonProps> = ({ visible, label, emoji, action, content, onClose}) => {
+  const [isVisible, setIsVisible] = useState(visible);
+
+  useEffect(()=>{
+
+  },[visible])
 
     const toggleContent = () => {
         setIsVisible(!isVisible);
@@ -40,10 +46,11 @@ const EditHabitButton: React.FC<GoalButtonProps> = ({ label, action, content, on
     return (
       <SafeAreaView>
           <View style={styles.container}>
+            {/** 
           <TouchableOpacity onPress={toggleContent} style={{ paddingRight: 5 }}>
             <Entypo name="dots-three-vertical" size={24} color="black" />
         </TouchableOpacity>
-
+*/}
               <Modal
                   visible={isVisible}
                   animationType="slide"
@@ -102,17 +109,16 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       padding: 16,
       backgroundColor: '#E6F0FA',
-      height:40,
-      marginBottom:10,
-      marginTop:10,
+      marginTop: 5,
+      borderBottomWidth:1,
+      marginHorizontal:15,
+      borderBottomColor:'#8BBDFA'
   },
   backButton: {
       flexDirection: 'row',
-      alignItems: 'center',
       position: 'absolute',
-      left: 16,
       zIndex: 1,
-      marginTop:10
+      marginTop:10,
   },
   backButtonText: {
       marginLeft: 4,
@@ -122,8 +128,8 @@ const styles = StyleSheet.create({
   headerText: {
       flex: 1,
       textAlign: 'center',
-      fontSize: 20,
-      fontWeight: '600',
+      fontSize: 24,
+      fontWeight: 'bold',
       color: '#3e4e88',
   },
   contentContainer: {

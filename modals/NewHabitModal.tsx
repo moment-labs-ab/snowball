@@ -7,18 +7,17 @@ import {
   StyleSheet,
   Alert,
   Platform,
-  Switch,
+  Keyboard,
   SafeAreaView,
-  Modal,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView
 } from "react-native";
-import CustomButton from "@/components/CustomButtom";
-import NumberInput from "@/components/NumberInput";
-import TimeIntervalPicker from "@/components/TimeIntervalPicker";
+import CustomButton from "@/components/shared/CustomButtom";
+import NumberInput from "./NumberInput";
+import TimeIntervalPicker from "./TimeIntervalPicker";
 import { insertHabit, getHabitCount } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import HabitSelector from "./HabitSelector";
-import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
@@ -80,6 +79,14 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       Alert.alert(
         "Duplicate Habit Name",
         `You already have a habit called ${habit.name}.`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    if (habit.name.length > 18){
+      Alert.alert(
+        "Name too long.",
+        'Habit name must be 18 characters or less.',
         [{ text: "OK" }]
       );
       return;
@@ -178,7 +185,10 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
     setHabitNames(names)
   }, [user.premiumUser]);
 
+
+
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -240,10 +250,12 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
           onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
           initialValue="Daily"
         />
+        
+
         <NumberInput
           title="Frequency"
           placeholder=" "
-          handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
+          handleChangeText={(e: number) => setHabit({ ...habit, frequency: e })}
           initialValue={0}
         />
 
@@ -305,6 +317,7 @@ const NewHabitModal: React.FC<NewHabitProps> = ({
       </View>
     </SafeAreaView>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

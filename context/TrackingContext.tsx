@@ -86,12 +86,12 @@ export default function TrackingProvider({ children }: GlobalProviderProps) {
 
   useEffect(() => {
     setLoadingTracking(true);
-    if (!isLoggedIn || !user?.userId) return;
+    if (!isLoggedIn || !user?.userId)return;
 
     const today = new Date();
     const oneMonthAgo = getLastMonth(today);
     fetchGridData(oneMonthAgo, today).then(()=>{setLoadingTracking(false)});
-  }, [isLoggedIn, user?.userId, habits.length]);
+  }, [isLoggedIn, user?.userId, habits.length, user.premiumUser]);
 
   return (
     <TrackingContext.Provider

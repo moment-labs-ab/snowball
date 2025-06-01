@@ -12,10 +12,8 @@ import { useGlobalContext } from "@/context/Context";
 import { Goal } from "@/types/types";
 import InnerGoalView from "./InnerGoalView";
 import { Milestones } from "@/types/types";
-import {
-  updateUserMilestones,
-} from "@/lib/supabase_goals";
-import LoadingSkeleton from "../LoadingSkeloton";
+import { updateUserMilestones } from "@/lib/supabase_goals";
+import LoadingSkeleton from "../HabitObjects/LoadingSkeloton";
 
 interface SelectedHabits {
   id: string;
@@ -59,7 +57,7 @@ const GoalObject = ({
   archived,
   accomplished_at,
   archived_at,
-  refreshGoals
+  refreshGoals,
 }: GoalObjectProps) => {
   const { user, isLoading } = useGlobalContext();
   const [goals, setGoals] = useState<Goal[]>();
@@ -85,8 +83,13 @@ const GoalObject = ({
     setHabitIdsList(habitIdsArray);
   }, [habit_ids, name, color, emoji]);
 
-  const handleMilestoneSave = async (milestones_updated:boolean,user_id:string, id:string, milestones: Milestones[]) => {
-    if(milestones_updated){
+  const handleMilestoneSave = async (
+    milestones_updated: boolean,
+    user_id: string,
+    id: string,
+    milestones: Milestones[]
+  ) => {
+    if (milestones_updated) {
       try {
         await updateUserMilestones(user.userId, id, milestones);
         // Optional: Additional success handling
@@ -94,12 +97,8 @@ const GoalObject = ({
         console.error("Failed to update milestones:", error);
         // Optional: Handle error or revert changes
       }
-
     }
-    
-  }
-
-  
+  };
 
   const toggleContent = async () => {
     if (isVisible) {
@@ -111,19 +110,35 @@ const GoalObject = ({
       setIsVisible(true);
     }
   };
-  if(isLoading){
-    return <LoadingSkeleton style={{
-      // Remove the border and add shadow properties
-    borderRadius: 8,
-    width: "100%",
-    aspectRatio: 1,
-    shadowColor: "#000", // Shadow color
-    shadowOffset: { width: 0, height: 4 }, // Shadow position
-    shadowOpacity: 0.3, // Shadow transparency
-    shadowRadius: 6, // Shadow spread
-    elevation: 5,
-    backgroundColor:color
-    }}/>
+
+  const getContrastingTextColor = (bgColor: string) => {
+    const hex = bgColor.replace("#", "");
+  
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+  
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+    return luminance > 0.6 ? "#000" : "#fff"; // light bg -> black text, dark bg -> white text
+  };
+  if (isLoading) {
+    return (
+      <LoadingSkeleton
+        style={{
+          // Remove the border and add shadow properties
+          borderRadius: 8,
+          width: "100%",
+          aspectRatio: 1,
+          shadowColor: "#000", // Shadow color
+          shadowOffset: { width: 0, height: 4 }, // Shadow position
+          shadowOpacity: 0.3, // Shadow transparency
+          shadowRadius: 6, // Shadow spread
+          elevation: 5,
+          backgroundColor: color,
+        }}
+      />
+    );
   }
   return (
     <View style={styles.wrapper}>
@@ -131,7 +146,7 @@ const GoalObject = ({
         <View style={[styles.goalContainer, { backgroundColor: color }]}>
           <View style={styles.contentContainer}>
             <Text style={styles.emoji}>{emoji}</Text>
-            <Text style={styles.name}>{name}</Text>
+            <Text style={[styles.name, { color: getContrastingTextColor(color) }]}>{name}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -142,7 +157,6 @@ const GoalObject = ({
         presentationStyle="fullScreen"
       >
         <SafeAreaView style={styles.modalContainer}>
-          
           <InnerGoalView
             id={id}
             created_at={created_at}
@@ -198,7 +212,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textAlign: "center",
     padding: 2,
-  },
+    },
   date: {
     fontSize: 14,
     color: "#666",

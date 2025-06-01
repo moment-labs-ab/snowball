@@ -11,8 +11,8 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import NumberInput from "@/components/NumberInput";
-import TimeIntervalPicker from "@/components/TimeIntervalPicker";
+import NumberInput from "./NumberInput";
+import TimeIntervalPicker from "./TimeIntervalPicker";
 import {
   deleteHabit,
   updateHabitIfChanged,
@@ -21,14 +21,16 @@ import {
 } from "@/lib/supabase_habits";
 import { useGlobalContext } from "@/context/Context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import NumberBox from "@/components/NumberBox";
+import NumberBox from "./NumberBox";
 import Octicons from "@expo/vector-icons/Octicons";
-import EmojiSelector from "react-native-emoji-selector";
 import Toast from "react-native-toast-message";
 import { useHabitContext } from "@/context/HabitContext";
 import { Habit } from "@/types/types";
 import { getTrackingCountDates } from "@/lib/supabase_habits";
 import EmojiModal from "./EmojiModal";
+import moment from "moment";
+import { ScrollView } from "react-native-gesture-handler";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 interface EditHabitProps {
   visible: boolean;
@@ -76,27 +78,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   const formatDate = (input: Date | string) => {
     const date =
       typeof input === "string" ? new Date(input + "T00:00:00") : input;
-
-    const getOrdinal = (day: number) => {
-      if (day > 3 && day < 21) return "th";
-      switch (day % 10) {
-        case 1:
-          return "st";
-        case 2:
-          return "nd";
-        case 3:
-          return "rd";
-        default:
-          return "th";
-      }
-    };
-
-    const day = date.getDate();
-    const ordinal = getOrdinal(day);
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
-
-    return `${month} ${day}${ordinal}, ${year}`;
+    return moment(input).format("M/DD");
   };
 
   const fetchTimeFrameDates = async () => {
@@ -158,6 +140,14 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       Alert.alert(
         "Duplicate Habit Name",
         `You already have a habit called ${habit.name}.`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    if (habit.name.length > 18) {
+      Alert.alert(
+        "Name too long.",
+        "Habit name must be 18 characters or less.",
         [{ text: "OK" }]
       );
       return;
@@ -249,12 +239,24 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   //Archiving
   const handleArchive = async (habit_id: string, user_id: string) => {
     if (!user.premiumUser) {
-      if (closeModal) {
-        closeModal();
-      }
-      showToast();
-      return;
-    }
+      Alert.alert(
+        "Premium Feature!",
+        "Upgrade to Premium to Archive Habits.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Ok.",
+            style: "default", // Optional: gives a red color to the button on iOS
+          },
+        ],
+        { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
+      );
+    }else{
+
+    
     Alert.alert(
       "Archive Habit",
       "Are you sure you want to Archive? You will not be able to re-activate this habit.",
@@ -280,6 +282,7 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
       ],
       { cancelable: true } // Allows the alert to be dismissed by tapping outside of it
     );
+    }
   };
 
   const showToast = () => {
@@ -312,6 +315,14 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
     });
   };
 
+  useEffect(() => {}, [visible]);
+
+  //Modal Logic
+  const [isVisible, setIsVisible] = useState(visible);
+  const toggleContent = () => {
+    setIsVisible(!isVisible);
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -321,237 +332,279 @@ const EditHabitModal: React.FC<EditHabitProps> = ({
   }
 
   return (
-    <SafeAreaView
+    <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#E6F0FA",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 10,
       }}
     >
-      <View
-        style={{
-          flex: 1,
-          padding: 20,
-          backgroundColor: "#E6F0FA",
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 10,
-            marginBottom: 25,
-          }}
+      <SafeAreaView>
+        <Modal
+          visible={visible}
+          animationType="slide"
+          onRequestClose={onClose}
+          presentationStyle="pageSheet"
         >
-          <Text
+          <View style={styles.headerContainer}>
+            <TouchableOpacity  onPress={onClose}>
+              <AntDesign name="close" size={24} color="black" />
+            </TouchableOpacity>
+            <View style={{ flex: 1, flexDirection: "column", alignItems:'center', marginRight:20}}>
+              <Text style={styles.headerText}>{habit.name}</Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "#333",
+                  fontWeight: "300",
+                }}
+              >
+                {startDate === endDate ? "" : `${startDate} - ${endDate}`}
+              </Text>
+            </View>
+          </View>
+          <View
             style={{
-              alignItems: "flex-start",
-              fontSize: 24,
-              fontWeight: "bold",
+              flex: 1,
+              paddingHorizontal: 20,
+              paddingVertical: 20,
             }}
           >
-            {habit.name}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              handleDelete(habit_id, user.userId);
-            }}
-            style={{
-              alignSelf: "flex-end",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Ionicons
-              name="trash-outline"
-              size={28}
-              color="red"
-              style={{ marginLeft: 10 }}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <NumberBox
-          title="Number Tracked"
-          placeholder={singleDayCount}
-          handleChangeNumber={(e) => setTrackingCount(e)}
-        />
-        <View
-          style={{
-            backgroundColor: "#B5C2C7", // light gray
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 10,
-            alignSelf: "center",
-            marginVertical: 8,
-          }}
-        >
-          <Text style={{ textAlign: "center", fontSize: 16, color: "#333" }}>
-            {startDate === endDate ? startDate : `${startDate} - ${endDate}`}
-          </Text>
-        </View>
-
-        <View style={{ marginBottom: 5 }}>
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "bold",
-              marginTop: 5,
-              marginBottom: 5,
-              paddingLeft: 2,
-            }}
-          >
-            Habit Name
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <EmojiModal
-            emoji={habit.emoji}
-            handleEmojiSelect={handleEmojiSelect}
-            height={40}
-            width={40}
-          />
-          <View style={{ flex: 1 }}>
-            <TextInput
+            <View
               style={{
-                borderWidth: 1,
-                borderColor: "black",
-                padding: 10,
-                borderRadius: 5,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
-              value={habit.name}
-              onChangeText={(e) => setHabit({ ...habit, name: e })}
-              placeholder="Read, Meditate, Journal ..."
-              placeholderTextColor={"#898989"}
-              textAlignVertical="center"
+            ></View>
+            <View style={{ marginBottom: 10 }}>
+              <View style={{ marginBottom: 5 }}>
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontWeight: "bold",
+                    marginTop: 5,
+                    marginBottom: 5,
+                    paddingLeft: 2,
+                  }}
+                >
+                  Tracking on{" "}
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 16,
+                      color: "#333",
+                      fontWeight: "300",
+                    }}
+                  >
+                    {formatDate(selectedDate)}
+                  </Text>
+                </Text>
+              </View>
+
+              <NumberBox
+                title="Number Tracked"
+                placeholder={singleDayCount}
+                handleChangeNumber={(e) => setTrackingCount(e)}
+              />
+            </View>
+
+            <View style={{ marginBottom: 5 }}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: "bold",
+                  marginTop: 5,
+                  marginBottom: 5,
+                  paddingLeft: 2,
+                }}
+              >
+                Habit Name
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <EmojiModal
+                emoji={habit.emoji}
+                handleEmojiSelect={handleEmojiSelect}
+                height={40}
+                width={40}
+              />
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "black",
+                    padding: 10,
+                    borderRadius: 5,
+                  }}
+                  value={habit.name}
+                  onChangeText={(e) => setHabit({ ...habit, name: e })}
+                  placeholder="Read, Meditate, Journal ..."
+                  placeholderTextColor={"#898989"}
+                  textAlignVertical="center"
+                />
+              </View>
+            </View>
+            <TimeIntervalPicker
+              onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
+              initialValue={habit.frequency_rate}
+              otherStyles="mt-5"
             />
-          </View>
-        </View>
-        <TimeIntervalPicker
-          onSave={(e) => setHabit({ ...habit, frequency_rate: e })}
-          initialValue="Daily"
-          otherStyles="mt-5"
-        />
-        <NumberInput
-          title="Frequency"
-          placeholder=" "
-          handleChangeText={(e) => setHabit({ ...habit, frequency: e })}
-          initialValue={habit.frequency}
-          otherStyles="mt-10"
-        />
+            <NumberInput
+              title="Frequency"
+              placeholder=" "
+              handleChangeText={(e: number) => setHabit({ ...habit, frequency: e })}
+              initialValue={habit.frequency}
+              otherStyles="mt-10"
+            />
 
-        <View
-          style={{
-            marginTop: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            paddingLeft: 4,
-          }}
-        ></View>
+            <View
+              style={{
+                marginTop: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                paddingLeft: 4,
+              }}
+            ></View>
 
-        <View
-          style={{
-            marginTop: 10,
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 50,
-          }}
-        >
-          <Text style={{ color: "gray", fontSize: 18, fontWeight: "500" }}>
-            I want to{" "}
-          </Text>
-          <Text style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}>
-            {habit.name}{" "}
-          </Text>
-          <Text
-            style={{
-              color: "#3e4e88",
-              fontSize: 18,
-              fontWeight: "700",
-              marginRight: 3,
-            }}
-          >
-            {habit.frequency}
-          </Text>
-          <Text
-            style={{
-              color: "gray",
-              fontSize: 18,
-              fontWeight: "500",
-              marginRight: 3,
-            }}
-          >
-            {habit.frequency === 1 ? "time" : "times"}
-          </Text>
-          <Text style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}>
-            {habit.frequency_rate}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            submit();
-          }}
-          style={[styles.submitButton, { backgroundColor: "#3e4e88" }]}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={[
-                styles.submitButtonText,
-                {
-                  color: "white",
-                  marginRight: 5,
-                  flex: 1,
-                  textAlign: "center",
-                },
-              ]}
+            <View
+              style={{
+                marginTop: 10,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 50,
+              }}
             >
-              Update Habit
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            handleArchive(habit_id, user.userId);
-          }}
-          style={[styles.archiveButton, { borderColor: color }]}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={[
-                styles.submitButtonText,
-                {
-                  color: "black",
-                  marginRight: 5,
-                  flex: 1,
-                  textAlign: "center",
-                },
-              ]}
+              <Text style={{ color: "gray", fontSize: 18, fontWeight: "500" }}>
+                I want to{" "}
+              </Text>
+              <Text
+                style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}
+              >
+                {habit.name}{" "}
+              </Text>
+              <Text
+                style={{
+                  color: "#3e4e88",
+                  fontSize: 18,
+                  fontWeight: "700",
+                  marginRight: 3,
+                }}
+              >
+                {habit.frequency}
+              </Text>
+              <Text
+                style={{
+                  color: "gray",
+                  fontSize: 18,
+                  fontWeight: "500",
+                  marginRight: 3,
+                }}
+              >
+                {habit.frequency === 1 ? "time" : "times"}
+              </Text>
+              <Text
+                style={{ color: "#3e4e88", fontSize: 18, fontWeight: "700" }}
+              >
+                {habit.frequency_rate}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                submit();
+              }}
+              style={[styles.submitButton, { backgroundColor: "#3e4e88" }]}
             >
-              Archive Habit
-            </Text>
-            <Octicons name="archive" size={24} color="black" />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={[
+                    styles.submitButtonText,
+                    {
+                      color: "white",
+                      marginRight: 5,
+                      flex: 1,
+                      textAlign: "center",
+                    },
+                  ]}
+                >
+                  Update Habit
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <View style={{ flexDirection: "row", gap: 5 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleArchive(habit_id, user.userId);
+                }}
+                style={[styles.archiveButton, { borderColor: color }]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.submitButtonText,
+                      {
+                        color: "black",
+                        marginRight: 5,
+                        flex: 1,
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    Archive Habit
+                  </Text>
+                  <Octicons name="archive" size={24} color="black" />
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleDelete(habit_id, user.userId)}
+                style={[styles.archiveButton, { borderColor: "red" }]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.submitButtonText,
+                      {
+                        color: "black",
+                        marginRight: 5,
+                        flex: 1,
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    Delete Habit
+                  </Text>
+                  <Ionicons
+                    name="trash-outline"
+                    size={28}
+                    color="red"
+                    style={{ marginLeft: 10 }}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -581,8 +634,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 15,
-    width: "100%",
-    borderWidth: 4,
+    width: "50%",
+    borderWidth: 3,
   },
   submitButton: {
     padding: 10,
@@ -597,5 +650,20 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: 'center',
+    padding: 16,
+    marginTop: 10,
+    borderBottomWidth: 1,
+    marginHorizontal: 15,
+    borderBottomColor: "#8BBDFA",
+  },
+  
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#3e4e88",
   },
 });
