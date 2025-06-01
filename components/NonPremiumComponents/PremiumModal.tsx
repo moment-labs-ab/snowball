@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import React, { useState } from "react";
 import { upgradeUserToPremium, downgradeUserFromPremium } from "@/lib/supabase_payments";
 import { useGlobalContext } from "@/context/Context";
+import { router } from "expo-router";
 
 import PremiumPurchasePage from "./PremiumPurchasePage";
 
@@ -25,6 +26,11 @@ const PremiumModal = ({ toggleContent }: PremiumModalProps) => {
                     premiumUser: true
                 }))
                 setIsLoading(false)
+
+                toggleContent()
+                
+                Alert.alert("Success", "Enjoy Snowball Premium!");
+                router.navigate('/habits');
             }
         }
 

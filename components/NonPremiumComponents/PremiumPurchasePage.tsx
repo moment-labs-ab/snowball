@@ -84,7 +84,7 @@ const PremiumPurchasePage = ({ setSelectedOption, selectedOption, handlePurchase
                     </TouchableOpacity>
                 </View>
 
-                <PremiumPurchaseButton subscriptionOption={selectedOption} />
+                <PremiumPurchaseButton subscriptionOption={selectedOption} handlePurchase={handlePurchase}/>
 
                 <View style={styles.comparePlanContainer}>
                     <Text style={styles.comparePlansTitle}>Premium vs. Free</Text>

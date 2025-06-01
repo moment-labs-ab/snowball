@@ -2,20 +2,19 @@
 import React, { useState } from 'react';
 import { Button, Alert, Modal, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useStripe } from '@stripe/stripe-react-native';
-import { useNavigation } from '@react-navigation/native';
 import { createPaymentIntent } from '@/lib/functions/stripe_functions';
+import { Redirect, router } from "expo-router";
 
 type SubscriptionOption = 'monthly' | 'lifetime' | 'early_access' | null;
 
 interface Props {
     subscriptionOption: SubscriptionOption;
+    handlePurchase: () => void;
 }
 
-const PremiumPurchaseButton: React.FC<Props> = ({ subscriptionOption }) => {
+const PremiumPurchaseButton: React.FC<Props> = ({ subscriptionOption, handlePurchase}) => {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
-    const navigation = useNavigation();
 
     const openPaymentSheet = async () => {
         setLoading(true);
@@ -41,23 +40,24 @@ const PremiumPurchaseButton: React.FC<Props> = ({ subscriptionOption }) => {
                 return;
             }
 
-            await presentPaymentSheet();
-            
-                // On successful payment, update Supabase
-                /*const user = supabase.auth.user();
-                if (user) {
-                  await supabase
-                    .from('users')
-                    .update({
-                      is_premium: true,
-                      stripe_customer_id: customer,
-                      subscription_option: subscriptionOption,
-                    })
-                    .eq('id', user.id);
+            const { error } = await presentPaymentSheet();
+
+            if (error) {
+                if (error.code === "Failed") {
+                    Alert.alert('Payment Failed', 'Plase try again later');
                 }
-                setModalVisible(true);
-                */
-            Alert.alert('Success', 'DELETE: Add Supabase logic here');
+
+                if (error.code === 'Timeout') {
+                    Alert.alert('Payment Failed', 'Payment timed out. Please try again.');
+                }
+
+                if (error.code === "Canceled") {
+                    // Do nothing if the user cancels the payment
+                    console.log('Payment canceled by user');
+                }
+            } else {
+                handlePurchase();
+            }
         } catch (err) {
             Alert.alert('Error', (err as Error).message);
         } finally {
@@ -74,21 +74,6 @@ const PremiumPurchaseButton: React.FC<Props> = ({ subscriptionOption }) => {
             >
                 {loading ? <Text>Processing...</Text> : <Text style={styles.purchaseButtonText}>Get Premium</Text>}
             </TouchableOpacity>
-            <Modal visible={modalVisible} transparent animationType="slide">
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                        <Text style={{ marginBottom: 10 }}>Thank you for upgrading!</Text>
-                        <Button
-                            title="Go Home"
-                            onPress={() => {
-                                setModalVisible(false);
-                                // @ts-ignore
-                                navigation.navigate('Home');
-                            }}
-                        />
-                    </View>
-                </View>
-            </Modal>
         </>
     );
 };
