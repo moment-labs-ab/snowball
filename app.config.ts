@@ -48,6 +48,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         ITSAppUsesNonExemptEncryption: false,
         NSUserNotificationUsageDescription:
           "Enable notifications to remind you about your habits!",
+        NSCameraUsageDescription:
+          "Camera access is required by some features or external libraries.",
       },
       icon: {
         dark: "./assets/app_icons/ios-dark.png",
