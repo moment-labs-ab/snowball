@@ -13,7 +13,6 @@ import Toast, {
     ErrorToast,
     ToastConfig,
 } from "react-native-toast-message";
-import ExpoStripeProvider from "@/context/ExpoStripeProvider";
 
 export default function RootLayout() {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -95,14 +94,12 @@ export default function RootLayout() {
                 <GoalProvider>
                 <HabitProvider>
                 <TrackingProvider>
-                <ExpoStripeProvider>
                     <Stack>
                         <Stack.Screen name="index" options={{ headerShown: false }} />
                         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                     </Stack>
                     <Toast config={toastConfig} topOffset={50} />
-                </ExpoStripeProvider>
                 </TrackingProvider>
                 </HabitProvider>
                 </GoalProvider>

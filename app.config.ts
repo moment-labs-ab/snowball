@@ -83,19 +83,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
         SNOWBALL_DB_URL: process.env.SNOWBALL_DB_URL,
         SNOWBALL_DB_ANON_KEY: process.env.SNOWBALL_DB_ANON_KEY,
-        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         RC_PUBLIC: process.env.RC_PUBLIC,
     },
     plugins: [
       "expo-router",
       "expo-font",
-      [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.com.momentlabs.snowball",
-          "enableGooglePay": false
-        }
-      ],
       /*[
         "expo-splash-screen",
         {
