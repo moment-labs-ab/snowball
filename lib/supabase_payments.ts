@@ -82,7 +82,7 @@ export const updateUserWithPremium = async (): Promise<User | null> => {
     
     const { data: purchase, error: purchaseError } = await client
         .from("purchases")
-        .insert([
+        .upsert([
             {
                 premium_type: "early_access", // or "monthly" or "lifetime"
                 status: "active",
@@ -138,5 +138,29 @@ export const restoreUserWithPremium = async (): Promise<User | null> => {
     }
 
     return data as User;
+}
+
+export const getUserPremiumStatus = async (): Promise<any> => {
+    const client = useSupabaseClient();
+    const user = await client.auth.getUser();
+
+    const { data, error } = await client
+        .from("purchases")
+        .select("*")
+        .eq("user_id", user.data.user?.id)
+        .single();
+
+    if (error) {
+        return null;
+    }
+
+    const purchaseData = {
+        premiumType: data.premium_type,
+        status: data.status,
+        customerId: data.customer_id,
+        createdAt: data.created_at,
+    }
+
+    return purchaseData;
 }
 

@@ -6,6 +6,7 @@ import RevenueCatUI from 'react-native-purchases-ui'
 import { AntDesign } from '@expo/vector-icons';
 import { useGlobalContext } from '@/context/Context';
 import { restoreUserWithPremium, updateUserWithPremium } from '@/lib/supabase_payments';
+import CurrentPremiumPage from './CurrentPremiumPage';
 
 function handleDismiss() {
     router.navigate('/profile');
@@ -96,7 +97,7 @@ const Paywall: React.FC<Props> = ({ toggleContent }) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={styles.modalContainer}>
             {toggleContent && (
                 <View style={styles.headerContainer}>
                     <TouchableOpacity style={styles.backButton} onPress={toggleContent}>
@@ -118,11 +119,7 @@ const Paywall: React.FC<Props> = ({ toggleContent }) => {
                 onRestoreError={handleRestoreError}
             />}
 
-            {user.premiumUser && <View>
-                <Text>
-                    You are already a Snowball Premium user! 🎉
-                </Text>
-            </View>}
+            {user.premiumUser && <CurrentPremiumPage/>}
 
             {isLoading && (
             <View style={styles.loadingOverlay}>
@@ -138,6 +135,7 @@ export default Paywall
 const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
+        padding: 24,
         backgroundColor: "#edf5fe",
     },
     headerContainer: {
