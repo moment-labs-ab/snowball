@@ -21,6 +21,17 @@
       "environment": "preview",
       "channel": "preview"
     },
+    "production-development": {
+        "developmentClient": true,
+        "distribution": "internal",
+        "environment": "production",
+        "channel": "production"
+    },
+    "production-preview": {
+      "distribution": "internal",
+      "environment": "production",
+      "channel": "production"
+    },
     "production": {
       "autoIncrement": true,
       "environment": "production",

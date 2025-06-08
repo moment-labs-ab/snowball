@@ -56,6 +56,9 @@ const Paywall: React.FC<Props> = ({ toggleContent }) => {
 
     function handlePurchaseCancelled() {
         Alert.alert("Purchase Cancelled");
+        
+        setIsLoading(false);
+
         if (toggleContent) {
             toggleContent();
         }
