@@ -23,7 +23,6 @@ const freeFeatures = [
 const PremiumComparisonTable = () => {
     return (
         <View style={styles.comparePlanContainer}>
-            <Text style={styles.comparePlansTitle}>Premium vs. Free</Text>
 
             <View style={styles.planComparisonTable}>
                 <View style={styles.tableHeader}>
@@ -89,7 +88,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#E9ECEF',
     },
-
     featureLabel: {
         flex: 2,
         fontWeight: '600',

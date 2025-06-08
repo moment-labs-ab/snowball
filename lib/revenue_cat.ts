@@ -10,7 +10,7 @@ export async function initRevenueCat(email: string) {
     const user = await client.auth.getUser();
     
     // TODO: Configure by environment
-    Purchases.setLogLevel(LOG_LEVEL.INFO);
+    Purchases. setLogLevel(LOG_LEVEL.INFO);
 
     const apiKey = Platform.select({
         ios: Environment.RC_PUBLIC,
@@ -22,8 +22,12 @@ export async function initRevenueCat(email: string) {
         return;
     }
 
-    Purchases.configure({ apiKey: apiKey, appUserID: user.data.user?.id });
-    Purchases.setEmail(email);
+    const configured = await Purchases.isConfigured();
+
+    if (!configured) {
+        Purchases.configure({ apiKey: apiKey, appUserID: user.data.user?.id });
+        Purchases.setEmail(email);
+    }
 }
 
 export async function presentPaywall(): Promise<boolean> {

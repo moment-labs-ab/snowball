@@ -21,8 +21,8 @@ const Paywall: React.FC<Props> = ({ toggleContent }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     async function handlePurchaseCompleted() {
-        console.log("Purchase completed");
         const user = await updateUserWithPremium()
+
         setIsLoading(false);
 
         if (!user) {
@@ -47,7 +47,6 @@ const Paywall: React.FC<Props> = ({ toggleContent }) => {
 
     function handePuchaseStarted() {
         setIsLoading(true);
-        console.log("Purchase started");
     }
 
     function handlePurchaseError() {

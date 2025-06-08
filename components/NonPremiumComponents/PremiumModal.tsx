@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import React, { useState } from "react";
-import { upgradeUserToPremium, downgradeUserFromPremium } from "@/lib/supabase_payments";
+import { downgradeUserFromPremium } from "@/lib/supabase_payments";
 import { useGlobalContext } from "@/context/Context";
 import { router } from "expo-router";
 
