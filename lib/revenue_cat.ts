@@ -1,7 +1,9 @@
 import { Platform } from "react-native";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
+
 import { useSupabaseClient } from "./supabase";
+import { Environment } from "./environment/environment";
 
 export async function initRevenueCat(email: string) {
     const client = useSupabaseClient();
@@ -11,7 +13,7 @@ export async function initRevenueCat(email: string) {
     Purchases.setLogLevel(LOG_LEVEL.INFO);
 
     const apiKey = Platform.select({
-        ios: "appl_TBQyYYChbAoWqKZQVxKjIVTDfJC",
+        ios: Environment.RC_PUBLIC,
         android: "TODO_ANDROID_API_KEY", // Replace with your actual Android API key
     });
 
