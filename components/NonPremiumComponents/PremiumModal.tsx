@@ -4,7 +4,7 @@ import { upgradeUserToPremium, downgradeUserFromPremium } from "@/lib/supabase_p
 import { useGlobalContext } from "@/context/Context";
 import { router } from "expo-router";
 
-import PremiumPurchasePage from "./PremiumPurchasePage";
+import Paywall from "./Paywall";
 
 
 interface PremiumModalProps {
@@ -13,30 +13,6 @@ interface PremiumModalProps {
 const PremiumModal = ({ toggleContent }: PremiumModalProps) => {
     const { user, setUser, setIsLoading } = useGlobalContext();
     const [selectedOption, setSelectedOption] = useState<"monthly" | "lifetime" | "early_access" | null>(null);
-
-    const handlePurchase = async () => {
-        //ADD PURCHASE LOGIC
-        if (selectedOption) {
-            const result = await upgradeUserToPremium(user.userId, selectedOption)
-            if (result.success == false) {
-                Alert.alert("Error", result.message);
-            } else if (result.success && result.user) {
-                setUser((prevUser) => ({
-                    ...prevUser,
-                    premiumUser: true
-                }))
-                setIsLoading(false)
-
-                toggleContent()
-                
-                Alert.alert("Success", "Enjoy Snowball Premium!");
-                router.navigate('/habits');
-            }
-        }
-
-
-        toggleContent()
-    };
 
     const handleDowngrade = async () => {
         const result = await downgradeUserFromPremium(user.userId, "Downgrade")
@@ -55,11 +31,7 @@ const PremiumModal = ({ toggleContent }: PremiumModalProps) => {
 
     if (!user.premiumUser) {
         return (
-
-            <PremiumPurchasePage
-                setSelectedOption={setSelectedOption}
-                handlePurchase={handlePurchase}
-                selectedOption={selectedOption} />
+            <Paywall/>
         )
     }
     else {

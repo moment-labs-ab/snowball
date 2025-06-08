@@ -20,6 +20,7 @@ export default function App() {
         await SplashScreen.hideAsync(); // Hide the splash screen when loading is complete
       }
     }
+    
     handleSplashScreen();
   }, [isLoading]);
 

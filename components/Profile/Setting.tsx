@@ -14,6 +14,7 @@ import { ProfileToggleState } from "./Types";
 import SettingUpdate from "./SettingUpdate";
 import SettingPage from "./SettingPage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Paywall from "../NonPremiumComponents/Paywall";
 
 interface SettingProps {
   label: string;
@@ -158,6 +159,11 @@ const Setting: React.FC<SettingProps> = ({
           onRequestClose={toggleContent}
           presentationStyle="pageSheet"
         >
+          {/* Premium: Show Paywall */}
+            {id === "premium" && (
+                <Paywall toggleContent={toggleContent}/>
+            )}
+          
           {accountSetting === "select" && selectValue && (
             <SettingUpdate
               isVisible={setIsVisible}
@@ -176,7 +182,7 @@ const Setting: React.FC<SettingProps> = ({
             />
           )}
 
-          {accountSetting === "page" && (
+          {accountSetting === "page" && id !== "premium" &&(
             <SettingPage
               currentSettingValue={"Page props from Setting.tsx"}
               label={label}
