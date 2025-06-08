@@ -24,11 +24,9 @@ import SettingsGoals from "./SettingsGoals";
 import SettingsHabits from "./SettingsHabits";
 import icons from "@/constants/icons";
 import Feedback from "./SettingsFeedback";
-import ProfileStats from "../ProfileSettings/ProfileStats";
 import SingleNotificationPage from "../ProfileSettings/SingleNotification";
 import TermsAndConditions from "../ProfileSettings/TermsAndConditions";
 import PrivacyPolicy from "../ProfileSettings/PrivacyPolicy";
-import { registerForPushNotificationsAsync } from "@/lib/supbase_notifications";
 import PremiumModal from "../NonPremiumComponents/PremiumModal";
 import { deleteUser } from "@/lib/functions/auth_functions";
 
