@@ -73,9 +73,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     updates: {
       url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
     },
-    runtimeVersion: {
-      policy: "appVersion",
-    },
+    runtimeVersion: "1.0.0",
     extra: {
       router: {
         origin: false,
@@ -83,20 +81,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: EAS_PROJECT_ID,
       },
-      SNOWBALL_DB_URL: process.env.SNOWBALL_DB_URL,
-      SNOWBALL_DB_ANON_KEY: process.env.SNOWBALL_DB_ANON_KEY,
-      STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+        SNOWBALL_DB_URL: process.env.SNOWBALL_DB_URL,
+        SNOWBALL_DB_ANON_KEY: process.env.SNOWBALL_DB_ANON_KEY,
+        RC_PUBLIC: process.env.RC_PUBLIC,
     },
     plugins: [
       "expo-router",
       "expo-font",
-      [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.com.momentlabs.snowball",
-          "enableGooglePay": false
-        }
-      ],
       /*[
         "expo-splash-screen",
         {

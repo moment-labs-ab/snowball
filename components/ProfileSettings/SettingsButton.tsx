@@ -31,7 +31,7 @@ const SettingsButton: React.FC<SettingButtonProps> = ({label, action, content, u
                   visible={isVisible}
                   animationType="slide"
                   onRequestClose={toggleContent}
-                  presentationStyle='pageSheet'
+                  presentationStyle='fullScreen'
                   
               >
                   <SafeAreaView style={styles.modalContainer}>
