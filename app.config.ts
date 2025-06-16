@@ -19,7 +19,7 @@ const SCHEME = "com.momentlabs.snowball";
 export default ({ config }: ConfigContext): ExpoConfig => {
   const { name, bundleIdentifier, icon, adaptiveIcon, packageName, scheme } =
     getDynamicAppConfig(
-      (process.env.APP_ENV as "development" | "preview" | "production") ||
+      (process.env.APP_VARIANT as "development" | "preview" | "production") ||
         "development"
     );
 
@@ -111,7 +111,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 export const getDynamicAppConfig = (
   environment: "development" | "preview" | "production"
 ) => {
-  console.log("⚙️ Building app for environment:", process.env.APP_ENV);
+  console.log("⚙️ Building app for environment:", process.env.APP_VARIANT);
 
   if (environment === "production") {
     return {
