@@ -395,6 +395,43 @@ export const accomplishGoal = async (goal_id: string, userId: string): Promise<{
     }
 }
 
+export const reactivateGoal = async (
+    goal_id: string,
+    userId: string,
+    archiveType: string
+  ): Promise<{ success: boolean; message: string; data?: Goal }> => {
+    const client = useSupabaseClient();
+  
+    // Determine which date field to null out
+    const dateField = archiveType === 'accomplished' ? 'accomplished_at' : 'archived_at';
+  
+    // Dynamically build the update object
+    const updateObject: any = {
+      [archiveType]: false,
+      [dateField]: null,
+    };
+  
+    const { data, error } = await client
+      .from('goal_objects')
+      .update(updateObject)
+      .eq('user_id', userId)
+      .eq('id', goal_id)
+      .select()
+      .single(); // use .single() since you're updating one row
+  
+    if (error) {
+      console.error('Error reactivating goal:', error);
+      return { success: false, message: 'Error reactivating goal', data: undefined };
+    }
+  
+    return {
+      success: true,
+      message: 'Goal reactivated successfully',
+      data: data as Goal,
+    };
+  };
+  
+
 type HabitIds = {
     id: string;
     name: string;

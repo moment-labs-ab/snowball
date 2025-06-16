@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Goal } from "@/types/types";
@@ -17,12 +18,13 @@ import {
 } from "@/lib/supabase_goals";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import ArchivedGoal from "../GoalObjects/ArchivedGoal";
 
 type SettingsGoalsProps = {
-  toggleContent: ()=>void
-}
+  toggleContent: () => void;
+};
 
-const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
+const SettingsGoals = ({ toggleContent }: SettingsGoalsProps) => {
   const [archivedGoals, setArchivedGoals] = useState<Goal[]>([]);
   const [accomplishedGoals, setAccomplishedGoals] = useState<Goal[]>([]);
   const { user } = useGlobalContext();
@@ -108,9 +110,8 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
           onPress: async () => {
             const result = await deleteGoal(goal_id, user_id);
             if (result.success) {
-              showUpdateToast("deleted")
-              toggleContent()
-
+              showUpdateToast("deleted");
+              toggleContent();
             } else {
               console.error("Error deleting goal:", result.message);
             }
@@ -131,10 +132,38 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
       position: "top",
       autoHide: true,
       props: {
-        onPress: () => {
-        }, // Navigate to your premium page
+        onPress: () => {}, // Navigate to your premium page
       },
     });
+  };
+
+  const [isAccomplishVisible, setIsAccomplishVisible] = useState(false);
+  const [selectedAccomplishGoal, setSelectedAccomplishGoal] = useState<Goal>()
+  const [isArchivedVisible, setIsArchiveVisible] = useState(false);
+  const [selectedArchiveGoal, setSelectedArchiveGoal] = useState<Goal>()
+
+  //Archived Goals
+  const toggleAccomplishModal = async (goal:Goal | undefined) => {
+    if (isAccomplishVisible) {
+      // If we're closing the modal, wait for any pending operations
+      // The closeModal prop passed to InnerGoalView will handle the saving
+      setIsAccomplishVisible(false);
+    } else {
+      // Just open the modal
+      setSelectedAccomplishGoal(goal)
+      setIsAccomplishVisible(true);
+    }
+  };
+  const toggleArchiveModal = async (goal: Goal | undefined) => {
+    if (isArchivedVisible) {
+      // If we're closing the modal, wait for any pending operations
+      // The closeModal prop passed to InnerGoalView will handle the saving
+      setIsArchiveVisible(false);
+    } else {
+      setSelectedArchiveGoal(goal)
+      // Just open the modal
+      setIsArchiveVisible(true);
+    }
   };
 
   return (
@@ -168,10 +197,74 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
             style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
           ></View>
           {accomplishedGoals.map((goal) => (
+            <View key={goal.id}>
+              <TouchableOpacity
+                style={[styles.goalItem, { backgroundColor: goal.color }]}
+                onPress={() => {
+                  toggleAccomplishModal(goal);
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View>
+                    <Text style={styles.goalName}>
+                      {goal.emoji} {goal.name}
+                    </Text>
+                    <Text style={styles.goalDate}>
+                      Accomplished: {formatDate(goal.accomplished_at)}
+                    </Text>
+                  </View>
+                  <View style={{ justifyContent: "center" }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleDelete(goal.id, user.userId);
+                      }}
+                      style={styles.deleteButton}
+                    >
+                      <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color="black"
+                        style={{ marginLeft: 10 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Modal
+                  visible={isAccomplishVisible}
+                  animationType="slide"
+                  onRequestClose={()=>{toggleAccomplishModal(selectedAccomplishGoal)}}
+                  presentationStyle="pageSheet"
+                >
+                  <ArchivedGoal closeModal={()=>{toggleAccomplishModal(selectedAccomplishGoal)}} goal={selectedAccomplishGoal} />
+                </Modal>
+              </TouchableOpacity>
+            </View>
+          ))}
+          {accomplishedGoals.length === 0 && (
+            <Text style={styles.emptyMessage}>No accomplished goals</Text>
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Archived Goals</Text>
+          <View
+            style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
+          ></View>
+          {archivedGoals.map((goal) => (
             <View
               key={goal.id}
-              style={[styles.goalItem, { backgroundColor: goal.color }]}
             >
+              
+              <TouchableOpacity
+              style={[styles.goalItem, { backgroundColor: goal.color }]}
+              onPress={() => {
+                toggleArchiveModal(goal);
+              }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -183,7 +276,7 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
                     {goal.emoji} {goal.name}
                   </Text>
                   <Text style={styles.goalDate}>
-                    Accomplished: {formatDate(goal.accomplished_at)}
+                    Archived: {formatDate(goal.archived_at)}
                   </Text>
                 </View>
                 <View style={{ justifyContent: "center" }}>
@@ -202,55 +295,19 @@ const SettingsGoals = ({toggleContent}:SettingsGoalsProps) => {
                   </TouchableOpacity>
                 </View>
               </View>
+              
+              </TouchableOpacity>
+              
             </View>
           ))}
-          {accomplishedGoals.length === 0 && (
-            <Text style={styles.emptyMessage}>No accomplished goals</Text>
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Archived Goals</Text>
-          <View
-            style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
-          ></View>
-          {archivedGoals.map((goal) => (
-           <View
-           key={goal.id}
-           style={[styles.goalItem, { backgroundColor: goal.color }]}
-         >
-           <View
-             style={{
-               flexDirection: "row",
-               justifyContent: "space-between",
-             }}
-           >
-             <View>
-               <Text style={styles.goalName}>
-                 {goal.emoji} {goal.name}
-               </Text>
-               <Text style={styles.goalDate}>
-                 Archived: {formatDate(goal.archived_at)}
-               </Text>
-             </View>
-             <View style={{ justifyContent: "center" }}>
-               <TouchableOpacity
-                 onPress={() => {
-                   handleDelete(goal.id, user.userId);
-                 }}
-                 style={styles.deleteButton}
-               >
-                 <Ionicons
-                   name="trash-outline"
-                   size={20}
-                   color="black"
-                   style={{ marginLeft: 10 }}
-                 />
-               </TouchableOpacity>
-             </View>
-           </View>
-         </View>
-          ))}
+          <Modal
+                  visible={isArchivedVisible}
+                  animationType="slide"
+                  onRequestClose={()=>{toggleArchiveModal(selectedArchiveGoal)}}
+                  presentationStyle="pageSheet"
+                >
+                  <ArchivedGoal closeModal={()=>{toggleArchiveModal(selectedArchiveGoal)}} goal={selectedArchiveGoal}/>
+                </Modal>
           {archivedGoals.length === 0 && (
             <Text style={styles.emptyMessage}>No archived goals</Text>
           )}

@@ -76,11 +76,17 @@ const GoalObject = ({
 
   useEffect(() => {
     // Convert habit_ids object to an array of key-value pairs
-    const habitIdsArray = Object.entries(habit_ids).map(([id, value]) => ({
-      id,
-      value,
-    }));
-    setHabitIdsList(habitIdsArray);
+    if (habit_ids && typeof habit_ids === 'object') {
+      const habitIdsArray = Object.entries(habit_ids).map(([id, value]) => ({
+        id,
+        value,
+      }));
+      setHabitIdsList(habitIdsArray);
+    } else {
+      // Handle the case where habit_ids is null, undefined, or not an object
+      setHabitIdsList([]); // or show an error/toast/log
+    }
+    
   }, [habit_ids, name, color, emoji]);
 
   const handleMilestoneSave = async (
