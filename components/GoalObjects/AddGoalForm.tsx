@@ -161,8 +161,8 @@ const AddGoalForm: React.FC<{ closeModal?: () => void }> = ({ closeModal }) => {
       if (result.success == false) {
         Alert.alert("Error", result.message);
       } else if (result.data) {
-        const habit = result.data as Goal;
-        setGoals((prevGoals) => [...prevGoals, habit])
+        const goal = result.data as Goal;
+        setGoals((prevGoals) => [...prevGoals, goal])
       }
     } catch(error) {
       Alert.alert("Submission Error", String(error));
