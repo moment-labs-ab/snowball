@@ -50,14 +50,23 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     steps:
-      - uses: actions/checkout@v4
+      - name: 💻 Checkout code 
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - run: npm install -g eas-cli
+      - name: 🏗️ Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: eas login --token ${{ secrets.EAS_TOKEN }}
+      - name: 📦 Install dependencies
+        run: npm install
 
-      - run: eas build --platform ios --profile development --non-interactive
+      - name: 🚀 Build iOS Development
+        run: eas build --platform ios --profile development --non-interactive
