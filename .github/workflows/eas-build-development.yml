@@ -1,4 +1,4 @@
-name: EAS Build (Development)
+name: EAS Build - Development
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
           - development-client
 
 jobs:
-  build-development:
+  build_development:
     if: github.event_name == 'pull_request' &&
         github.event.pull_request.merged == true &&
         github.base_ref == 'develop' &&
@@ -50,7 +50,7 @@ jobs:
       - name: 🚀 Build iOS Development
         run: eas build --platform ios --profile development --non-interactive
 
-  build-development-client:
+  build_development_client:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_target == 'development-client'
     environment: Development
     runs-on: ubuntu-latest
