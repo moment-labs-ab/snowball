@@ -1,14 +1,27 @@
 {
   "cli": {
-    "version": ">= 15.0.10",
+    "version": ">= 16.10.1",
     "appVersionSource": "remote"
   },
   "build": {
     "development": {
-      "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
-      "channel": "development"
+      "channel": "development",
+      "ios": {
+        "buildConfiguration": "Debug",
+        "image": "latest"
+      },
+      "android": {
+        "image": "latest"
+      },
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    },
+    "development-client": {
+      "extends": "development",
+      "developmentClient": true
     },
     "development-simulator": {
       "extends": "development",
@@ -19,23 +32,36 @@
     "preview": {
       "distribution": "internal",
       "environment": "preview",
-      "channel": "preview"
+      "channel": "preview",
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "APP_VARIANT": "preview"
+      }
     },
-    "production-development": {
-        "developmentClient": true,
-        "distribution": "internal",
-        "environment": "production",
-        "channel": "production"
-    },
-    "production-preview": {
-      "distribution": "internal",
-      "environment": "production",
-      "channel": "production"
+    "preview-client": {
+      "extends": "preview",
+      "developmentClient": true
     },
     "production": {
       "autoIncrement": true,
       "environment": "production",
-      "channel": "production"
+      "channel": "production",
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    }, 
+    "production-client": {
+      "extends": "production",
+      "developmentClient": true
+    },
+    "production-internal": {
+      "extends": "production",
+      "distribution": "internal"
     }
   },
   "submit": {

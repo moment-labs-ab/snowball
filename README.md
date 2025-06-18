@@ -1,61 +1,84 @@
-# Welcome to SNOWBALL ❄️
+ # Welcome to SNOWBALL ❄️
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An Expo React Native app created to keep tracking habits and goals simple.
 
-## Get started
+## 🚀 Get Started
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-2. Setup Environment Variables (Only need to do once per environment)
+1. **Install dependencies**
     ```bash
-   eas env:pull 
-   ```
-3. Start the app
+    npm install
+    ```
 
-   ```bash
-    npx expo start
-   ```
+2. **Set up environment variables** (run once per environment)
+    ```bash
+    eas env:pull
+    ```
 
-## EAS Build
+3. **Start the app**
+    ```bash
+    # Choose one of the following
+    npm run dev       # Development
+    npm run preview   # Internal QA
+    npm run prod      # Production
+    ```
 
-1. Install EAS CLI
+---
+
+## 📦 Create Builds
+
+### 🔁 Trigger Builds via GitHub Workflow
+
+1. **Automatic**
+    - Push branch to repo
+    - Create a pull request
+    - Add tag: **ios-build:development**
+
+2. **Manual**
+    - Push branch to repo
+    - Navigate to **Actions → Target Environment Build**
+    - Click **Run Workflow**
+    - Select job to run (e.g., internal dist build or dev client build)
+
+---
+
+### 🛠️ Manual Builds (Local)
+
+1. **Install EAS CLI**
     ```bash
     npm install -g eas-cli
     ```
 
-2. Login to EAS
+2. **Log in to EAS**
     ```bash
     eas login
     ```
 
-3. Create Build
-### Option 1: Development Server Build
-    ```bash
-    eas build --platform ios --profile development
-    ```    
+3. **Create a Build**
 
-### Option 2: Internal Distribution Build
+    #### Development Build
     ```bash
-    eas build --platform ios --profile preview
+    eas build --platform ios --profile <profile-name>
     ```
-### Build for App Store Connect and submit
-    ```bash
-    eas build --platform ios --message {label}
-    ```
+    _Example: `development`, `preview`, `production` (see `eas.json`)_
 
+    #### Production Build with PR Label
+    ```bash
+    eas build --platform ios --message "<label>"
+    ```
+    _Example: `"ios-build:production"`_
+
+    #### Submit to App Store
     ```bash
     eas submit -p ios
     ```
 
+---
 
-In the output, you'll find options to open the app in a
+## 🧪 Test the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+Open your build with one of the following options:
+
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-
+- [Expo Go](https://expo.dev/go) – limited feature sandbox
