@@ -8,47 +8,26 @@ on:
     types: [closed]
     branches:
       - develop
+  workflow_dispatch:
+    inputs:
+      build_target:
+        description: 'Which development build to run'
+        required: true
+        default: 'development-client'
+        type: choice
+        options:
+          - development
+          - development-client
 
 jobs:
-  build-development:
+  create development build:
     if: github.event_name == 'pull_request' &&
         github.event.pull_request.merged == true &&
         github.base_ref == 'develop' &&
-        contains(join(github.event.pull_request.labels.*.name), 'build-development')
+        contains(join(github.event.pull_request.labels.*.name), 'ios-build:development') ||
+        github.event_name == 'workflow_dispatch' && github.event.inputs.build_target == 'development'
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - run: npm install -g eas-cli
-
-      - run: eas login --token ${{ secrets.EAS_TOKEN }}
-
-      - run: eas build --platform ios --profile development --non-interactive
-
-  build-development-client:
-    if: github.event_name == 'push' && contains(github.ref, '-client')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - run: npm install -g eas-cli
-
-      - run: eas login --token ${{ secrets.EAS_TOKEN }}
-
-      - run: eas build --platform ios --profile development-client --non-interactive
-
-  build-development-test:
-    if: github.event_name == 'push' && contains(github.ref, 'configuration')
-    runs-on: ubuntu-latest
-    environment: development
+    environment: Development
     steps:
       - name: 💻 Checkout code 
         uses: actions/checkout@v4
@@ -70,3 +49,29 @@ jobs:
 
       - name: 🚀 Build iOS Development
         run: eas build --platform ios --profile development --non-interactive
+
+  create development client build:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_target == 'development-client'
+    environment: Development
+    runs-on: ubuntu-latest
+    steps:
+      - name: 💻 Checkout code 
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 🏗️ Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🚀 Build iOS Development Client
+        run: eas build --platform ios --profile development-client --non-interactive
