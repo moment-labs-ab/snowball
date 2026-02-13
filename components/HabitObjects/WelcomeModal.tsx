@@ -70,7 +70,7 @@ const WelcomeModal = ({ isOpen, setIsOpen }: ModalProps) => {
       style={[styles.bodyContainer, { alignItems: "center", height: "80%" }]}
     >
       <View style={styles.iconWrapper}>
-        <AntDesign name="hearto" size={24} color="#3e4e88" />
+        <AntDesign name="heart" size={24} color="#3e4e88" />
       </View>
       <Text style={styles.body}>
         We're in this together
