@@ -1,15 +1,14 @@
 import {
     View,
     Text,
-    SafeAreaView,
     ScrollView,
     Image,
     Alert,
     StyleSheet,
   } from "react-native";
-  import React, { useEffect, useState } from "react";
+  import React, { useState } from "react";
   import images from "../../constants/images";
-  import { Link, router } from "expo-router";
+  import { Link } from "expo-router";
   import FormField from "@/components/shared/FormField";
   import CustomButton from "@/components/shared/CustomButtom";
   
@@ -25,15 +24,16 @@ import {
     // TODO: The following needs to be refactored and account for sign in failing.
     const submit = async () => {
       if (form.email === "") {
-        //Alert.alert("Error", "Please fill in all the fields");
+        Alert.alert("Error", "Please provide your email.");
+        return;
       }
       setisSubmitting(true);
       try {
         await sendResetPasswordEmail(form.email);
         Alert.alert("Email Sent!", "Check your email for the reset link");
 
-      } catch (error) {
-        //Alert.alert(String(error))
+      } catch {
+        Alert.alert("Request Failed", "Unable to send reset email. Please try again.");
       } finally {
         setisSubmitting(false);
       }
@@ -69,7 +69,7 @@ import {
           
           <View className="justify-center pt-5 flex-row gap-2 mb-100">
             <Text className="text-lg text-black-100 font-pregular">
-              Don't have an account?
+              Don&apos;t have an account?
             </Text>
             <Link
               href="/sign-up"

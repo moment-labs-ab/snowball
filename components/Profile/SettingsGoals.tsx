@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Goal } from "@/types/types";
 import { useGlobalContext } from "@/context/Context";
 import { useGoalContext } from "@/context/GoalContext";
 import {
   getUserArchivedGoals,
-  getUserGoals,
   deleteGoal,
 } from "@/lib/supabase_goals";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -28,32 +27,9 @@ const SettingsGoals = ({ toggleContent }: SettingsGoalsProps) => {
   const [archivedGoals, setArchivedGoals] = useState<Goal[]>([]);
   const [accomplishedGoals, setAccomplishedGoals] = useState<Goal[]>([]);
   const { user } = useGlobalContext();
-  const { goals, setGoals } = useGoalContext();
-  const [loading, setLoading] = useState<boolean>(true);
+  const { goals } = useGoalContext();
 
-  const fetchUserGoals = async () => {
-    setLoading(true);
-    const data = await getUserGoals(user.userId);
-
-    // Sort by expected_end_date first and then by name
-    const sortedData = data.sort((a, b) => {
-      const dateA = new Date(a.expected_end_date).getTime();
-      const dateB = new Date(b.expected_end_date).getTime();
-
-      // Compare dates first
-      if (dateA !== dateB) {
-        return dateA - dateB;
-      }
-
-      // If dates are the same, compare names
-      return a.name.localeCompare(b.name);
-    });
-
-    setGoals(sortedData);
-    setLoading(false);
-  };
-
-  const fetchArchivedGoals = async () => {
+  const fetchArchivedGoals = useCallback(async () => {
     const data = await getUserArchivedGoals(user.userId);
 
     // Sort by expected_end_date first and then by name
@@ -72,12 +48,20 @@ const SettingsGoals = ({ toggleContent }: SettingsGoalsProps) => {
 
     setAccomplishedGoals(sortedData.filter((goal) => goal.accomplished));
     setArchivedGoals(sortedData.filter((goal) => goal.archived));
-  };
+  }, [user.userId]);
 
   useEffect(() => {
     fetchArchivedGoals();
-    fetchUserGoals();
-  }, [goals]);
+  }, [fetchArchivedGoals, goals.length]);
+
+  const activeGoals = [...goals].sort((a, b) => {
+    const dateA = new Date(a.expected_end_date).getTime();
+    const dateB = new Date(b.expected_end_date).getTime();
+    if (dateA !== dateB) {
+      return dateA - dateB;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   const formatDate = (date: Date | null): string => {
     if (!date) return "";
@@ -174,7 +158,7 @@ const SettingsGoals = ({ toggleContent }: SettingsGoalsProps) => {
           <View
             style={{ borderBottomWidth: 1, borderBottomColor: "black" }}
           ></View>
-          {goals.map((goal) => (
+          {activeGoals.map((goal) => (
             <View
               key={goal.id}
               style={[styles.goalItem, { backgroundColor: goal.color }]}
@@ -187,7 +171,7 @@ const SettingsGoals = ({ toggleContent }: SettingsGoalsProps) => {
               </Text>
             </View>
           ))}
-          {goals.length === 0 && (
+          {activeGoals.length === 0 && (
             <Text style={styles.emptyMessage}>No active goals</Text>
           )}
         </View>

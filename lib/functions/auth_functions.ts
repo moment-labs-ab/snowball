@@ -3,13 +3,13 @@ import { useSupabaseClient } from '../supabase';
 export const deleteUser = async (userId: string): Promise<boolean> => {
     const client = useSupabaseClient();
 
-    const { data, error } = await client.functions.invoke("delete_user", {
+    const { error } = await client.functions.invoke("delete_user", {
         body: { user_id: userId },
         method: "DELETE"
     });
 
     if (error) {
-        console.error("Error creating payment intent:", error);
+        console.error("Error deleting user:", error);
         return false;
     }
 

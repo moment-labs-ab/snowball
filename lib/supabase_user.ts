@@ -1,16 +1,17 @@
 import { Alert } from 'react-native'
 import 'react-native-url-polyfill/auto'
-import { nanoid } from 'nanoid';
 import { User } from '@/types/types'
 import { useSupabaseClient } from './supabase';
 import { getDateISOStringFromUtcTimeString, getDefaultDateISOStringFromUtcTimeString } from './utils/dateTimeUtils';
-import * as Linking from 'expo-linking';
 
-// Function to generate a unique ID
-function generateUniqueId(): string {
-    const id = nanoid();
-    return id
-}
+type UserProfileData = {
+    username?: string | null;
+    premium_user?: boolean | null;
+    full_name?: string | null;
+    expo_push_token?: string | null;
+    notification_time?: string | null;
+    [key: string]: unknown;
+};
 
 /**
  * Allows users to sign up with an email
@@ -34,7 +35,7 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
     }
 
     // TODO: Check for duplicate usernames
-    const { data, error: upsertError } = await client.from('profiles')
+    const { error: upsertError } = await client.from('profiles')
         .upsert({ id: session?.user.id, full_name: name }).select();
 
     if (upsertError) {
@@ -42,7 +43,7 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
         return null;
     }
 
-    trackLogin(session.user.id)
+    await trackLogin(session.user.id)
 
     return {
         userId: session?.user.id,
@@ -60,7 +61,7 @@ export const signUpWithEmail = async function signUpWithEmail(email: string, pas
 export const sendResetPasswordEmail = async (email: string) => {
     const client = useSupabaseClient();
 
-    const { data, error } = await client.auth.resetPasswordForEmail(email, {
+    const { error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: 'com.momentlabs.snowball://reset-password'//Linking.createURL("/reset-password") //exp://10.0.0.201:8081/--/reset-password
     });
 
@@ -127,11 +128,14 @@ export const signInWithEmail = async function signInWithEmail(email: string, pas
         password: password,
     })
 
-    if (error) Alert.alert(error.message)
+    if (error) {
+        Alert.alert(error.message)
+        return null
+    }
 
     const { data: { user } } = await client.auth.getUser()
     if (user) {
-        trackLogin(user.id)
+        await trackLogin(user.id)
     }
     return user
 }
@@ -142,7 +146,7 @@ export const signInWithEmail = async function signInWithEmail(email: string, pas
  * @param fields Optional array of specific fields to return (returns all fields if not specified)
  * @returns Object containing requested user profile fields or undefined if error occurs
  */
-export const getUserProfile = async (userId: string, fields?: string[]) => {
+export const getUserProfile = async (userId: string, fields?: string[]): Promise<UserProfileData | null> => {
     const client = useSupabaseClient();
     
     // Define default fields to fetch if not specified
@@ -153,16 +157,16 @@ export const getUserProfile = async (userId: string, fields?: string[]) => {
             .from('profiles')
             .select(fieldsToFetch.join(','))
             .eq('id', userId)
-            .select();
+            .single();
             
         if (error) {
-            return undefined;
+            return null;
         }
 
-        return data[0];
+        return data as unknown as UserProfileData;
     } catch (error) {
         console.error("Exception when fetching user profile:", error);
-        return undefined;
+        return null;
     }
 }
 
@@ -170,54 +174,31 @@ export const getUserProfile = async (userId: string, fields?: string[]) => {
 /* Gets the current user on the app.
 * @returns current_user data 
 */
-export const getCurrentUser = async (): Promise<User> => {
+export const getCurrentUser = async (): Promise<User | null> => {
     const client = useSupabaseClient();
 
     try {
-        //console.log("Fetching current user data...");
-        const { data } = await client.auth.getUser();
-        if (!data) {
-            Alert.alert("User data not found");
-            let defaultUser = {
-                userId: "",
-                username: "",
-                name: "",
-                email: "",
-                premiumUser: false,
-                expoPushToken: "",
-                notificationTime: ""
-            } as User;
-
-            return defaultUser;
-        } else {
-
-            const profile = await getUserProfile(data.user?.id || "");
-
-            let currentUser = {
-                userId: data.user?.id || "",
-                username: profile.username || "",
-                email: data.user?.email || "",
-                premiumUser: profile.premium_user || false,
-                name: profile.full_name || "",
-                expoPushToken: profile.expo_push_token || "",
-                notificationTime: profile.notification_time ? getDateISOStringFromUtcTimeString(profile.notification_time) : 
-                    getDefaultDateISOStringFromUtcTimeString()
-            } as User;
-
-            return currentUser;
+        const { data, error } = await client.auth.getUser();
+        if (error || !data?.user) {
+            return null;
         }
-    } catch (error) {
-        //console.log("Error fetching current user info:", error);
 
-        let defaultUser = {
-            userId: "",
-            username: "",
-            name: "",
-            email: "",
-            premiumUser: false
+        const profile = await getUserProfile(data.user.id);
+
+        const currentUser = {
+            userId: data.user.id,
+            username: profile?.username || "",
+            email: data.user.email || "",
+            premiumUser: profile?.premium_user || false,
+            name: profile?.full_name || "",
+            expoPushToken: profile?.expo_push_token || "",
+            notificationTime: profile?.notification_time ? getDateISOStringFromUtcTimeString(profile.notification_time) :
+                getDefaultDateISOStringFromUtcTimeString()
         } as User;
 
-        return defaultUser;
+        return currentUser;
+    } catch {
+        return null;
     }
 };
 
@@ -231,14 +212,14 @@ export const refreshUserSession = async () => {
     try {
         const { data: {
             session
-        }, error } = await client.auth.refreshSession()
+        } } = await client.auth.refreshSession()
         if (!session) {
             Alert.alert("User not found.")
         } else {
             return session
 
         }
-    } catch (error) {
+    } catch {
 
     }
 }
@@ -268,8 +249,10 @@ export const handleUserDeletion = async (user_id: string): Promise<{ success: bo
     const client = useSupabaseClient();
 
     try {
-        // Delete user using admin client
-        const { data, error } = await client.auth.admin.deleteUser(user_id)
+        const { data, error } = await client.functions.invoke("delete_user", {
+            body: { user_id: user_id },
+            method: "DELETE"
+        })
 
         if (error) {
             console.error('Error Deleting User:', error)
@@ -296,7 +279,7 @@ export const handleUserDeletion = async (user_id: string): Promise<{ success: bo
 export const trackLogin = async (userId: string) => {
     const client = useSupabaseClient();
 
-    const now = new Date().toDateString()
+    if (!userId) return;
     try {
         await client
             .from('user_logins')
@@ -305,9 +288,3 @@ export const trackLogin = async (userId: string) => {
         console.error("Error logging login event:", error);
     }
 };
-
-
-
-
-
-

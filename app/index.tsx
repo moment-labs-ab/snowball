@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { ScrollView, Text, View, Image, StyleSheet } from "react-native";
+import { ScrollView, Text, View, Image } from "react-native";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
@@ -7,7 +7,6 @@ import * as SplashScreen from "expo-splash-screen";
 import CustomButton from "@/components/shared/CustomButtom";
 import images from "../constants/images";
 import { useGlobalContext } from "@/context/Context";
-import { trackLogin } from "@/lib/supabase_user";
 
 SplashScreen.preventAutoHideAsync(); // Keep the splash screen visible until we manually hide it.
 
@@ -30,10 +29,6 @@ export default function App() {
         <Image source={images.snowballlogo} style={{ width: 60, height: 60 }} />
       </View>
     ); 
-  }
-
-  if (user?.email) {
-    trackLogin(user.userId);
   }
 
   if (isLoggedIn && user?.name) {

@@ -1,4 +1,4 @@
-import { Alert, AppState, Linking } from 'react-native'
+import { Alert, Linking } from 'react-native'
 import 'react-native-url-polyfill/auto'
 import { NotificationItem } from '@/types/types'
 import * as Notifications from "expo-notifications";
@@ -13,15 +13,16 @@ export const getNotifications = async (userId: string): Promise<NotificationItem
 
     try {
         const { data, error } = await client
-            .from('user_notifications')
-            .select('id, label, time, expo_push_token') // Only fetch count without data
-            .eq('user_id', userId);
+            .from('profiles')
+            .select('id, notification_time, expo_push_token')
+            .eq('id', userId)
+            .single();
 
         if (error && userId) {
-            console.error('Error fetching habits:', error);
+            console.error('Error fetching notifications:', error);
             return [];
         }
-        return data as NotificationItem[];
+        return data ? [data as NotificationItem] : [];
     }
     catch {
         return []
@@ -34,10 +35,11 @@ export const saveNotifications = async (userId: string, pushToken: string, notif
 
     const notificationTimeString = notificationTime ? getUtcTimeString(notificationTime) : notificationTime;
     try {
-        // Check if the user already exists in the table
+        const normalizedToken = pushToken ? pushToken : null;
+
         const { error } = await client
             .from("profiles")
-            .update({ notification_time: notificationTimeString})
+            .update({ notification_time: notificationTimeString, expo_push_token: normalizedToken })
             .eq("id", userId);
 
         if (error) {
@@ -60,8 +62,11 @@ export const updateUserExpoPushToken = async (userId: string, pushToken: string 
             .update({ expo_push_token: pushToken })
             .eq('id', userId)
 
+        if (error) {
+            console.error("Error updating Expo Push Token", error)
+        }
     } catch (error) {
-        console.error("Error inserting Expo Push Token", error)
+        console.error("Error updating Expo Push Token", error)
 
     }
 
@@ -72,16 +77,17 @@ export const getExpoPushToken = async (userId: string) => {
 
     try {
         const { data, error } = await client
-            .from("user_notifications")
+            .from("profiles")
             .select("expo_push_token")
-            .eq("user_id", userId)
+            .eq("id", userId)
+            .single();
 
         if (error) {
             console.error("Error fetching Expo Push Token:", error.message);
             return null;
         }
 
-        return data[0].expo_push_token; // Return just the token, not the whole object
+        return data?.expo_push_token || null;
     } catch (err) {
         console.error("Unexpected error fetching Expo Push Token:", err);
         return null;
@@ -126,15 +132,13 @@ export async function checkUpdate(updatedDate: string) {
 
     const userIds = ['7a6e684a-f2f3-4a1e-b10b-0b3701ace42c']
     const { error: updateError } = await client
-        .from("user_notifications")
-        .update({ last_updated: updatedDate })
-        .in("user_id", userIds); // Batch update
+        .from("profiles")
+        .update({ updated_at: updatedDate })
+        .in("id", userIds); // Batch update
 
-}
-
-function handleRegistrationError(errorMessage: string) {
-    alert(errorMessage);
-    throw new Error(errorMessage);
+    if (updateError) {
+        console.error("Error updating profile timestamps:", updateError);
+    }
 }
 
 export async function registerForPushNotificationsAsync() {
@@ -155,6 +159,11 @@ export async function registerForPushNotificationsAsync() {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
+
+        if (finalStatus !== 'granted') {
+            return "";
+        }
+
         token = await Notifications.getExpoPushTokenAsync({
             projectId: Constants?.expoConfig?.extra?.eas.projectId,
         });
@@ -174,8 +183,6 @@ export async function unregisterForPushNotificationsAsync() {
 
     if (Device.isDevice) {
         await Notifications.cancelAllScheduledNotificationsAsync();
-        const status = await Notifications.getPermissionsAsync();
-
     } else {
         alert("Must use physical device for Push Notifications");
     }
@@ -219,4 +226,3 @@ export async function isNotificationsEnabled() {
         return false;
     }
 }
-

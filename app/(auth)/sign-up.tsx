@@ -25,6 +25,7 @@ const SignUp = () => {
   const submit = async () =>{
     if(form.name === "" || form.email === "" || form.password === ""){
       Alert.alert('Error', 'Please fill in all the fields')
+      return;
     }
     setisSubmitting(true)
 
@@ -38,11 +39,12 @@ const SignUp = () => {
         router.replace('/habits')
       }
       else {
-        setisSubmitting(false);
+        Alert.alert("Sign Up Failed", "Please try again.");
       }
 
-      } catch (error){
-        Alert.alert(String(error))
+      } catch {
+        Alert.alert("Sign Up Failed", "Please try again.");
+      } finally {
         setisSubmitting(false)
     }
   }

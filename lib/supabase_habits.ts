@@ -3,6 +3,13 @@ import { PostgrestError } from "@supabase/supabase-js";
 import { Habit, HabitTracking } from "@/types/types";
 import { useSupabaseClient } from "./supabase";
 
+const toDateOnlyString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
 //**
 /* Helper function to convert a frequency string to a numerical representation.
  * @param frequency
@@ -441,14 +448,15 @@ export const getTrackingCount = async (
     const client = useSupabaseClient();
 
     const selectedDate = new Date(date.toDateString());
+    const selectedDateString = toDateOnlyString(selectedDate);
     //const time_frame_end = getDateAfterTimeFrame(selectedDate, frequency_rate_int);
     const { data: existingTracking, error } = await client
         .from("habit_tracking")
         .select("tracking_count")
         .eq("user_id", user_id)
         .eq("habit_id", habit_id)
-        .lte("time_frame_start", selectedDate.toISOString())
-        .gte("time_frame_end", selectedDate.toISOString());
+        .lte("time_frame_start", selectedDateString)
+        .gte("time_frame_end", selectedDateString);
     if (error && user_id) {
         //console.log('Error fetching habits:', error, habit_id);
         return 0;
@@ -469,14 +477,15 @@ export const getTrackingCountDates = async (
     const client = useSupabaseClient();
 
     const selectedDate = new Date(date.toDateString());
+    const selectedDateString = toDateOnlyString(selectedDate);
 
     const { data: existingTrackingDates, error } = await client
         .from("habit_tracking")
         .select("time_frame_start, time_frame_end")
         .eq("user_id", user_id)
         .eq("habit_id", habit_id)
-        .lte("time_frame_start", selectedDate.toISOString())
-        .gte("time_frame_end", selectedDate.toISOString())
+        .lte("time_frame_start", selectedDateString)
+        .gte("time_frame_end", selectedDateString)
         .single(); // Ensure only a single object is returned
 
     if (error || !existingTrackingDates) {
@@ -540,10 +549,12 @@ export const addTracking = async (
     const frequency_rate_int = Number(frequencies[0].frequency_rate_int);
     const frequency = Number(frequencies[0].frequency);
     const selectedDate = new Date(date.toDateString());
+    const selectedDateString = toDateOnlyString(selectedDate);
     const time_frame_end = getDateAfterTimeFrame(
         selectedDate,
         frequency_rate_int
     );
+    const timeFrameEndString = toDateOnlyString(time_frame_end);
 
     // Check if there is already a tracking record for the given user, habit, and time frame
     const { data: existingTracking, error } = await client
@@ -551,8 +562,8 @@ export const addTracking = async (
         .select("id, tracking_count, tracking_goal")
         .eq("user_id", user_id)
         .eq("habit_id", habit_id)
-        .lte("time_frame_start", selectedDate.toISOString())
-        .gte("time_frame_end", selectedDate.toISOString());
+        .lte("time_frame_start", selectedDateString)
+        .gte("time_frame_end", selectedDateString);
 
     if (error) {
         //console.log('No tracking data exists', error);
@@ -584,8 +595,8 @@ export const addTracking = async (
             .insert({
                 user_id,
                 habit_id,
-                time_frame_start: selectedDate,
-                time_frame_end,
+                time_frame_start: selectedDateString,
+                time_frame_end: timeFrameEndString,
                 tracking_count: newValue, // Start at 1 since this is the first tracking
                 tracking_goal: frequency,
                 frequency_rate_int: frequency_rate_int,
@@ -607,8 +618,8 @@ export const addTracking = async (
             .insert({
                 user_id,
                 habit_id,
-                time_frame_start: selectedDate,
-                time_frame_end,
+                time_frame_start: selectedDateString,
+                time_frame_end: timeFrameEndString,
                 tracking_count: newTrackingCount, // Start at 1 since this is the first tracking
                 tracking_goal: frequency,
                 frequency_rate_int: frequency_rate_int,
@@ -639,7 +650,7 @@ export const addTrackingHistory = async (
             .insert({
                 tracking_id: tracking_id,
                 habit_id: habit_id,
-                tracked_habit_date: tracked_habit_date.toLocaleDateString(),
+                tracked_habit_date: toDateOnlyString(tracked_habit_date),
                 user_id: user_id,
             });
 
@@ -696,6 +707,7 @@ export const removeTracking = async (
     const client = useSupabaseClient();
 
     const selectedDate = new Date(date.toDateString());
+    const selectedDateString = toDateOnlyString(selectedDate);
     const deincrementCount = async () => {
         const newValue = await getTrackingCount(habit_id, user_id, selectedDate);
         return newValue - 1;
@@ -704,12 +716,12 @@ export const removeTracking = async (
     //console.log(newTrackingCount)
 
     const { data, error: updateError } = await client
-        .from("habits_tracking")
+        .from("habit_tracking")
         .update({ tracking_count: newTrackingCount })
         .eq("user_id", user_id)
         .eq("habit_id", habit_id)
-        .lte("time_frame_start", selectedDate.toISOString())
-        .gte("time_frame_end", selectedDate.toISOString());
+        .lte("time_frame_start", selectedDateString)
+        .gte("time_frame_end", selectedDateString);
 
     if (updateError) {
         //console.error('Error inserting tracking data:', insertError);
@@ -727,6 +739,7 @@ export const updateTracking = async (
     const client = useSupabaseClient();
 
     const selectedDate = new Date(date.toDateString());
+    const selectedDateString = toDateOnlyString(selectedDate);
 
     // Check if the tracking record exists
     const { data: existingTracking, error: selectError } = await client
@@ -734,8 +747,8 @@ export const updateTracking = async (
         .select("id, tracking_count")
         .eq("user_id", user_id)
         .eq("habit_id", habit_id)
-        .lte("time_frame_start", selectedDate.toISOString())
-        .gte("time_frame_end", selectedDate.toISOString());
+        .lte("time_frame_start", selectedDateString)
+        .gte("time_frame_end", selectedDateString);
 
     if (existingTracking && existingTracking.length > 0) {
         const trackingId = existingTracking[0].id;
@@ -749,8 +762,8 @@ export const updateTracking = async (
                 .delete()
                 .eq("user_id", user_id)
                 .eq("habit_id", habit_id)
-                .lte("time_frame_start", selectedDate.toISOString())
-                .gte("time_frame_end", selectedDate.toISOString());
+                .lte("time_frame_start", selectedDateString)
+                .gte("time_frame_end", selectedDateString);
 
             if (deleteError) {
                 //console.error("Error deleting tracking data:", deleteError);
@@ -765,8 +778,8 @@ export const updateTracking = async (
                 .update({ tracking_count: newTrackingCount })
                 .eq("user_id", user_id)
                 .eq("habit_id", habit_id)
-                .lte("time_frame_start", selectedDate.toISOString())
-                .gte("time_frame_end", selectedDate.toISOString())
+                .lte("time_frame_start", selectedDateString)
+                .gte("time_frame_end", selectedDateString)
                 .select("tracking_count")
                 .single();
 

@@ -60,6 +60,13 @@ const HabitCard = ({
   emoji,
   fetchHabits,
 }: habitCardProps) => {
+  const toDateOnlyString = (input: Date): string => {
+    const year = input.getFullYear();
+    const month = String(input.getMonth() + 1).padStart(2, "0");
+    const day = String(input.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const { user, isLoading } = useGlobalContext();
   const { tracking, setTracking, isLoadingTracking } = useTrackingContext();
   const [trackingCount, setTrackingCount] = useState<number>(0);
@@ -69,6 +76,47 @@ const HabitCard = ({
   const [singleDayCount, setSingleDayCount] = useState(0);
 
   type HabitTrackingData = { [key: string]: HabitTrackingEntry[] };
+
+  function handleTrackingCountChange(newTrackingCount: number) {
+    setTrackingCount(newTrackingCount);
+    setTracking((prevTracking) => {
+      return incrementHabitCount(
+        prevTracking,
+        id,
+        formattedDate,
+        "update",
+        newTrackingCount
+      );
+    });
+  }
+
+  async function handlingPress(id: string, increment: number) {
+    if (increment > 0) {
+      animateIncrement(trackingCount + 1);
+      setTrackingCount(trackingCount + 1);
+      const trackingData = await addTracking(user.userId, id, date);
+
+      setTracking((prevTracking) => {
+        return incrementHabitCount(
+          prevTracking,
+          id,
+          formattedDate,
+          "increment",
+          trackingCount + increment
+        );
+      });
+    } else if (increment < 0) {
+      animateIncrement(trackingCount - 1);
+      setTrackingCount(trackingCount - 1);
+      const result = await updateTracking(
+        user.userId,
+        id,
+        date,
+        -(trackingCount - (trackingCount - 1))
+      );
+      handleTrackingCountChange(trackingCount - 1);
+    }
+  }
 
   //Animated Tracking Logic
   const isSwipingRef = useRef(false);
@@ -144,7 +192,7 @@ const HabitCard = ({
   };
 
   useEffect(() => {
-    setFormattedDate(new Date(date.toDateString()).toISOString().split("T")[0]);
+    setFormattedDate(toDateOnlyString(new Date(date.toDateString())));
   }, [date]);
 
   useEffect(() => {
@@ -201,47 +249,6 @@ const HabitCard = ({
 
     return updatedHabitData;
   }
-
-  const handlingPress = async (id: string, increment: number) => {
-    if (increment > 0) {
-      animateIncrement(trackingCount + 1);
-      setTrackingCount(trackingCount + 1);
-      const trackingData = await addTracking(user.userId, id, date);
-
-      setTracking((prevTracking) => {
-        return incrementHabitCount(
-          prevTracking,
-          id,
-          formattedDate,
-          "increment",
-          trackingCount + increment
-        );
-      });
-    } else if (increment < 0) {
-      animateIncrement(trackingCount - 1);
-      setTrackingCount(trackingCount - 1);
-      const result = await updateTracking(
-        user.userId,
-        id,
-        date,
-        -(trackingCount - (trackingCount - 1))
-      );
-      handleTrackingCountChange(trackingCount - 1);
-    }
-  };
-
-  const handleTrackingCountChange = (newTrackingCount: number) => {
-    setTrackingCount(newTrackingCount);
-    setTracking((prevTracking) => {
-      return incrementHabitCount(
-        prevTracking,
-        id,
-        formattedDate,
-        "update",
-        newTrackingCount
-      );
-    });
-  };
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
