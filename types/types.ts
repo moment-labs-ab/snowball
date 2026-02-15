@@ -90,8 +90,7 @@ export interface Milestones {
 }
 
 export interface NotificationItem {
-  id: number;
-  label: string;
-  time: string;
-  expo_push_token: string;
+  id: string;
+  expo_push_token: string | null;
+  notification_time: string | null;
 }

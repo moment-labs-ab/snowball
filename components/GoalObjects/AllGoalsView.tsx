@@ -1,25 +1,21 @@
-import { View, Text, Dimensions, ScrollView, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useGlobalContext } from "@/context/Context";
+import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import { useGoalContext } from "@/context/GoalContext";
 import { FlashList } from "@shopify/flash-list";
 import { Goal } from "@/types/types";
 import GoalObject from "./GoalObject";
-import { ActivityIndicator } from "react-native";
 import GoalsWelcome from "./GoalsWelcome";
 
 const AllGoalsView = () => {
-  const { user } = useGlobalContext();
   const { goals } = useGoalContext();
   const [sortedGoals, setSortedGoals] = useState<Goal[]>([]);
-  const [orderedGoals, setOrderedGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchUserGoals = async () => {
+  const fetchUserGoals = useCallback(async (): Promise<void> => {
     setLoading(true);
 
     // Sort by expected_end_date first and then by name
-    const sortedData = goals.sort((a, b) => {
+    const sortedData = [...goals].sort((a, b) => {
       const dateA = new Date(a.expected_end_date).getTime();
       const dateB = new Date(b.expected_end_date).getTime();
 
@@ -34,12 +30,11 @@ const AllGoalsView = () => {
 
     setSortedGoals(sortedData);
     setLoading(false);
-  };
+  }, [goals]);
 
   useEffect(() => {
     fetchUserGoals();
-    
-  }, [goals]);
+  }, [fetchUserGoals]);
 
   if (!loading && goals.length === 0) {
     return <GoalsWelcome />;
@@ -77,7 +72,6 @@ const AllGoalsView = () => {
                 />
               </View>
             )}
-            estimatedItemSize={200}
             numColumns={2} // This specifies two items per row
             contentContainerStyle={styles.listContent}
           />

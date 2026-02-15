@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, TextInput, TouchableOpacity, KeyboardTypeOptions } from "react-native";
 import React, { useState } from "react";
 
 import Feather from "@expo/vector-icons/Feather";
@@ -9,7 +9,7 @@ type FormFieldProps = {
   placeholder?: string;
   handleChangeText: (e: string) => void;
   otherStyles: string;
-  keyboardType?: string;
+  keyboardType?: KeyboardTypeOptions;
 };
 
 const FormField = ({
@@ -18,6 +18,7 @@ const FormField = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  keyboardType = "default",
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -37,6 +38,7 @@ const FormField = ({
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
           textAlignVertical="center"
+          keyboardType={keyboardType}
           secureTextEntry={title === "Password" && !showPassword}
         />
         {title === "Password" && (

@@ -1,206 +1,86 @@
-import { View, Text, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { signOut } from '@/lib/supabase_user';
-import { router } from 'expo-router';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useGlobalContext } from '@/context/Context';
-import { getUserLoginCount } from '@/lib/supabase_profile';
+import { getUserLoginCount, getLifetimeHabitStats } from '@/lib/supabase_profile';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { LifetimeHabitStats } from '@/types/types';
-import { getLifetimeHabitStats } from '@/lib/supabase_profile';
 import Feather from '@expo/vector-icons/Feather';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 
 const ProfileStats = () => {
-  const { setIsLoggedIn, setUser, isLoggedIn, user } = useGlobalContext();
-  const [modalVisible, setModalVisible] = useState(false);
+  const { user } = useGlobalContext();
   const [userLoginCount, setUserLoginCount] = useState(0);
   const [lifetimeStats, setLifetimeStats] = useState<LifetimeHabitStats>();
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
-  // Refs for tooltip positioning
-  const completionRateRef = useRef(null);
-  const streakRef = useRef(null);
-  const consistentHabitRef = useRef(null);
-  const daysTrackedRef = useRef(null);
-  const joinDateRef = useRef(null);
-  const loginCountRef = useRef(null);
-
-  const tooltipData = {
-    completionRate: {
-      title: "Completion Rate",
-      value: `${lifetimeStats?.completionRate}%`,
-      description: "The percentage of habits you've successfully completed out of all tracked habits.",
-      calculation: "Completed Habits ÷ Total Habits Tracked × 100"
-    },
-    streak: {
-      title: "Longest Streak",
-      value: `${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Days'}`,
-      description: "Your longest consecutive period of completing at least one habit daily.",
-    },
-    consistentHabit: {
-      title: "Most Consistent Habit",
-      value: lifetimeStats?.mostConsistentHabit,
-      description: "The habit you've maintained most regularly over time.",
-    },
-    daysTracked: {
-      title: "Total Days Tracked",
-      value: lifetimeStats?.totalDaysTracked,
-      description: "The total number of days you've logged into the app and tracked your habits.",
-    },
-    joinDate: {
-      title: "Join Date",
-      value: lifetimeStats?.joinDate?.toLocaleDateString(),
-      description: "The date you started your habit tracking journey with us.",
-    },
-    loginCount: {
-      title: "Account Logins",
-      value: userLoginCount,
-      description: "Total number of times you've accessed your account.",
-    },
-  };
-
-  // Rest of the fetch functions remain the same...
-  const fetchLoginCounts = async(user_id: string) => {
+  const fetchLoginCounts = async (user_id: string) => {
     const data = await getUserLoginCount(user_id);
-    if(data) {
+    if (data) {
       setUserLoginCount(data);
     }
-    return data;
   };
 
-  const fetchLifetimeStats = async (user_id:string) => {
+  const fetchLifetimeStats = async (user_id: string) => {
     const data = await getLifetimeHabitStats(user_id);
-    if(data) {
+    if (data) {
       setLifetimeStats(data);
-    } else {
-      //console.log("Error fetching lifetime stats");
     }
   };
 
   useEffect(() => {
-    if(user) {
-      fetchLoginCounts(user.userId);
-      fetchLifetimeStats(user.userId);
+    if (!user.userId) {
+      return;
     }
-  }, [userLoginCount, lifetimeStats?.completionRate]);
 
-  // Functions for handling modals and tooltips
-  const handleOpenModal = () => setModalVisible(true);
-  const handleCloseModal = () => setModalVisible(false);
-  const showTooltip = (tooltipId: string) => setActiveTooltip(tooltipId);
-  const hideTooltip = () => setActiveTooltip(null);
+    fetchLoginCounts(user.userId);
+    fetchLifetimeStats(user.userId);
+  }, [user.userId]);
 
-  // Rest of the logout function remains the same...
-  const logout = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          onPress: async () => {
-            const result = await signOut();
-            if (result.success) {
-              setIsLoggedIn(false);
-              setUser({
-                email: '',
-                username: '',
-                name: '',
-                userId: '',
-                premiumUser: false
-              });
-              router.replace('/sign-in');
-            } else {
-              console.error('Error signing user out:', result.message);
-            }
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  const MetricItem = ({ 
-    icon, 
-    text, 
-    tooltipKey, 
-    reference 
-  }: { 
-    icon: JSX.Element, 
-    text: string, 
-    tooltipKey: string, 
-    reference: React.RefObject<any> 
-  }) => (
+  const MetricItem = ({ icon, text }: { icon: React.ReactElement; text: string }) => (
     <View style={styles.singleMetricsContainer}>
-      <TouchableOpacity 
-        style={styles.metricCircle}
-        ref={reference}
-        onPress={() => showTooltip(tooltipKey)}
-      >
-        {icon}
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.metricCircle}>{icon}</TouchableOpacity>
       <Text>{text}</Text>
-      
     </View>
   );
 
-  if(!lifetimeStats){
-    return <View style={styles.container}>
-    <ActivityIndicator size="large" color="#3e4e88" />
-    </View>
-   
+  if (!lifetimeStats) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#3e4e88" />
+      </View>
+    );
   }
 
   return (
     <ScrollView>
-    <View className='px-3'>
+      <View className="px-3">
         <View style={styles.metricsContainer}>
-        <MetricItem
+          <MetricItem
             icon={<Feather name="check-circle" size={30} color="black" />}
-            text={`${Math.floor(lifetimeStats?.completionRate)}% Completion Rate`}
-            tooltipKey="completionRate"
-            reference={completionRateRef}
-        />
-        <MetricItem
+            text={`${Math.floor(lifetimeStats.completionRate)}% Completion Rate`}
+          />
+          <MetricItem
             icon={<SimpleLineIcons name="fire" size={30} color="black" />}
-            text={`${lifetimeStats?.longestStreak} ${lifetimeStats?.longestStreak === 1 ? 'Day' : 'Day'} Streak`}
-            tooltipKey="streak"
-            reference={streakRef}
-        />
-        <MetricItem
+            text={`${lifetimeStats.longestStreak} ${lifetimeStats.longestStreak === 1 ? 'Day' : 'Days'} Streak`}
+          />
+          <MetricItem
             icon={<SimpleLineIcons name="trophy" size={30} color="black" />}
-            text={lifetimeStats?.mostConsistentHabit || ''}
-            tooltipKey="consistentHabit"
-            reference={consistentHabitRef}
-        />
-        <MetricItem
+            text={lifetimeStats.mostConsistentHabit || ''}
+          />
+          <MetricItem
             icon={<Feather name="calendar" size={30} color="black" />}
-            text={`${lifetimeStats?.totalDaysTracked} Total Days Tracked`}
-            tooltipKey="daysTracked"
-            reference={daysTrackedRef}
-        />
-        <MetricItem
+            text={`${lifetimeStats.totalDaysTracked} Total Days Tracked`}
+          />
+          <MetricItem
             icon={<SimpleLineIcons name="login" size={30} color="black" />}
-            text={`Join Date: ${lifetimeStats?.joinDate?.toLocaleDateString()}`}
-            tooltipKey="joinDate"
-            reference={joinDateRef}
-        />
-        <MetricItem
+            text={`Join Date: ${lifetimeStats.joinDate?.toLocaleDateString()}`}
+          />
+          <MetricItem
             icon={<MaterialIcons name="update" size={30} color="black" />}
             text={`${userLoginCount} Account Logins`}
-            tooltipKey="loginCount"
-            reference={loginCountRef}
-        />
+          />
         </View>
-        
-    </View>
+      </View>
     </ScrollView>
   );
 };
@@ -215,11 +95,11 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginBottom: 10,
     justifyContent: 'center',
-    alignContent: 'center'
+    alignContent: 'center',
   },
   metricsContainer: {
     flexWrap: 'wrap',
-    alignContent: 'center'
+    alignContent: 'center',
   },
   singleMetricsContainer: {
     flexDirection: 'row',

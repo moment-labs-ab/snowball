@@ -1,23 +1,20 @@
 import {
     View,
     Text,
-    SafeAreaView,
     ScrollView,
     Image,
     Alert,
     StyleSheet,
   } from "react-native";
-  import React, { useEffect, useState } from "react";
+  import React, { useState } from "react";
   import images from "../../constants/images";
-  import { Link, router, useLocalSearchParams } from "expo-router";
+  import { router, useLocalSearchParams } from "expo-router";
   import FormField from "@/components/shared/FormField";
   import CustomButton from "@/components/shared/CustomButtom";
   
   import { resetPassword } from "@/lib/supabase_user";
-  import { useGlobalContext } from "@/context/Context";
   
   const ResetPassword = () => {
-    const { setUser, setIsLoggedIn } = useGlobalContext();
     const { email, access_token } = useLocalSearchParams();
   
     const [form, setForm] = useState({
@@ -41,7 +38,7 @@ import {
         await resetPassword(form.email, form.accessToken, form.password);
   
         router.replace("/sign-in");
-      } catch (error) {
+      } catch {
         //Alert.alert(String(error))
       } finally {
         setisSubmitting(false);

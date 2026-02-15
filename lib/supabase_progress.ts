@@ -3,6 +3,14 @@ import { Habit, ProgressData, HabitTrackingEntry } from '@/types/types'
 import { getUserHabits, getHabit } from './supabase_habits'
 import { useSupabaseClient } from './supabase';
 
+const toDateOnlyString = (dateValue: Date | string): string => {
+    const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 function getRelativeDates(baseDate: Date) {
     // Create a new Date object for each calculation to avoid mutating the original date
     const oneWeekAgo = new Date(baseDate);
@@ -21,13 +29,15 @@ function getRelativeDates(baseDate: Date) {
 
 export const getHabitTrackingCount = async (habit_id: string, startDate: string, endDate: string) => {
     const client = useSupabaseClient();
+    const startDateOnly = toDateOnlyString(startDate);
+    const endDateOnly = toDateOnlyString(endDate);
 
-    const { data, error, count } = await client
+    const { error, count } = await client
         .from('habit_tracking_history')
         .select('id', { count: 'exact' }) // 'exact' will return the total count of matching rows
         .eq('habit_id', habit_id)
-        .gte('tracked_habit_date', startDate)
-        .lte('tracked_at', endDate);
+        .gte('tracked_habit_date', startDateOnly)
+        .lte('tracked_habit_date', endDateOnly);
 
     if (error) {
         console.error('Error querying habit tracking history:', error);
@@ -347,13 +357,16 @@ export const getGridTrackingHistory = async (
     endDate: Date
   ): Promise<HabitTrackingEntry[] | null> => {
     const client = useSupabaseClient();
+    const startDateOnly = toDateOnlyString(startDate);
+    const endDateOnly = toDateOnlyString(endDate);
   
     const { data, error } = await client
       .from('habit_tracking_history')
       .select('tracked_habit_date')
+      .eq('user_id', userId)
       .eq('habit_id', habitId)
-      .gte('tracked_habit_date', startDate.toISOString())
-      .lte('tracked_habit_date', endDate.toISOString());
+      .gte('tracked_habit_date', startDateOnly)
+      .lte('tracked_habit_date', endDateOnly);
   
     if (error) {
       console.error('Error querying habit tracking history:', error);
@@ -363,7 +376,7 @@ export const getGridTrackingHistory = async (
     // Step 1: Count how many times each day was tracked
     const countByDate: Record<string, number> = {};
     data?.forEach(entry => {
-      const dateStr = new Date(entry.tracked_habit_date).toISOString().split('T')[0];
+      const dateStr = String(entry.tracked_habit_date).split('T')[0];
       countByDate[dateStr] = (countByDate[dateStr] || 0) + 1;
     });
   
@@ -387,4 +400,3 @@ export const getGridTrackingHistory = async (
     return result;
   };
   
-

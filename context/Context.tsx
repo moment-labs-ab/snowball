@@ -40,9 +40,11 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
                 await initSupabaseClient();
 
                 const result = await getCurrentUser();
-                if (result) {
+                if (result?.userId) {
 
-                    await initRevenueCat(result.email || "");
+                    if (result.email) {
+                        await initRevenueCat(result.email);
+                    }
                     setUser({
                         email: result.email || "",
                         username: result.username || "",

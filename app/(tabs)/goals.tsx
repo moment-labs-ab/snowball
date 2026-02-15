@@ -1,19 +1,16 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddGoalButton from "@/components/GoalObjects/AddGoalButton";
 import AddGoalForm from "@/components/GoalObjects/AddGoalForm";
 import AllGoalsView from "@/components/GoalObjects/AllGoalsView";
-import { useGlobalContext } from "@/context/Context";
 import { useGoalContext } from "@/context/GoalContext";
 import FeedbackButton from "@/modals/FeedbackButton";
 import Feedback from "@/components/Profile/SettingsFeedback";
 
-const goals = () => {
-  const { user } = useGlobalContext();
+const GoalsTab = () => {
   const { goals } = useGoalContext();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [feedbackVisible, setFeedbackVisible] = useState(false)
+  const feedbackVisible = false;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -126,4 +123,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default goals;
+export default GoalsTab;

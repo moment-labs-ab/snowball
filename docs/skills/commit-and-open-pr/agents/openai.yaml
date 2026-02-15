@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit and Open PR"
+  short_description: "Stage, commit, and open a rich PR to develop"
+  default_prompt: "Use $commit-and-open-pr to stage my changes, commit them, and open a detailed PR against develop."

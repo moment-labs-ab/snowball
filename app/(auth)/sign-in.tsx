@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
 import images from "../../constants/images";
 import { Link, router } from "expo-router";
@@ -21,23 +21,28 @@ const SignIn = () => {
   // TODO: The following needs to be refactored and account for sign in failing.
   const submit = async () => {
     if (form.email === "" || form.password === "") {
-      //Alert.alert("Error", "Please fill in all the fields");
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
     }
     setisSubmitting(true);
     try {
-      await signInWithEmail(form.email, form.password);
+      const authenticatedUser = await signInWithEmail(form.email, form.password);
+      if (!authenticatedUser) {
+        return;
+      }
+
       const result = await getCurrentUser();
+      if (!result?.userId) {
+        Alert.alert("Sign In Failed", "Could not load your profile. Please try again.");
+        setIsLoggedIn(false);
+        return;
+      }
+
       setUser(result);
       setIsLoggedIn(true);
-
-      if (result?.email && result?.userId) {
-        router.replace("/habits");
-      }
-      else {
-        setisSubmitting(false);
-      }
-    } catch (error) {
-      //Alert.alert(String(error))
+      router.replace("/habits");
+    } catch {
+      Alert.alert("Sign In Failed", "Please try again.");
     } finally {
       setisSubmitting(false);
     }
@@ -80,7 +85,7 @@ const SignIn = () => {
 
         <View className="justify-center pt-8 flex-row gap-2">
           <Text className="text-lg text-black-100 font-pregular">
-            Don't have an account?
+            Don&apos;t have an account?
           </Text>
           <Link
             href="/sign-up"

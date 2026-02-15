@@ -24,7 +24,9 @@ const SingleNotificationPage = () => {
     const [notificationsGranted, setNotificationsGranted] = useState(false);
     const [expoPushToken, setExpoPushToken] = useState("");
     const [notificationTime, setNotificationTime] = useState(new Date());
-    const [originalTime, setOriginalTime] = useState<Date>(new Date(user.notificationTime || ""));
+    const [originalTime, setOriginalTime] = useState<Date>(
+        user.notificationTime ? new Date(user.notificationTime) : getDefaultDateUtcTime()
+    );
     const [timeChanged, setTimeChanged] = useState(false);
 
     // Run once on mount and when user changes
@@ -64,15 +66,6 @@ const SingleNotificationPage = () => {
         setOriginalTime(date);
     }
 
-    // Helper function to set time to the top of the hour
-    const setToTopOfHour = (date: Date ) => {
-        const newDate = new Date(date);
-        newDate.setMinutes(0);
-        newDate.setSeconds(0);
-        newDate.setMilliseconds(0);
-        return newDate;
-    };
-    
     // Called when user selects a time from the picker
     const handleTimeSelected = (time: Date) => {
         setNotificationTime(time);

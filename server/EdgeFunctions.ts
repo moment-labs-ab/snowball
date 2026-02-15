@@ -1,58 +1,87 @@
+/* eslint-disable import/no-unresolved */
 import { createClient } from "@supabase/supabase-js";
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const supabaseUrl = 'https://eykpncisvbuptalctkjx.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3BuY2lzdmJ1cHRhbGN0a2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAxMTQ3MzgsImV4cCI6MjAzNTY5MDczOH0.mULscPjrRARbUp80OnVY_GQGUYMPhG6k-QCvGTZ4k3g'
-
+declare const Deno: {
+  env: {
+    get: (key: string) => string | undefined;
+  };
+};
 
 interface DeleteUserRequest {
-    user_id: string;
+  user_id: string;
+}
+
+interface DeleteUserResponse {
+  success: boolean;
+  error?: string;
+}
+
+class DeleteUserError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DeleteUserError";
   }
-  
-  interface DeleteUserResponse {
-    success: boolean;
-    error?: string;
+}
+
+serve(async (req: Request): Promise<Response> => {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Missing Supabase environment configuration" }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      }
+    );
   }
-  
-  class DeleteUserError extends Error {
-    constructor(message: string) {
-      super(message);
-      this.name = 'DeleteUserError';
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+  try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new DeleteUserError("Authorization token is required");
     }
-  }
-  
-  serve(async (req: Request): Promise<Response> => {
-    const supabase = createClient(
-        supabaseUrl,
-        supabaseAnonKey
-    )
-  
-    try {
-      const { user_id }: DeleteUserRequest = await req.json()
-  
-      if (!user_id) {
-        throw new DeleteUserError('User ID is required')
-      }
-  
-      const { error } = await supabase.auth.admin.deleteUser(user_id)
-  
-      if (error) {
-        throw new DeleteUserError(error.message)
-      }
-  
-      const response: DeleteUserResponse = { success: true }
-      return new Response(JSON.stringify(response), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 200,
-      })
-    } catch (error) {
-      const response: DeleteUserResponse = { 
-        success: false, 
-        error: error instanceof DeleteUserError ? error.message : 'An unexpected error occurred'
-      }
-      return new Response(JSON.stringify(response), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 400,
-      })
+
+    const jwt = authHeader.replace("Bearer ", "");
+    const { data: authData, error: authError } = await supabase.auth.getUser(jwt);
+
+    if (authError || !authData.user) {
+      throw new DeleteUserError("Invalid authorization token");
     }
-  })
+
+    const { user_id }: DeleteUserRequest = await req.json();
+
+    if (!user_id) {
+      throw new DeleteUserError("User ID is required");
+    }
+
+    if (authData.user.id !== user_id) {
+      throw new DeleteUserError("You can only delete your own account");
+    }
+
+    const { error } = await supabase.auth.admin.deleteUser(user_id);
+
+    if (error) {
+      throw new DeleteUserError(error.message);
+    }
+
+    const response: DeleteUserResponse = { success: true };
+    return new Response(JSON.stringify(response), {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch (error) {
+    const response: DeleteUserResponse = {
+      success: false,
+      error: error instanceof DeleteUserError ? error.message : "An unexpected error occurred",
+    };
+    return new Response(JSON.stringify(response), {
+      headers: { "Content-Type": "application/json" },
+      status: 400,
+    });
+  }
+});
